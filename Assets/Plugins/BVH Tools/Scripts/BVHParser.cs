@@ -12,17 +12,19 @@ public class BVHParser {
     private List<BVHBone> boneList;
 
     static private char[] charMap = null;
-    private float[][] channels;
+    private float[][] channels_bvhParser; // the first index ranges over the total number of channels, DOFs, in MOTION part of the bvh file.
+                                          // the second index ranges over the total number of frames in the MOTION.
     private string bvhText;
     private int pos = 0;
-
+    
+    // Inner class BVHBone of BVHParser  
     public class BVHBone {
         public string name;
         public List<BVHBone> children;
         public float offsetX, offsetY, offsetZ;
         public int[] channelOrder;
         public int channelNumber;
-        public BVHChannel[] channels;
+        public BVHChannel[] channels_bvhBones;
 
         private BVHParser bp;
 
@@ -33,17 +35,21 @@ public class BVHParser {
         }
 
         public BVHBone(BVHParser parser, bool rootBone) {
-            bp = parser;
-            bp.boneList.Add(this);
-            channels = new BVHChannel[6];
-            channelOrder = new int[6] { 0, 1, 2, 5, 3, 4 };
-            children = new List<BVHBone>();
+            this.bp = parser; // this refers to an instance of BVHBone
 
-            bp.skip();
+            this.bp.boneList.Add(this); // because BVHBone constructor is called recursively, the bone referred to by "this"
+                                        // will be added to this.bp.boneList, creating the total number of bones. 
+
+            this.channels_bvhBones = new BVHChannel[6];
+            this.channelOrder = new int[6] { 0, 1, 2, 5, 3, 4 };
+
+            this.children = new List<BVHBone>();
+
+            this.bp.skip();
             if (rootBone) {
-                bp.assureExpect("ROOT");
+                this.bp.assureExpect("ROOT");
             } else {
-                bp.assureExpect("JOINT");
+                this.bp.assureExpect("JOINT");
             }
             bp.assure("joint name", bp.getString(out name));
             bp.skip();
@@ -60,15 +66,15 @@ public class BVHParser {
             bp.assureExpect("CHANNELS");
 
             bp.skip();
-            bp.assure("channel number", bp.getInt(out channelNumber));
-            bp.assure("valid channel number", channelNumber >= 1 && channelNumber <= 6);
+            bp.assure("channel number", bp.getInt(out this.channelNumber));
+            bp.assure("valid channel number", this.channelNumber >= 1 && this.channelNumber <= 6);
 
-            for (int i = 0; i < channelNumber; i++) {
+            for (int i = 0; i < this.channelNumber; i++) {
                 bp.skip();
                 int channelId;
                 bp.assure("channel ID", bp.getChannel(out channelId));
-                channelOrder[i] = channelId;
-                channels[channelId].enabled = true;
+                this.channelOrder[i] = channelId;
+                this.channels_bvhBones[channelId].enabled = true;
             }
 
             char peek = ' ';
@@ -78,8 +84,9 @@ public class BVHParser {
                 bp.assure("child joint", bp.peek(out peek));
                 switch (peek) {
                     case 'J':
-                        BVHBone child = new BVHBone(bp, false);
-                        children.Add(child);
+                        BVHBone child = new BVHBone(bp, false); // recursive call to BVHBone constructor with rootBone = false
+                        // create the children nodes of the current bone, this.
+                        this.children.Add(child);
                         break;
                     case 'E':
                         bp.assureExpect("End Site");
@@ -109,10 +116,10 @@ public class BVHParser {
 
     private bool peek(out char c) {
         c = ' ';
-        if (pos >= bvhText.Length) {
+        if (this.pos >= this.bvhText.Length) { // this refers to an instance BVHParser
             return false;
         }
-        c = bvhText[pos];
+        c = this.bvhText[this.pos];
         return true;
     }
 
@@ -267,7 +274,7 @@ public class BVHParser {
           } // if ( bvhText[pos] == 'E' || bvhText[pos] == 'e')
           else { // not  ( bvhText[pos] == 'E' || bvhText[pos] == 'e') ==> The character other than 'E' or 'e' found after the float number. This is an error
             
-              digitFound = false;
+              digitFound = true;
           }
         
         } // // pos <  bvhText.Length 
@@ -389,7 +396,7 @@ public class BVHParser {
 
     private void parse(bool overrideFrameTime, float time) {
         // Prepare character table
-        if (charMap == null) {
+        if (charMap == null) { // charMap is static
             charMap = new char[256];
             for (int i = 0; i < 256; i++) {
                 if (i >= 'a' && i <= 'z') {
@@ -406,8 +413,9 @@ public class BVHParser {
         skip();
         assureExpect("HIERARCHY");
        // MJ: Create a hiearchy of the character
-        boneList = new List<BVHBone>();
-        root = new BVHBone(this, true); 
+        this.boneList = new List<BVHBone>(); // this refers to an instance of  BVHParser
+
+        this.root = new BVHBone(this, true); // true = the bone is the root of the hierarchy; It will call BVHBone() recursively for the childen bones
 
         // Parse meta data
         skip();
@@ -415,45 +423,61 @@ public class BVHParser {
         skip();
         assureExpect("FRAMES:");
         skip();
-        assure("frame number", getInt(out frames)); // MJ: The number of frames in the motion data
+        assure("frame number", getInt(out this.frames)); // MJ: The number of frames in the motion data
         skip();
         assureExpect("FRAME TIME:");
         skip();
-        assure("frame time", getFloat(out frameTime));
+        assure("frame time", getFloat(out this.frameTime));
 
         if (overrideFrameTime) {
-            frameTime = time;
+            this.frameTime = time;
         }
 
         // Prepare channels
         int totalChannels = 0; // the total degrees of freedom for the body.
-        foreach (BVHBone bone in boneList) {
-            totalChannels += bone.channelNumber;
+        foreach (BVHBone bone in this.boneList) {
+            
+            totalChannels += bone.channelNumber; // add all the channel number  of each bone to totalChannels.
         }
         int channel = 0; // channel = DOF
-        channels = new float[totalChannels][];
-        foreach (BVHBone bone in boneList) {
+
+        this.channels_bvhParser = new float[totalChannels][];
+
+        // Allocate the data structure to which the parsed data will be stored.
+        foreach (BVHBone bone in this.boneList) { // this.boneList has the total number of bones
+
             for (int i = 0; i < bone.channelNumber; i++) {
-                channels[channel] = new float[frames];
-                bone.channels[bone.channelOrder[i]].values = channels[channel++];
+                this.channels_bvhParser[channel] = new float[frames]; // channel ranges over the total number of channels in the MOTION data
+
+                bone.channels_bvhBones[bone.channelOrder[i]].values =this.channels_bvhParser[channel++]; // chanel++ for each increment of i
+                //  this.channelOrder = new int[6] { 0, 1, 2, 5, 3, 4 };
+
+                 // This statement makes the left and right hand variables refer  to the same reference,
+                 // so that assigning values to the right hand side makes the left hand side refer to those values.
+                 // When displaying the motion data, bone.channels_bvhBones[bone.channelOrder[i]].values will be used,
+                 // in loadAnimation() in BVHAnimationLoader.cs
+                 
+
             }
         }
         
         // Parse frames
-        for (int i = 0; i < frames; i++) { // get the DOF data for each frame line in the motion data part
+        for (int i = 0; i < this.frames; i++) { // get the DOF data for each frame line in the motion data part
             newline();
             for (channel = 0; channel < totalChannels; channel++) {
                 skipInLine(); // skip empty characters in the current line, increasing pos
-                assure("channel value", getFloat(out channels[channel][i])); // channel = DOF; i = each frame in the motion
+
+                assure("channel value", getFloat(out this.channels_bvhParser[channel][i])); // channel = DOF; i = each frame in the motion
+               
             }
         }
     } // private void parse(bool overrideFrameTime, float time)
 
     public BVHParser(string bvhText) { //MJ:  bvhText is a string that contains the whole data of the bvh file, without the end of file character (?)
-        this.bvhText = bvhText;
+        this.bvhText = bvhText; // this refers to an instance of BVHParser
 
-        this.parse(false, 0f); // this.channels[][] will store the all the DOF data in all the frames in bvhText;
-        //   private float[][] channels;
+        this.parse(false, 0f); // bp.channels[][] and bone.channels[].values will store the all the DOF data in all the frames in bvhText;
+        
     }
 
     public BVHParser(string bvhText, float time) {

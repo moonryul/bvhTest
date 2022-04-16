@@ -1,4 +1,4 @@
-﻿// Things to fix:
+// Things to fix:
 // - Handle non-zero-rotation bones without producing a stupid rest pose
 // - Add support recording translation too
 // - Update API documentation
@@ -82,7 +82,7 @@ public class BVHRecorder : MonoBehaviour {
         }
     }
 
-    public static void populateBoneMap(out Dictionary<Transform, string> boneMap, Animator targetAvatar) {
+    public static void populateBoneMap(out Dictionary<Transform, string> transformToBoneMap, Animator targetAvatar) {
         if (!targetAvatar.avatar.isHuman) {
             throw new InvalidOperationException("Enforce humanoid bones and rename bones can only be used with humanoid avatars.");
         }
@@ -90,22 +90,27 @@ public class BVHRecorder : MonoBehaviour {
         Dictionary<string, int> usedNames = new Dictionary<string, int>();
         RuntimeAnimatorController rac = targetAvatar.runtimeAnimatorController;
         targetAvatar.runtimeAnimatorController = null;
-        boneMap = new Dictionary<Transform, string>();
+
+        transformToBoneMap = new Dictionary<Transform, string>();
         HumanBodyBones[] bones = (HumanBodyBones[])Enum.GetValues(typeof(HumanBodyBones));
+
         foreach (HumanBodyBones bone in bones) {
+
             if (bone < 0 || bone >= HumanBodyBones.LastBone) {
                 continue;
             }
-            Transform bodyBone = targetAvatar.GetBoneTransform(bone);
-            if (bodyBone != null && bone != HumanBodyBones.LastBone) {
+            Transform bodyBoneTransform = targetAvatar.GetBoneTransform(bone); // it assumes that targetAvatar has the standard Unity bone id (enum)
+
+            if (bodyBoneTransform != null && bone != HumanBodyBones.LastBone) {
                 if (usedNames.ContainsKey(bone.ToString())) {
                     throw new InvalidOperationException("Multiple bones were assigned to the same standard bone name.");
                 } else {
-                    boneMap.Add(bodyBone, bone.ToString());
+                    transformToBoneMap.Add(bodyBoneTransform, bone.ToString());
                     usedNames.Add(bone.ToString(), 1);
                 }
             }
         }
+        
         targetAvatar.runtimeAnimatorController = rac;
     }
 
