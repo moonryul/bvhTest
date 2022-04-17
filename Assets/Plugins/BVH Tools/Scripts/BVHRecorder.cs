@@ -39,9 +39,9 @@ public class BVHRecorder : MonoBehaviour {
 
     [Header("Motion target")]
     [Tooltip("This is the avatar for which motion should be captured. All skinned meshes that are part of the avatar should be children of this object. All bones should be initialized with zero rotations. This is usually the case for VRM avatars.")]
-    public Animator targetAvatar = null;
+    public Animator targetAnimator = null;
     [Tooltip("This is the root bone for the avatar, usually the hips. If this is not set, it will be detected automatically.")]
-    public Transform rootBone = null;
+    public Transform rootBoneTransform = null;
     [Tooltip("This list contains all the bones for which motion will be recorded. If nothing is assigned, it will be automatically generated when the script starts. When manually setting up an avatar the Unity Editor, you can press the corresponding button at the bottom of this component to automatically populate the list and add or remove bones manually if necessary.")]
     public List<Transform> bones;
 
@@ -82,14 +82,14 @@ public class BVHRecorder : MonoBehaviour {
         }
     }
 
-    public static void populateBoneMap(out Dictionary<Transform, string> transformToBoneMap, Animator targetAvatar) {
-        if (!targetAvatar.avatar.isHuman) {
+    public static void populateBoneMap(out Dictionary<Transform, string> transformToBoneMap, Animator targetAnimator) {
+        if (!targetAnimator.avatar.isHuman) {
             throw new InvalidOperationException("Enforce humanoid bones and rename bones can only be used with humanoid avatars.");
         }
 
         Dictionary<string, int> usedNames = new Dictionary<string, int>();
-        RuntimeAnimatorController rac = targetAvatar.runtimeAnimatorController;
-        targetAvatar.runtimeAnimatorController = null;
+        RuntimeAnimatorController rac = targetAnimator.runtimeAnimatorController;
+        targetAnimator.runtimeAnimatorController = null;
 
         transformToBoneMap = new Dictionary<Transform, string>();
         HumanBodyBones[] bones = (HumanBodyBones[])Enum.GetValues(typeof(HumanBodyBones));
@@ -99,7 +99,9 @@ public class BVHRecorder : MonoBehaviour {
             if (bone < 0 || bone >= HumanBodyBones.LastBone) {
                 continue;
             }
-            Transform bodyBoneTransform = targetAvatar.GetBoneTransform(bone); // it assumes that targetAvatar has the standard Unity bone id (enum)
+            Transform bodyBoneTransform = targetAnimator.GetBoneTransform(bone); 
+            // it assumes that targetAnimator has the standard Unity bone id (enum); The transforms obtained by GetBoneTransform(bone) is the
+            // transforms defined in Configure process for the Avatar setting.
 
             if (bodyBoneTransform != null && bone != HumanBodyBones.LastBone) {
                 if (usedNames.ContainsKey(bone.ToString())) {
@@ -111,14 +113,14 @@ public class BVHRecorder : MonoBehaviour {
             }
         }
         
-        targetAvatar.runtimeAnimatorController = rac;
+        targetAnimator.runtimeAnimatorController = rac;
     }
 
-    public static Transform getRootBone(Animator avatar) {
-        return getRootBone(avatar, null);
+    public static Transform getrootBoneTransform(Animator avatar) {
+        return getrootBoneTransform(avatar, null);
     }
 
-    public static Transform getRootBone (Animator avatar, List<Transform> bones) {
+    public static Transform getrootBoneTransform (Animator avatar, List<Transform> bones) {
         List<Component> meshes = new List<Component>(avatar.GetComponents<SkinnedMeshRenderer>());
         meshes.AddRange(avatar.GetComponentsInChildren<SkinnedMeshRenderer>(true));
 
@@ -148,11 +150,11 @@ public class BVHRecorder : MonoBehaviour {
         return root;
     }
 
-    private void getTargetAvatar() {
-        if (targetAvatar == null) {
-            targetAvatar = GetComponent<Animator>();
+    private void gettargetAnimator() {
+        if (targetAnimator == null) {
+            targetAnimator = GetComponent<Animator>();
         }
-        if (targetAvatar == null) {
+        if (targetAnimator == null) {
             throw new InvalidOperationException("No target avatar set.");
         }
 
@@ -160,20 +162,20 @@ public class BVHRecorder : MonoBehaviour {
 
     // This function tries to find all Transforms that are bones of the character
     public void getBones() {
-        getTargetAvatar();
+        gettargetAnimator();
 
         if (enforceHumanoidBones) {
-            populateBoneMap(out boneMap, targetAvatar);
+            populateBoneMap(out boneMap, targetAnimator);
         }
 
-        List<Component> meshes = new List<Component>(targetAvatar.GetComponents<SkinnedMeshRenderer>());
-        meshes.AddRange(targetAvatar.GetComponentsInChildren<SkinnedMeshRenderer>(true));
+        List<Component> meshes = new List<Component>(targetAnimator.GetComponents<SkinnedMeshRenderer>());
+        meshes.AddRange(targetAnimator.GetComponentsInChildren<SkinnedMeshRenderer>(true));
         
         HashSet<Transform> boneSet = new HashSet<Transform>();
 
         foreach (SkinnedMeshRenderer smr in meshes) {
             foreach (Transform bone in smr.bones) {
-                if (rootBone == null || (bone.IsChildOf(rootBone) && bone != rootBone)) {
+                if (rootBoneTransform == null || (bone.IsChildOf(rootBoneTransform) && bone != rootBoneTransform)) {
                     if (enforceHumanoidBones) {
                         if (boneMap.ContainsKey(bone)) {
                             boneSet.Add(bone);
@@ -226,27 +228,27 @@ public class BVHRecorder : MonoBehaviour {
     
     // This builds a minimal tree covering all detected bones that will be used to generate the hierarchy section of the BVH file
     public void buildSkeleton() {
-        getTargetAvatar();
+        gettargetAnimator();
 
         cleanupBones();
         if (bones.Count == 0) {
             throw new InvalidOperationException("Target avatar, root bone and the bones list have to be set before calling buildSkeleton(). You can initialize bones list by calling getBones().");
         }
 
-        rootBone = getRootBone(targetAvatar, bones);
-        if (rootBone == null) {
+        rootBoneTransform = getrootBoneTransform(targetAnimator, bones);
+        if (rootBoneTransform == null) {
             throw new InvalidOperationException("No root bone found.");
         }
 
         if (enforceHumanoidBones) {
-            populateBoneMap(out boneMap, targetAvatar);
+            populateBoneMap(out boneMap, targetAnimator);
         } else {
             boneMap = null;
         }
-        basePosition = targetAvatar.transform.position;
+        basePosition = targetAnimator.transform.position;
 
         HashSet<Transform> boneSet = new HashSet<Transform>(bones);
-        skel = new SkelTree(rootBone, boneMap);
+        skel = new SkelTree(rootBoneTransform, boneMap);
 
         Queue<SkelTree> queue = new Queue<SkelTree>();
         queue.Enqueue(skel);
@@ -358,13 +360,13 @@ public class BVHRecorder : MonoBehaviour {
 
     // This function generates the hierarchy section of the BVH file
     public void genHierarchy() {
-        getTargetAvatar();
+        gettargetAnimator();
 
         if (skel == null) {
             throw new InvalidOperationException("Skeleton not initialized. You can initialize the skeleton by calling buildSkeleton().");
         }
 
-        offsetScale = new Vector3(1f/targetAvatar.transform.localScale.x, 1f/targetAvatar.transform.localScale.y, 1f/targetAvatar.transform.localScale.z);
+        offsetScale = new Vector3(1f/targetAnimator.transform.localScale.x, 1f/targetAnimator.transform.localScale.y, 1f/targetAnimator.transform.localScale.z);
 
         Quaternion rot = skel.transform.rotation;
         skel.transform.rotation = Quaternion.identity;

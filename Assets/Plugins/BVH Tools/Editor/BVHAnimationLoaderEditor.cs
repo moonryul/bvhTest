@@ -13,7 +13,7 @@ public class BVHAnimationLoaderEditor : Editor {
 
         if (GUILayout.Button("Load animation")) {
             bvhLoader.parseFile();
-            bvhLoader.loadAnimation();
+            bvhLoader.loadAnimation(); 
             Debug.Log("Loading animation done.");
         }
 
@@ -29,11 +29,12 @@ public class BVHAnimationLoaderEditor : Editor {
 
         if (GUILayout.Button("Initialize renaming map with humanoid bone names")) {
             HumanBodyBones[] bones = (HumanBodyBones[])Enum.GetValues(typeof(HumanBodyBones));
-            bvhLoader.boneRenamingMap = new BVHAnimationLoader.FakeDictionary[bones.Length - 1];
+            // bvhToUnityRenamingMapArray 
+            bvhLoader.bvhToUnityRenamingMapArray = new BVHAnimationLoader.FakeDictionary[bones.Length - 1];
             for (int i = 0; i < bones.Length - 1; i++) {
                 if (bones[i] != HumanBodyBones.LastBone) {
-                    bvhLoader.boneRenamingMap[i].bvhName = "";
-                    bvhLoader.boneRenamingMap[i].targetName = bones[i].ToString();
+                    bvhLoader.bvhToUnityRenamingMapArray[i].bvhName = "";
+                    bvhLoader.bvhToUnityRenamingMapArray[i].targetName = bones[i].ToString();
                 }
             }
         }

@@ -8,7 +8,7 @@ using UnityEngine;
 public class BVHParser {
     public int frames = 0;
     public float frameTime = 1000f / 60f;
-    public BVHBone root;
+    public BVHBone bvhRootNode;
     private List<BVHBone> boneList;
 
     static private char[] charMap = null;
@@ -34,7 +34,7 @@ public class BVHParser {
             public float[] values;
         }
 
-        public BVHBone(BVHParser parser, bool rootBone) {
+        public BVHBone(BVHParser parser, bool isRoot) {
             this.bp = parser; // this refers to an instance of BVHBone
 
             this.bp.boneList.Add(this); // because BVHBone constructor is called recursively, the bone referred to by "this"
@@ -46,7 +46,7 @@ public class BVHParser {
             this.children = new List<BVHBone>();
 
             this.bp.skip();
-            if (rootBone) {
+            if (isRoot) {
                 this.bp.assureExpect("ROOT");
             } else {
                 this.bp.assureExpect("JOINT");
@@ -84,7 +84,7 @@ public class BVHParser {
                 bp.assure("child joint", bp.peek(out peek));
                 switch (peek) {
                     case 'J':
-                        BVHBone child = new BVHBone(bp, false); // recursive call to BVHBone constructor with rootBone = false
+                        BVHBone child = new BVHBone(bp, false); // recursive call to BVHBone constructor with rootBoneTransform = false
                         // create the children nodes of the current bone, this.
                         this.children.Add(child);
                         break;
@@ -415,8 +415,9 @@ public class BVHParser {
        // MJ: Create a hiearchy of the character
         this.boneList = new List<BVHBone>(); // this refers to an instance of  BVHParser
 
-        this.root = new BVHBone(this, true); // true = the bone is the root of the hierarchy; It will call BVHBone() recursively for the childen bones
-
+        this.bvhRootNode = new BVHBone(this, true); // true = the bone to parse is the root of the bvh hierarchy;
+                                                    // It will call BVHBone() recursively for the childen bones.
+        // new BVHBone() creates an instance of BVHBone and returns it
         // Parse meta data
         skip();
         assureExpect("MOTION");

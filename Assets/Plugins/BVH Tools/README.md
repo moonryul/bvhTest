@@ -74,11 +74,11 @@ scripts, you will find all the necessary information in this section.
 
 This component can be used to record BVH data and save it to a file.
 
-#### `Animator targetAvatar` (required)
+#### `Animator targetAnimator` (required)
 
 This is the only required field. Set the target avatar here.
 
-#### `Transform rootBone`
+#### `Transform rootBoneTransform`
 
 This is usually the hips or pelvis bone. It is the root bone of the skeleton.
 If not set, it will be automatically detected. However, setting it can be
@@ -200,16 +200,16 @@ captured motion data.
 This function calls genBVH() and writes the string to the file specified by
 the `filename` field.
 
-#### `static Transform getRootBone (Animator avatar)`
+#### `static Transform getrootBoneTransform (Animator avatar)`
 
 This function can be used to detect the root bone of an avatar.
 
-#### `static Transform getRootBone (Animator avatar, List<Transform> bones)`
+#### `static Transform getrootBoneTransform (Animator avatar, List<Transform> bones)`
 
 This function can be used to detect the root bone of an avatar, given a set of
 bones.
 
-#### `static void populateBoneMap(out Dictionary<Transform, string> boneMap, Animator targetAvatar)`
+#### `static void populateBoneMap(out Dictionary<Transform, string> boneMap, Animator targetAnimator)`
 
 This function can be used on humanoid avatars to generate a mapping from
 bones to standard Unity humanoid bone names.
@@ -219,7 +219,7 @@ bones to standard Unity humanoid bone names.
 Here is a short example of how you could start the capturing process:
 
     BVHRecorder recorder = gameObject.AddComponent<BVHRecorder>();
-    recorder.targetAvatar = GetComponent<Animator>();
+    recorder.targetAnimator = GetComponent<Animator>();
     recorder.scripted = true;
     recorder.getBones();
     recorder.buildSkeleton();
@@ -250,7 +250,7 @@ This component allows the creation of (legacy) animation clips from BVH files.
 The skeleton defined in the BVH file should match that of the avatar for
 which it is being loaded.
 
-#### `Animator targetAvatar` (required)
+#### `Animator targetAnimator` (required)
 
 This field specifies the avatar to which the animation should be applied.
 
@@ -291,7 +291,7 @@ to the corresponding bones of the skeleton.
 
 When this option is disabled, bone names have to match exactly.
 
-#### `FakeDictionary[] boneRenamingMap`
+#### `FakeDictionary[]BvhToUnityRenamingMapArray`
 
 If the bone names of the avatar do not match those in the file and the file
 doesn't use Unity's standard bone names, but the structure matches otherwise,
@@ -365,7 +365,7 @@ one of the parsing functions and this function in sequence multiple times.
 For example:
 
     BVHAnimationLoader loader = gameObject.AddComponent<BVHAnimationLoader>();
-    loader.targetAvatar = GetComponent<Animator>();
+    loader.targetAnimator = GetComponent<Animator>();
     loader.clipName = "anim1";
     loader.filename = "anim1.bvh";
     loader.parseFile();
