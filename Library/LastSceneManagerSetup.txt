@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/DCXR/UPython2 Pro/Demo/2.RecBigFile/2.RecBigFile.unity
+- path: Assets/Scenes/SampleScene.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

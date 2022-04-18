@@ -7,7 +7,7 @@ public class BVHRecorderEditor : Editor {
     public override void OnInspectorGUI() {
         DrawDefaultInspector();
 
-        BVHRecorder bvhRecorder = (BVHRecorder)target;
+        BVHRecorder bvhRecorder = (BVHRecorder) this.target;
 
         if (GUILayout.Button("Detect bones")) {
             bvhRecorder.getBones();

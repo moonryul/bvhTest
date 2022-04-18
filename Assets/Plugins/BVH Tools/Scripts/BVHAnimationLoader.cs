@@ -488,8 +488,8 @@ public class BVHAnimationLoader : MonoBehaviour
         Queue<Transform> transformsInImportedAvatar = new Queue<Transform>();
 
         transformsInImportedAvatar.Enqueue(this.targetAnimator.transform); // add the root transform of the avatar to Unity transforms queue
-
-        string bvhRootBoneName = standardName(this.bp.bvhRootNode.name); // The root bvh bone name = "Hips"
+        //  this.targetAnimator.transform = 'avatar'
+        string bvhRootBoneName = standardName(this.bp.bvhRootNode.name); // this.bp.bvhRootNode.name = "Hips"; bvhRootBoneName ='hips'
              
 
         // BvhToUnityRenamingMap.ContainsKey(rootBoneTransformNameBvh) is false when
@@ -542,7 +542,9 @@ public class BVHAnimationLoader : MonoBehaviour
         // The rootBoneTransform was not identified so far:
         if (this.bvhRootTransform == null)
         {
-            throw new InvalidOperationException("No root bone \"" + bp.bvhRootNode.name + "\" found.");
+            Debug.LogWarning("The name of the bvsh root should be the same as the real root, say 'hip' of the Unity character model");
+
+            throw new InvalidOperationException("The bvh root bone \"" + bp.bvhRootNode.name + "\" not found in the Unity character model");
         }
 
         this.frames = this.bp.frames;
