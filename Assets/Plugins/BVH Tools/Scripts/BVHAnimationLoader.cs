@@ -134,18 +134,21 @@ public class BVHAnimationLoader : MonoBehaviour
     {
         // first = true means that bvhName is the root node
         string bvhNameStandard = standardName(bvhName);
-      
+
 
         if (this.bvhToUnityRenamingMap.ContainsKey(bvhNameStandard))
         {
-             bvhNameStandard = standardName(bvhToUnityRenamingMap[bvhNameStandard]);
+            bvhNameStandard = standardName(bvhToUnityRenamingMap[bvhNameStandard]);
         }
-       
+
         if (first)
         { // check if the bhvNode is the root node of the hiearachy
-          // if (standardName(avatarNodeTransform.name) == unityBoneName) {
-          //     return avatarNodeTransform;
-          // }
+        // Try it for the case of NOT using Standard Unity Bone Names
+            if (standardName(targetTransform.name) == bvhNameStandard)
+            { 
+                return targetTransform;
+            }
+        //  Try it for the case of  using Standard Unity Bone Names    
             if (this.UnityBoneToTransformMap.ContainsKey(bvhNameStandard) && this.UnityBoneToTransformMap[bvhNameStandard] == targetTransform)
             {
                 return targetTransform;
@@ -156,17 +159,19 @@ public class BVHAnimationLoader : MonoBehaviour
 
         for (int i = 0; i < targetTransform.childCount; i++)
         {
-            Transform child = targetTransform.GetChild(i);
-            //if (standardName(child.name) == unityBoneName) {
-            //    return child;
-            //}
-            if (this.UnityBoneToTransformMap.ContainsKey(bvhNameStandard) && this.UnityBoneToTransformMap[bvhNameStandard] == child)
+            Transform childTransform = targetTransform.GetChild(i);
+             //// Try it for the case of NOT using Standard Unity Bone Names
+            if (standardName(childTransform.name) == bvhNameStandard) {
+               return childTransform;
+            }
+            //  Try it for the case of  using Standard Unity Bone Names    
+            if (this.UnityBoneToTransformMap.ContainsKey(bvhNameStandard) && this.UnityBoneToTransformMap[bvhNameStandard] == childTransform)
             { // targetName is a Unity bone name
-                return child;
+                return childTransform;
             }
         }
         // None of the return statements are encountered. Then it means that an error has occurred:
-        throw new InvalidOperationException("Could not find BVH bone \"" + bvhName + "\" under/below AVATAR bone \"" + targetTransform.name + "\".");
+        throw new InvalidOperationException( bvhName + "is supposed to be under/below AVATAR bone" + targetTransform.name + " but IS NOT");
     }
 
     //private void getCurves(string path, BVHParser.BVHBone bvhNode, bool first) {
@@ -490,18 +495,18 @@ public class BVHAnimationLoader : MonoBehaviour
         transformsInImportedAvatar.Enqueue(this.targetAnimator.transform); // add the root transform of the avatar to Unity transforms queue
         //  this.targetAnimator.transform = 'avatar'
         string bvhRootBoneName = standardName(this.bp.bvhRootNode.name); // this.bp.bvhRootNode.name = "Hips"; bvhRootBoneName ='hips'
-             
+
 
         // BvhToUnityRenamingMap.ContainsKey(rootBoneTransformNameBvh) is false when
         // this.boneBvhToUnityRenamingMap is not created by the user; 
         // Check if the root bone name from bvh file is mapped to a Unity standard bone name
         if (bvhToUnityRenamingMap.Count != 0)
         {
-            if (bvhToUnityRenamingMap.ContainsKey(bvhRootBoneName) )
+            if (bvhToUnityRenamingMap.ContainsKey(bvhRootBoneName))
             {
                 bvhRootBoneName = standardName(bvhToUnityRenamingMap[bvhRootBoneName]); // get the unity root bone name
             }
-                                     
+
         }
 
         // Check if  rootBoneTransformNameUnity to used as the root of the bvh character in Unity corresponds to some bone in the "Avatar" hierarchy imported in the Unity scene, e.g., imported from Daz3D humanoid
@@ -511,15 +516,15 @@ public class BVHAnimationLoader : MonoBehaviour
             Transform transformInImportedAvatar = transformsInImportedAvatar.Dequeue(); // get the transform from the queue
             // Transform.name is the name of the game object to which Transform component is attached.
             // if the root bone of bvh hierarchy is the same as the root bone of the Unity avatar character, use this bone as this.rootBoneTransform
-            if (standardName(transformInImportedAvatar.name) == bvhRootBoneName )
-            { 
+            if (standardName(transformInImportedAvatar.name) == bvhRootBoneName)
+            {
                 this.bvhRootTransform = transformInImportedAvatar;
                 break;
             }
 
-            if ( UnityBoneToTransformMap.ContainsKey(bvhRootBoneName) &&  UnityBoneToTransformMap[bvhRootBoneName] == transformInImportedAvatar ) 
+            if (UnityBoneToTransformMap.ContainsKey(bvhRootBoneName) && UnityBoneToTransformMap[bvhRootBoneName] == transformInImportedAvatar)
             {
-                   this.bvhRootTransform = transformInImportedAvatar;
+                this.bvhRootTransform = transformInImportedAvatar;
 
                 break;
             }
@@ -535,14 +540,15 @@ public class BVHAnimationLoader : MonoBehaviour
 
         // When the control reaches here, it means that the root bvh bone is NOT found in the Unity avatar;
         // THis is an error.
-        if (this.bvhRootTransform == null) { // Use 
+        if (this.bvhRootTransform == null)
+        { // Use 
             this.bvhRootTransform = BVHRecorder.getrootBoneTransform(targetAnimator);
-            Debug.LogWarning("Using the root Transform of the Unity Avatar \"" + this.bvhRootTransform +  "\" as the transform  of the bvh root.");
+            Debug.LogWarning("Using the root Transform of the Unity Avatar \"" + this.bvhRootTransform + "\" as the transform  of the bvh root.");
         }
         // The rootBoneTransform was not identified so far:
         if (this.bvhRootTransform == null)
         {
-            Debug.LogWarning("The name of the bvsh root should be the same as the real root, say 'hip' of the Unity character model");
+            Debug.LogWarning("The name of the bvh root should be the same as the real root, say 'hips' of the Unity character model");
 
             throw new InvalidOperationException("The bvh root bone \"" + bp.bvhRootNode.name + "\" not found in the Unity character model");
         }
