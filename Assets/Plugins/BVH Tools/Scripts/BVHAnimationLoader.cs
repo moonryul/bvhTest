@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class BVHAnimationLoader : MonoBehaviour
 {
+    // Field Initializer vs Setting within Constructors: https://stackoverflow.com/questions/298183/c-sharp-member-variable-initialization-best-practice?msclkid=7fa9d0edc04911ec89a1aa2251ca3533
+       
     [Header("Loader settings")]
     [Tooltip("This is the target avatar for which the animation should be loaded. **Bone names should be identical to those in the BVH file and unique in the original version of this script, but MoonJung modified it so that the avatar can use different bone names from those of the bvh hieararchy. All bones should be initialized with zero rotations.")]
     public Animator targetAnimator; // the default value of reference variable is null
@@ -142,7 +144,7 @@ public class BVHAnimationLoader : MonoBehaviour
         }
 
         if (first)
-        { // check if the bhvNode is the root node of the hiearachy
+        { // check if the bhvNode is the root node of the bvh hiearachy
         // Try it for the case of NOT using Standard Unity Bone Names
             if (standardName(targetTransform.name) == bvhNameStandard)
             { 
@@ -153,10 +155,12 @@ public class BVHAnimationLoader : MonoBehaviour
             {
                 return targetTransform;
             }
-        }
-        // The above two conditions failed to be met: Try to find bvhName among the children of avatarNodeTransform;
-        // This trick is used to cover the cases where the Unity Avatar has some "empty" linking bones whose transform is Identity.
 
+            // None of the return statements are encountered. Then it means that an error has occurred:
+            throw new InvalidOperationException( bvhName + "is supposed to be the " + targetTransform.name + " but IS NOT");
+        }
+        // first is NOT true:  Try to find bvhName among the children of targetTransform;
+       
         for (int i = 0; i < targetTransform.childCount; i++)
         {
             Transform childTransform = targetTransform.GetChild(i);
@@ -171,13 +175,14 @@ public class BVHAnimationLoader : MonoBehaviour
             }
         }
         // None of the return statements are encountered. Then it means that an error has occurred:
-        throw new InvalidOperationException( bvhName + "is supposed to be under/below AVATAR bone" + targetTransform.name + " but IS NOT");
+        throw new InvalidOperationException( bvhName + "is supposed to be under/below " + targetTransform.name + " but IS NOT");
     }
 
     //private void getCurves(string path, BVHParser.BVHBone bvhNode, bool first) {
 
     //this.getCurves(this.prefix, this.bp.bvhRootNode, this.bvhRootTransform, true) when first called. 
-    private void getCurves(string path, BVHParser.BVHBone bvhNode, Transform targetTransform, bool first)
+    private void getCurves(string path, BVHParser.BVHBone bvhNode, Transform targetTransform, bool first) 
+    // bvhNode is the current bvh node to which the animation key frames will be assigned
     {
         // first = true means bvhNode is the root node
         bool posX = false;
@@ -199,13 +204,16 @@ public class BVHAnimationLoader : MonoBehaviour
         Transform bvhNodeTransform = getBoneTransformByName(bvhNode.name, targetTransform, first);
 
         if (path != this.prefix)
-        { // getCurve() is first called with path == this.prefix;   // this.prefix has the form of root.name + "/"
+        { // getCurve() is first called with path == this.prefix;   // this.prefix has the form of "Genesis8Male/"
             path += "/";
         }
-        // In our experiment, path = this.prefix
-        if (this.bvhRootTransform != this.targetAnimator.transform || !first)
+        // In our experiment, path = this.prefix when getCurves() is called in the first time, with first = true.
+        // In this case, path = 
+        //MJ: if (this.bvhRootTransform != this.targetAnimator.transform || !first)
+        if ( !first)
         {
-            path += bvhNodeTransform.name;
+            //path += bvhNodeTransform.name;
+            path += targetTransform.name;
         }
         // In our experiment, this.rootBoneTransform == this.targetAnimator.transform
 
@@ -253,6 +261,7 @@ public class BVHAnimationLoader : MonoBehaviour
             }
 
             keyframes[channel] = new Keyframe[frames];
+
             values[channel] = bvhNode.channels_bvhBones[channel].values; // the animation key frames
 
             if (rotX && rotY && rotZ && keyframes[6] == null)
@@ -377,6 +386,7 @@ public class BVHAnimationLoader : MonoBehaviour
 
         foreach (BVHParser.BVHBone child in bvhNode.children)
         {
+            //this.getCurves(path, child, bvhNodeTransform, false);
             this.getCurves(path, child, bvhNodeTransform, false);
         }
 
@@ -385,9 +395,9 @@ public class BVHAnimationLoader : MonoBehaviour
     // first call: this.prefix = getPathBetween(this.bvhRootTransform, this.targetAnimator.transform, true, true);
     public static string getPathBetween(Transform target, Transform root, bool skipFirst, bool skipLast)
     {
-        if (root == target)
+        if (root == target) // the termining condition for the recursion
         {
-            if (skipLast)
+            if (skipLast) // true in our experiment
             {
                 return "";
             }
@@ -397,7 +407,7 @@ public class BVHAnimationLoader : MonoBehaviour
             }
         }
         // The target transform is a child of the root transform
-        for (int i = 0; i < root.childCount; i++)
+        for (int i = 0; i < root.childCount; i++) // root = "avatar" in the first call of the function
         {
             Transform child = root.GetChild(i);
 
@@ -405,14 +415,15 @@ public class BVHAnimationLoader : MonoBehaviour
             {
 
                 if (skipFirst)
-                { // skipFirst means skip "Genesis8Male" under "Avatar"
+                { // skipFirst means skip the first node "Avatar" to find the path to the  "target" transform
                     return getPathBetween(target, child, false, skipLast); // Find the path from child to target, with skipFirst = false
-                    // root = avatar, target = hip; skipFirst = false
+                    // root = "avatar", child =  "Genesis8Male"; target = "hips"; skipFirst = false
                 }
                 else
                 {
                     return root.name + "/" + getPathBetween(target, child, false, skipLast);
-                    // root = Genesis8Male;   target = hip, child  = hip;  getPathBetween(target, child, false, skipLast) =""
+                    // root ="Genesis8Male";  target ="hips", child  = "hips";  => getPathBetween(target, child, false, skipLast) =""
+                    // return "Genesis8Male"/"
                 }
             }
         }
@@ -540,11 +551,11 @@ public class BVHAnimationLoader : MonoBehaviour
 
         // When the control reaches here, it means that the root bvh bone is NOT found in the Unity avatar;
         // THis is an error.
-        if (this.bvhRootTransform == null)
-        { // Use 
-            this.bvhRootTransform = BVHRecorder.getrootBoneTransform(targetAnimator);
-            Debug.LogWarning("Using the root Transform of the Unity Avatar \"" + this.bvhRootTransform + "\" as the transform  of the bvh root.");
-        }
+        // if (this.bvhRootTransform == null) // The following logic is dubious; commented by MJ
+        // { // Use 
+        //     this.bvhRootTransform = BVHRecorder.getrootBoneTransform(targetAnimator);
+        //     Debug.LogWarning("Using the root Transform of the Unity Avatar \"" + this.bvhRootTransform + "\" as the transform  of the bvh root.");
+        // }
         // The rootBoneTransform was not identified so far:
         if (this.bvhRootTransform == null)
         {
@@ -574,8 +585,9 @@ public class BVHAnimationLoader : MonoBehaviour
         this.prefix = getPathBetween(this.bvhRootTransform, this.targetAnimator.transform, true, true);
         // this.prefix has the form of root.name + "/"
         // this.targetAnimator.transform is the Transform component attached to this gameObject, where "this gameObject" is
-        // the Avatar gameObject to which targetAnimator component is attached. This is not "hip"; hip is under this.targetAnimator.transform:
-        // Avatar => Genesis8Male => hip => pelvis. This.prefix = Genesis8Male
+        // the Avatar gameObject to which targetAnimator component is attached. This is "avatar" in our experiment;
+        // The bvh root transform is "Hips", which is under  this.targetAnimator.transform:
+        // Avatar => Genesis8Male => hips => pelvis. This.prefix = "Genesis8Male/"
 
         // Save the root transform of the Unity avatar
         Vector3 targetAnimatorPosition = this.targetAnimator.transform.position;
