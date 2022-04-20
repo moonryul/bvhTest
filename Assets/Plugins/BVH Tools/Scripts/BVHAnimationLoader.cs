@@ -181,6 +181,7 @@ public class BVHAnimationLoader : MonoBehaviour
     //private void getCurves(string path, BVHParser.BVHBone bvhNode, bool first) {
 
     //this.getCurves(this.prefix, this.bp.bvhRootNode, this.bvhRootTransform, true) when first called. 
+    // //  this.getCurves("Genesis8Male/Hips", "Spine", "Hips"  false)
     private void getCurves(string path, BVHParser.BVHBone bvhNode, Transform targetTransform, bool first) 
     // bvhNode is the current bvh node to which the animation key frames will be assigned
     {
@@ -202,9 +203,14 @@ public class BVHAnimationLoader : MonoBehaviour
         //   Return "avatarNodeTransform" itself or one of its children
 
         Transform bvhNodeTransform = getBoneTransformByName(bvhNode.name, targetTransform, first);
-
+        // ROOT Hips{ => bvhNode.name
+	    //   OFFSET -14.64140 90.27770 -84.91600
+        //   CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation => targetTransform
+        //    JOINT Spine {
+            //}  
+      
         if (path != this.prefix)
-        { // getCurve() is first called with path == this.prefix;   // this.prefix has the form of "Genesis8Male/"
+        { // getCurve() is first called with path == this.prefix;   // this.prefix has the form of "Genesis8Male/Hips"
             path += "/";
         }
         // In our experiment, path = this.prefix when getCurves() is called in the first time, with first = true.
@@ -213,10 +219,9 @@ public class BVHAnimationLoader : MonoBehaviour
         if ( !first)
         {
             //path += bvhNodeTransform.name;
-            path += targetTransform.name;
+            path += targetTransform.name; // path becomes "Genesis8Male/Hips/Spine", bvhNode = "Spine" in the second call of SetCurves()
         }
-        // In our experiment, this.rootBoneTransform == this.targetAnimator.transform
-
+   
         // This needs to be changed to gather from all channels into two vector3, invert the coordinate system transformation and then make keyframes from it
         for (int channel = 0; channel < 6; channel++)
         {
@@ -387,13 +392,14 @@ public class BVHAnimationLoader : MonoBehaviour
         foreach (BVHParser.BVHBone child in bvhNode.children)
         {
             //this.getCurves(path, child, bvhNodeTransform, false);
-            this.getCurves(path, child, bvhNodeTransform, false);
+            this.getCurves(path, child, bvhNodeTransform, false); //  this.getCurves("Genesis8Male/Hips", "Spine", "Hips"  false) in the second call
         }
 
     } // private void getCurves(string path, BVHParser.BVHBone bvhRootNode, Transform rootBoneTransform, bool first)
 
     // first call: this.prefix = getPathBetween(this.bvhRootTransform, this.targetAnimator.transform, true, true);
-    public static string getPathBetween(Transform target, Transform root, bool skipFirst, bool skipLast)
+    public static string getPathBetween(Transform target, Transform root, bool skipFirst, bool skipLast) 
+     // target ="hips", root = "avatar"  when first called
     {
         if (root == target) // the termining condition for the recursion
         {
@@ -423,7 +429,7 @@ public class BVHAnimationLoader : MonoBehaviour
                 {
                     return root.name + "/" + getPathBetween(target, child, false, skipLast);
                     // root ="Genesis8Male";  target ="hips", child  = "hips";  => getPathBetween(target, child, false, skipLast) =""
-                    // return "Genesis8Male"/"
+                    // return "Genesis8Male/hips" at the end
                 }
             }
         }
@@ -587,7 +593,7 @@ public class BVHAnimationLoader : MonoBehaviour
         // this.targetAnimator.transform is the Transform component attached to this gameObject, where "this gameObject" is
         // the Avatar gameObject to which targetAnimator component is attached. This is "avatar" in our experiment;
         // The bvh root transform is "Hips", which is under  this.targetAnimator.transform:
-        // Avatar => Genesis8Male => hips => pelvis. This.prefix = "Genesis8Male/"
+        // Avatar => Genesis8Male => hips => pelvis. This.prefix = "Genesis8Male/Hips"
 
         // Save the root transform of the Unity avatar
         Vector3 targetAnimatorPosition = this.targetAnimator.transform.position;
@@ -599,6 +605,9 @@ public class BVHAnimationLoader : MonoBehaviour
 
         // 	Creates an animation curve from an arbitrary number of keyframes.
         // this.bp.root contains the bvh motion data to used to define Animation frames.
+        // this.prefix refers to the real root node of the avatar, whidh is a child of the avatar gameObject to which the AnimationClip
+        // component is attached. If the path = this.prefix is "", then the frame data will be applied to the GameObject to which
+        // the AnimationClip component is attached. 
         this.getCurves(this.prefix, this.bp.bvhRootNode, this.bvhRootTransform, true); // true: first
                                                                                        //  this.bvhRootTransform is the transform of bp.bvhRootNode
 
