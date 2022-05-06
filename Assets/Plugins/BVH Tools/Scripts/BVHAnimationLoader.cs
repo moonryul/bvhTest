@@ -4,13 +4,29 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class AnimationClipOverrides : List<KeyValuePair<AnimationClip, AnimationClip>> // a list class of keyValuePairs
+{
+    public AnimationClipOverrides(int capacity) : base(capacity) {}
+
+    public AnimationClip this[string name]  // indexer to AnimationClipOverides
+    {
+        get { return this.Find(x => x.Key.name.Equals(name)).Value; } //  T Find(Predicate<T> match); x refers to AnimationClip
+        set
+        {
+            int index = this.FindIndex(x => x.Key.name.Equals(name)); // x.Key refers to AnimationClip, which has a name as an Object
+            if (index != -1)
+                this[index] = new KeyValuePair<AnimationClip, AnimationClip>(this[index].Key, value);
+                 // The First AnimationClip refers to the original clip and the second AnimationClip to the overriding clip
+        }
+    }
+}
 public class BVHAnimationLoader : MonoBehaviour
 {
     // Field Initializer vs Setting within Constructors: https://stackoverflow.com/questions/298183/c-sharp-member-variable-initialization-best-practice?msclkid=7fa9d0edc04911ec89a1aa2251ca3533
        
     [Header("Loader settings")]
-    [Tooltip("This is the target avatar for which the animation should be loaded. **Bone names should be identical to those in the BVH file and unique in the original version of this script, but MoonJung modified it so that the avatar can use different bone names from those of the bvh hieararchy. All bones should be initialized with zero rotations.")]
-    public Animator targetAnimator; // the default value of reference variable is null
+    [Tooltip("The Animator component for the character; The bone names should be identical to those in the BVH file; All bones should be initialized with zero rotations.")]
+    public Animator bvhAnimator; // the default value of reference variable is null
 
     [Tooltip("This is the path to the BVH file that should be loaded. **Bone offsets** are currently being ignored by this loader.")]
     public string filename;
@@ -43,6 +59,16 @@ public class BVHAnimationLoader : MonoBehaviour
     [Tooltip("This field can be used to read out the the animation clip after being loaded. A new clip will always be created when loading.")]
     public AnimationClip clip;
 
+    //MJ added the following to use Animation Controller for the animation of the character
+
+    private AnimationClip[] m_Animations;
+    
+     protected AnimatorOverrideController animatorOverrideController; 
+    
+    protected AnimationClipOverrides clipOverrides;
+     
+        // public AnimationClip this[string name] { get; set; }
+        // public AnimationClip this[AnimationClip clip] { get; set; }
     static private int clipCount = 0;
     private BVHParser bp = null;
     private Transform bvhRootTransform;
@@ -215,7 +241,7 @@ public class BVHAnimationLoader : MonoBehaviour
         }
         // In our experiment, path = this.prefix when getCurves() is called in the first time, with first = true.
         // In this case, path = 
-        //MJ: if (this.bvhRootTransform != this.targetAnimator.transform || !first)
+        //MJ: if (this.bvhRootTransform != this.bvhAnimator.transform || !first)
         if ( !first)
         {
             //path += bvhNodeTransform.name;
@@ -223,7 +249,8 @@ public class BVHAnimationLoader : MonoBehaviour
         }
    
         // This needs to be changed to gather from all channels into two vector3, invert the coordinate system transformation and then make keyframes from it
-        for (int channel = 0; channel < 6; channel++)
+        // Construct the data structure for frame data for each channel for the current node or joint
+        for (int channel = 0; channel < 6; channel++) // 6 or 3 channels
         {
             if (!bvhNode.channels_bvhBones[channel].enabled)
             {
@@ -267,27 +294,31 @@ public class BVHAnimationLoader : MonoBehaviour
 
             keyframes[channel] = new Keyframe[frames];
 
-            values[channel] = bvhNode.channels_bvhBones[channel].values; // the animation key frames
+            values[channel] = bvhNode.channels_bvhBones[channel].values; // the animation key frames (joint angles for frames)
 
             if (rotX && rotY && rotZ && keyframes[6] == null)
             {
                 keyframes[6] = new Keyframe[frames];
                 props[6] = "localRotation.w";
             }
-        }
+        } // for (int channel = 0; channel < 6; channel++)
 
         float time = 0f;
 
-        if (posX && posY && posZ)
+        // Get the position data of the current joint/node  for each frame
+        if (posX && posY && posZ) // the position value of the joint center
         {
-            Vector3 offset;
-            if (this.blender)
+            Vector3 offset; //  used for the root node
+
+                        
+            if (this.blender) //  //  the BVH file will be assumed to have the Z axis as up and the Y axis as forward, X rightward as in Blender
             {
-                offset = new Vector3(-bvhNode.offsetX, bvhNode.offsetZ, -bvhNode.offsetY);
+                offset = new Vector3(-bvhNode.offsetX, bvhNode.offsetZ, -bvhNode.offsetY); // => Unity frame
             }
-            else
+            else //  //  the BVH file will be assumed to have the normal BVH convention: Y up; Z backward; X right (OpenGL: right handed)
             {
-                offset = new Vector3(-bvhNode.offsetX, bvhNode.offsetY, bvhNode.offsetZ);
+                offset = new Vector3(-bvhNode.offsetX, bvhNode.offsetY, bvhNode.offsetZ);  // To unity Frame
+                // Unity:  Y: up, Z: forward, X = right or Y: up, Z =backward, X left (The above transform follows the second)
             }
             for (int i = 0; i < this.frames; i++)
             {
@@ -303,19 +334,19 @@ public class BVHAnimationLoader : MonoBehaviour
                 }
                 else
                 {
-                    keyframes[0][i].value = -values[0][i];
+                    keyframes[0][i].value = -values[0][i]; // From BVH to Unity: the sign of the x coordinate changes because of the frame change from BVH to Unity
                     keyframes[1][i].value = values[1][i];
                     keyframes[2][i].value = values[2][i];
                 }
-                if (first)
+                if (first) // use the offset of the joint to compute the location of the root joint relative to the world space, when it is the root joint.
                 {
-                    Vector3 bvhPosition = targetTransform.transform.parent.InverseTransformPoint(new Vector3(keyframes[0][i].value, keyframes[1][i].value, keyframes[2][i].value) + targetAnimator.transform.position + offset);
-                    keyframes[0][i].value = bvhPosition.x * this.targetAnimator.transform.localScale.x;
-                    keyframes[1][i].value = bvhPosition.y * this.targetAnimator.transform.localScale.y;
-                    keyframes[2][i].value = bvhPosition.z * this.targetAnimator.transform.localScale.z;
+                    Vector3 bvhPositionLocal = targetTransform.transform.parent.InverseTransformPoint(new Vector3(keyframes[0][i].value, keyframes[1][i].value, keyframes[2][i].value) + bvhAnimator.transform.position + offset);
+                    keyframes[0][i].value = bvhPositionLocal.x * this.bvhAnimator.transform.localScale.x;
+                    keyframes[1][i].value = bvhPositionLocal.y * this.bvhAnimator.transform.localScale.y;
+                    keyframes[2][i].value = bvhPositionLocal.z * this.bvhAnimator.transform.localScale.z;
                 }
             }
-            if (first)
+            if (first) // the first bone
             {
                 this.clip.SetCurve(path, typeof(Transform), props[0], new AnimationCurve(keyframes[0]));
                 this.clip.SetCurve(path, typeof(Transform), props[1], new AnimationCurve(keyframes[1]));
@@ -325,10 +356,10 @@ public class BVHAnimationLoader : MonoBehaviour
             {
                 Debug.LogWarning("Position information on bones other than the root bone is currently not supported and has been ignored. If you exported this file from Blender, please tick the \"Root Translation Only\" option next time.");
             }
-        }
+        } // if (posX && posY && posZ) // the position value of the joint center
 
         time = 0f;
-        if (rotX && rotY && rotZ)
+        if (rotX && rotY && rotZ) // the rotatation value of the joint center
         {
             Quaternion oldRotation = targetTransform.transform.rotation;
 
@@ -353,9 +384,14 @@ public class BVHAnimationLoader : MonoBehaviour
                     keyframes[6][i].value = rot.w;
                     //rot2 = new Quaternion(rot.x, -rot.y, -rot.z, rot.w);
                 }
+
                 if (first)
                 { // first == true means that the curve is generated for the bvh root node
                     targetTransform.transform.rotation = new Quaternion(keyframes[3][i].value, keyframes[4][i].value, keyframes[5][i].value, keyframes[6][i].value);
+
+                    // public Quaternion localRotation { get; set; }:  The rotation of the transform relative to the transform rotation of the parent.
+                    // position and rotation atrributes are the values relative to the world space.
+        
                     keyframes[3][i].value = targetTransform.transform.localRotation.x;
                     keyframes[4][i].value = targetTransform.transform.localRotation.y;
                     keyframes[5][i].value = targetTransform.transform.localRotation.z;
@@ -380,11 +416,12 @@ public class BVHAnimationLoader : MonoBehaviour
             // https://docs.unity3d.com/ScriptReference/AnimationClip.SetCurve.html
             // The root node of path is the game object to which AnimationClip component is attached, and
             // the tip of the path is the game object to which Animation Curive will be applied.
-            clip.SetCurve(path, typeof(Transform), props[3], new AnimationCurve(keyframes[3])); // Material as well as Transform can be animated
-            clip.SetCurve(path, typeof(Transform), props[4], new AnimationCurve(keyframes[4]));
-            clip.SetCurve(path, typeof(Transform), props[5], new AnimationCurve(keyframes[5]));
-            clip.SetCurve(path, typeof(Transform), props[6], new AnimationCurve(keyframes[6]));
-        } // if (rotX && rotY && rotZ) 
+            this.clip.SetCurve(path, typeof(Transform), props[3], new AnimationCurve(keyframes[3])); // Material as well as Transform can be animated
+            this.clip.SetCurve(path, typeof(Transform), props[4], new AnimationCurve(keyframes[4]));
+            this.clip.SetCurve(path, typeof(Transform), props[5], new AnimationCurve(keyframes[5]));
+            this.clip.SetCurve(path, typeof(Transform), props[6], new AnimationCurve(keyframes[6]));
+
+        } //if (rotX && rotY && rotZ) // the rotatation value of the joint center 
 
         // Call getCurves() recursively.
         // Define the animation curves for each child bone of the root bone.
@@ -397,7 +434,7 @@ public class BVHAnimationLoader : MonoBehaviour
 
     } // private void getCurves(string path, BVHParser.BVHBone bvhRootNode, Transform rootBoneTransform, bool first)
 
-    // first call: this.prefix = getPathBetween(this.bvhRootTransform, this.targetAnimator.transform, true, true);
+    // first call: this.prefix = getPathBetween(this.bvhRootTransform, this.bvhAnimator.transform, true, true);
     public static string getPathBetween(Transform target, Transform root, bool skipFirst, bool skipLast) 
      // target ="hips", root = "avatar"  when first called
     {
@@ -437,16 +474,18 @@ public class BVHAnimationLoader : MonoBehaviour
         throw new InvalidOperationException("No path between transforms " + target.name + " and " + root.name + " found.");
     }
 
-    private void getTargetAnimator()
+    private void getbvhAnimator()
     {
-        if (this.targetAnimator == null)
+        if (this.bvhAnimator == null)
         {
-            this.targetAnimator = this.GetComponent<Animator>();
+            this.bvhAnimator = this.GetComponent<Animator>();
             // In our seeting, Animator component is not added to bvh to which BVHAnimationLoader component (this) is added.
-            //So, this.targetAnimator should be set in the inspector.
+            //So, this.bvhAnimator should be set in the inspector.
+            // Create Animation controller field for Animator component => This should have been done by creating Animation Controller asset and drag and drop it
+            // to Controller field of Animator component.
         }
 
-        if (this.targetAnimator == null)
+        if (this.bvhAnimator == null)
         {
             throw new InvalidOperationException("No target avatar set.");
         }
@@ -457,8 +496,13 @@ public class BVHAnimationLoader : MonoBehaviour
     // private Dictionary<string, string> BvhToUnityRenamingMap;
     public void loadAnimation()
     {
-        this.getTargetAnimator(); // Get Animator component of the virtual human to which this BVHAnimationLoader component is added
-        // =>   this.targetAnimator = this.GetComponent<Animator>();
+        this.getbvhAnimator(); // Get Animator component of the virtual human to which this BVHAnimationLoader component is added
+        // =>   this.bvhAnimator = this.GetComponent<Animator>();
+        
+ 
+        //animatorOverrideController = new AnimatorOverrideController(bvhAnimator.runtimeAnimatorController);
+        //bvhAnimator.runtimeAnimatorController = animatorOverrideController;
+
 
         if (this.bp == null)
         {
@@ -473,7 +517,7 @@ public class BVHAnimationLoader : MonoBehaviour
             { // Use the standard Unity Human Bone Names for BVH hierarchy??
                 Dictionary<Transform, string> transformToBoneMapUnityAvatar; // Transform: string
 
-                BVHRecorder.populateBoneMap(out transformToBoneMapUnityAvatar, targetAnimator);
+                BVHRecorder.populateBoneMap(out transformToBoneMapUnityAvatar, bvhAnimator);
                 // switch { transform: boneName} to { boneName: transform}
                 this.UnityBoneToTransformMap = transformToBoneMapUnityAvatar.ToDictionary(kp => standardName(kp.Value), kp => kp.Key); // switch the order of Transform and string
             }
@@ -509,8 +553,8 @@ public class BVHAnimationLoader : MonoBehaviour
 
         Queue<Transform> transformsInImportedAvatar = new Queue<Transform>();
 
-        transformsInImportedAvatar.Enqueue(this.targetAnimator.transform); // add the root transform of the avatar to Unity transforms queue
-        //  this.targetAnimator.transform = 'avatar'
+        transformsInImportedAvatar.Enqueue(this.bvhAnimator.transform); // add the root transform of the avatar to Unity transforms queue
+        //  this.bvhAnimator.transform = 'avatar'
         string bvhRootBoneName = standardName(this.bp.bvhRootNode.name); // this.bp.bvhRootNode.name = "Hips"; bvhRootBoneName ='hips'
 
 
@@ -559,7 +603,7 @@ public class BVHAnimationLoader : MonoBehaviour
         // THis is an error.
         // if (this.bvhRootTransform == null) // The following logic is dubious; commented by MJ
         // { // Use 
-        //     this.bvhRootTransform = BVHRecorder.getrootBoneTransform(targetAnimator);
+        //     this.bvhRootTransform = BVHRecorder.getrootBoneTransform(bvhAnimator);
         //     Debug.LogWarning("Using the root Transform of the Unity Avatar \"" + this.bvhRootTransform + "\" as the transform  of the bvh root.");
         // }
         // The rootBoneTransform was not identified so far:
@@ -572,57 +616,94 @@ public class BVHAnimationLoader : MonoBehaviour
 
         this.frames = this.bp.frames;
 
-        this.clip = new AnimationClip();
+       
 
-        this.clip.name = "BVHClip (" + (clipCount++) + ")"; // clipCount is static
-        if (this.clipName != "")
-        {
-            this.clip.name = this.clipName;
-        }
-        this.clip.legacy = true;
-
+        
+      
         //public static string getPathBetween(Transform target, Transform root, bool skipFirst, bool skipLast) 
-        // Get the"prefix" path of nodes from root "this.targetAnimator.transform" to target "this.rootBoneTransform", which is the
+        // Get the"prefix" path of nodes from root "this.bvhAnimator.transform" to target "this.rootBoneTransform", which is the
         // root node of the bvh hierarchy. This prefix path is not controlled by the bvh motion data.
 
         // RelativePath for AnimationClip.SetCurve: https://forum.unity.com/threads/help-i-dont-get-it-animationclip-setcurve-relativepath.168050/
         //   public static string getPathBetween(Transform target, Transform root, bool skipFirst, bool skipLast)
         // Get the prefix which consists of bones without the first and the last bone
-        this.prefix = getPathBetween(this.bvhRootTransform, this.targetAnimator.transform, true, true);
+        this.prefix = getPathBetween(this.bvhRootTransform, this.bvhAnimator.transform, true, true);
         // this.prefix has the form of root.name + "/"
-        // this.targetAnimator.transform is the Transform component attached to this gameObject, where "this gameObject" is
-        // the Avatar gameObject to which targetAnimator component is attached. This is "avatar" in our experiment;
-        // The bvh root transform is "Hips", which is under  this.targetAnimator.transform:
+        // this.bvhAnimator.transform is the Transform component attached to this gameObject, where "this gameObject" is
+        // the Avatar gameObject to which bvhAnimator component is attached. This is "avatar" in our experiment;
+        // The bvh root transform is "Hips", which is under  this.bvhAnimator.transform:
         // Avatar => Genesis8Male => hips => pelvis. This.prefix = "Genesis8Male/Hips"
 
         // Save the root transform of the Unity avatar
-        Vector3 targetAnimatorPosition = this.targetAnimator.transform.position;
-        Quaternion targetAnimatorRotation = this.targetAnimator.transform.rotation;
+        Vector3 bvhAnimatorPosition = this.bvhAnimator.transform.position;
+        Quaternion bvhAnimatorRotation = this.bvhAnimator.transform.rotation;
 
         // Set the identity transform to the root node of the Unity Avatar
-        this.targetAnimator.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
-        this.targetAnimator.transform.rotation = Quaternion.identity;
+        this.bvhAnimator.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
+        this.bvhAnimator.transform.rotation = Quaternion.identity;
 
         // 	Creates an animation curve from an arbitrary number of keyframes.
         // this.bp.root contains the bvh motion data to used to define Animation frames.
         // this.prefix refers to the real root node of the avatar, whidh is a child of the avatar gameObject to which the AnimationClip
         // component is attached. If the path = this.prefix is "", then the frame data will be applied to the GameObject to which
         // the AnimationClip component is attached. 
+
+        // getCurves sets this.clip.SetCurves
+
+        this.clip = new AnimationClip();
+        // Create the animation clip to this.clip by   this.clip.SetCurve(path, typeof(Transform), props[0], new AnimationCurve(keyframes[0]));
         this.getCurves(this.prefix, this.bp.bvhRootNode, this.bvhRootTransform, true); // true: first
                                                                                        //  this.bvhRootTransform is the transform of bp.bvhRootNode
 
         //this.getCurves(this.prefix, this.bp.bvhRootNode,true); // true: first
 
-        this.targetAnimator.transform.position = targetAnimatorPosition;
-        this.targetAnimator.transform.rotation = targetAnimatorRotation;
+        this.bvhAnimator.transform.position = bvhAnimatorPosition;
+        this.bvhAnimator.transform.rotation = bvhAnimatorRotation;
 
-        clip.EnsureQuaternionContinuity();
+        this.clip.EnsureQuaternionContinuity();
+
+        // MJ will use Animator and Animator Controller rather than Animation component in order to use Mechanim Humanoid rather than
+        // the old Legacy animation technique;
+        // The difference between Animation and Animator: refer to https://forum.unity.com/threads/whats-the-difference-between-animation-and-animator.288962/?msclkid=70fded59c86d11ec9503fa26f247a194
+        // The animation component is the legacy animation system which was not updated since 4.0, it doesn't support new feature like Sprite animation or material properties animation.
+        //  In those case you have to use the new Animator Component.
+
+        // https://stackoverflow.com/questions/45949738/what-is-the-difference-between-playing-animator-state-and-or-playing-animationcl?msclkid=70fe9844c86d11ecb10d2d137743528e
+
+
+//         Basically, the system works this way:
+
+// First of all, you need an Animator Controller asset. 
+// This Animator is a Finite State Machine (with substates etc.), and every single state can have an Animation Clip (you assign it via script of via Inspector in the Motion field). 
+//  When the FSM enters a specific state, it will play the Animation Clip assigned.
+//  Clearly the Animator, in order to be used by a game object, has to be assigned to that object via the Animator component.
+
+// Animation Clips are assets which contain the actual animation, they're never assigned as components to game objects,
+// but instead they must be referenced by an Animator to be played, as I said before.
+
+// Blend trees are used to blend different animations in a seamless way by using linear interpolation. 
+// They're a "special" state of the Animator, which has multiple Animation Clips that you can interpolate to display transitions from a state to another,
+// for example when you need to change the animation among running forward, running left and running right.
+
+// The argument is very broad, you can start to get into it by reading the official documentation about Animators, Animation Clips and Blend Trees here:
+
+// https://docs.unity3d.com/Manual/AnimationSection.html
+//  this.bvhAnimator 
+
+        this.clipName = "temp (3)|temp (4)"; //' the string name of the AnimationClip
+        if (this.clipName != "")
+        {
+            this.clip.name = this.clipName;
+        }
+
+        this.clip.legacy = true; // MJ
+
         if (this.anim == null)
         { // null by default
-            this.anim = this.targetAnimator.gameObject.GetComponent<Animation>();
+          //  this.anim = this.bvhAnimator.gameObject.GetComponent<Animation>();
             if (this.anim == null)
-            {
-                this.anim = this.targetAnimator.gameObject.AddComponent<Animation>();
+            { //  The animation component is used to play back animations.
+                this.anim = this.bvhAnimator.gameObject.AddComponent<Animation>();
             }
         }
         this.anim.AddClip(this.clip, this.clip.name);
@@ -631,9 +712,89 @@ public class BVHAnimationLoader : MonoBehaviour
 
         if (this.autoPlay)
         {
-            this.anim.Play(this.clip.name);
+            this.anim.Play(this.clip.name);  // MJ: Animator.Play(string stateName); play a state stateName; Base Layer.Bounce, e.g.
+                                              // "Entry" => Bounce 
         }
+
+       
+     
+// It is expected that the Animator is reset when you change a clip. 
+// Unity needs to save the Animator state before replacing the AnimationClip and set it back after it has been replaced,
+//  but that feature is not implemented in some versions of Unity.
+// https://support.unity.com/hc/en-us/articles/205845885-Animator-state-is-reset-when-AnimationClips-are-replaced-using-an-AnimatorControllerOverride
+
+//https://answers.unity.com/questions/1319072/how-to-change-animation-clips-of-an-animator-state.html
+//https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.ApplyOverrides.html
+
+
+//this.clip.name = "BVHClip (" + (clipCount++) + ")"; // clipCount is static
+
+        //this.clipName = "temp (3)|temp (4)"; //' the string name of the AnimationClip
+        // if (this.clipName != "")
+        // {
+        //     this.clip.name = this.clipName;
+        // }
+
+        //this.clip.legacy = true; // MJ
+
+
+       // this.SetClipAtRunTime(this.bvhAnimator, this.clipName, this.clip );
+
+//https://www.telerik.com/blogs/implementing-indexers-in-c#:~:text=To%20declare%20an%20indexer%20for,value%20from%20the%20object%20instance.
+        
     } // public void loadAnimation()
+
+   void SetClipAtRunTime(Animator animator, string currentClipName, AnimationClip animClip ){
+    //Animator anim = GetComponent<Animator>(); 
+
+    animatorOverrideController =    new AnimatorOverrideController( animator.runtimeAnimatorController);
+    
+    
+    clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
+    // original clip vs override clip
+    animatorOverrideController.GetOverrides(clipOverrides); // get 
+
+     //var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
+
+    
+     clipOverrides[currentClipName] =  animClip;
+
+     AnimationClip animClipToOverride =  clipOverrides[currentClipName];
+     Debug.Log( animClipToOverride );
+
+     animatorOverrideController.ApplyOverrides(clipOverrides);
+
+     animator.runtimeAnimatorController = animatorOverrideController;
+
+  } // void SetClipAtRunTime
+
+   void ChangeClipAtRunTime(Animator anim, string currentClipName, AnimationClip clip ){
+    //Animator anim = GetComponent<Animator>(); 
+
+    AnimatorOverrideController overrideController =    new AnimatorOverrideController();
+
+    AnimatorStateInfo[] layerInfo = new AnimatorStateInfo[anim.layerCount];
+    for (int i = 0; i < anim.layerCount; i++)
+    {
+        layerInfo[i] = anim.GetCurrentAnimatorStateInfo(i);
+    }
+
+    overrideController.runtimeAnimatorController = anim.runtimeAnimatorController;
+
+    overrideController[currentClipName] = clip;
+
+    anim.runtimeAnimatorController = overrideController;
+
+    // Force an update
+    anim.Update(0.0f);
+
+    // Push back state
+    for (int i = 0; i < anim.layerCount; i++)
+    {
+        anim.Play(layerInfo[i].fullPathHash, i, layerInfo[i].normalizedTime);
+    }
+    //currentClipName = clip.name;
+  } // void ChangeClip
 
     public void mapBvhBoneNamesToUnityBoneNames()
     {
@@ -673,30 +834,43 @@ public class BVHAnimationLoader : MonoBehaviour
 
     public void playAnimation()
     {
-        if (this.bp == null)
-        {
-            throw new InvalidOperationException("No BVH file has been parsed.");
-        }
-        if (anim == null || clip == null)
-        {
-            this.loadAnimation();
-        }
-        this.anim.Play(this.clip.name);
+
+        this.bvhAnimator.Play("BVHBehaviour");  // MJ: Animator.Play(string stateName); play a state stateName; Base Layer.Bounce, e.g.
+                                              // "Entry" => Bounce        
+
+        // if (this.bp == null)
+        // {
+        //     throw new InvalidOperationException("No BVH file has been parsed.");
+        // }
+        // if (anim == null || clip == null)
+        // {
+        //     this.loadAnimation();
+        // }
+        // this.anim.Play(this.clip.name);
     }
 
     public void stopAnimation()
     {
-        if (clip != null)
-        {
-            if (anim.IsPlaying(clip.name))
-            {
-                anim.Stop();
-            }
-        }
+
+        
+        this.bvhAnimator.enabled  = false;
+        // if (clip != null)
+        // {
+        //     if (anim.IsPlaying(clip.name))
+        //     {
+        //         anim.Stop();
+        //     }
+        // }
     }
 
     void Start()
     {
+
+        //this.getbvhAnimator(); // Get Animator component of the virtual human to which this BVHAnimationLoader component is added
+        // =>   this.bvhAnimator = this.GetComponent<Animator>();
+        
+ 
+
         if (autoStart)
         {
             autoPlay = true;

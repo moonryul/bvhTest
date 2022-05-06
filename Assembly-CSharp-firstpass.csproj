@@ -36,10 +36,16 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Plugins\Winterdust\BvhImporterExporterDemoL.cs" />
+     <Compile Include="Assets\Plugins\Winterdust\BVH.cs" />
+     <Compile Include="Assets\Plugins\Winterdust\BVHTest.cs" />
      <Compile Include="Assets\Plugins\BVH Tools\Scripts\BVHParser.cs" />
      <Compile Include="Assets\Plugins\BVH Tools\Scripts\BVHRecorder.cs" />
+     <Compile Include="Assets\Plugins\Winterdust\BVHDebugLines.cs" />
      <Compile Include="Assets\Plugins\BVH Tools\Scripts\BVHAnimationLoader.cs" />
+     <None Include="Assets\Plugins\Winterdust\BvhImporterExporterDemo1.1.0.xml" />
      <None Include="Assets\Plugins\BVH Tools\AUTHORS.txt" />
+     <None Include="Assets\Plugins\Winterdust\BvhImporterExporterDemoReadme.txt" />
     <Reference Include="UnityEngine">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.32f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
@@ -261,6 +267,9 @@
     </Reference>
     <Reference Include="UnityEditor.UnityConnectModule">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.32f1\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
+    </Reference>
+    <Reference Include="BvhImporterExporterDemo1.1.0">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Assets\Plugins\Winterdust\BvhImporterExporterDemo1.1.0.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.32f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>

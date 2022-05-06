@@ -21,7 +21,7 @@ public class BVHParser {
     public class BVHBone {
         public string name;
         public List<BVHBone> children;
-        public float offsetX, offsetY, offsetZ;
+        public float offsetX, offsetY, offsetZ; // for each bone/joint
         public int[] channelOrder;
         public int channelNumber;
         public BVHChannel[] channels_bvhBones;

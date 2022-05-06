@@ -1,8 +1,8 @@
 HIERARCHY
 ROOT Hips
 {
-	OFFSET -14.64140 90.27770 -84.91600
-	CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation
+	OFFSET 0.0   0.0  0.0 
+	CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation  
 	JOINT Spine
 	{
 		OFFSET 0.00000 13.20850 -1.60436
