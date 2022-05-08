@@ -496,9 +496,11 @@ public class BVHAnimationLoader : MonoBehaviour
     // private Dictionary<string, string> BvhToUnityRenamingMap;
     public void loadAnimation()
     {
-        this.getbvhAnimator(); // Get Animator component of the virtual human to which this BVHAnimationLoader component is added
+      //  this.getbvhAnimator(); // Get Animator component of the virtual human to which this BVHAnimationLoader component is added
         // =>   this.bvhAnimator = this.GetComponent<Animator>();
         
+        // the character is automatically set in the initial pose by playing the clip "temp (3)|temp (3)", which is associated with the 
+        // state "InitState"
  
         //animatorOverrideController = new AnimatorOverrideController(bvhAnimator.runtimeAnimatorController);
         //bvhAnimator.runtimeAnimatorController = animatorOverrideController;
@@ -690,31 +692,34 @@ public class BVHAnimationLoader : MonoBehaviour
 // https://docs.unity3d.com/Manual/AnimationSection.html
 //  this.bvhAnimator 
 
+//this.clip.name = "BVHClip (" + (clipCount++) + ")"; // clipCount is static
+
         this.clipName = "temp (3)|temp (4)"; //' the string name of the AnimationClip
         if (this.clipName != "")
-        {
-            this.clip.name = this.clipName;
-        }
+         {
+             this.clip.name = this.clipName;
+         }
 
-        this.clip.legacy = true; // MJ
+//Use the Legacy Animation using Animation component
+        // this.clip.legacy = true; // MJ
 
-        if (this.anim == null)
-        { // null by default
-          //  this.anim = this.bvhAnimator.gameObject.GetComponent<Animation>();
-            if (this.anim == null)
-            { //  The animation component is used to play back animations.
-                this.anim = this.bvhAnimator.gameObject.AddComponent<Animation>();
-            }
-        }
-        this.anim.AddClip(this.clip, this.clip.name);
-        this.anim.clip = this.clip;
-        this.anim.playAutomatically = this.autoPlay;
+        // if (this.anim == null)
+        // { // null by default
+        //   //  this.anim = this.bvhAnimator.gameObject.GetComponent<Animation>();
+        //     if (this.anim == null)
+        //     { //  The animation component is used to play back animations.
+        //         this.anim = this.bvhAnimator.gameObject.AddComponent<Animation>();
+        //     }
+        // }
+        // this.anim.AddClip(this.clip, this.clip.name);
+        // this.anim.clip = this.clip;
+        // this.anim.playAutomatically = this.autoPlay;
 
-        if (this.autoPlay)
-        {
-            this.anim.Play(this.clip.name);  // MJ: Animator.Play(string stateName); play a state stateName; Base Layer.Bounce, e.g.
-                                              // "Entry" => Bounce 
-        }
+        // if (this.autoPlay)
+        // {
+        //     this.anim.Play(this.clip.name);  // MJ: Animator.Play(string stateName); play a state stateName; Base Layer.Bounce, e.g.
+        //                                       // "Entry" => Bounce 
+        // }
 
        
      
@@ -727,19 +732,36 @@ public class BVHAnimationLoader : MonoBehaviour
 //https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.ApplyOverrides.html
 
 
-//this.clip.name = "BVHClip (" + (clipCount++) + ")"; // clipCount is static
-
-        //this.clipName = "temp (3)|temp (4)"; //' the string name of the AnimationClip
-        // if (this.clipName != "")
-        // {
-        //     this.clip.name = this.clipName;
-        // }
-
-        //this.clip.legacy = true; // MJ
 
 
-       // this.SetClipAtRunTime(this.bvhAnimator, this.clipName, this.clip );
+      
+      
 
+       //Sets the animator in playback mode.
+       //this.bvhAnimator.StartPlayback();
+
+       // In playback mode, you control the animator by setting a time value. The animator is not updated from game logic. 
+       //Use playbackTime to explicitly manipulate the progress of time
+
+       // Animator.StopPlayback: Stops the animator playback mode. When playback stops, the avatar resumes getting control from game logic.
+       // NormalizedTime: https://stackoverflow.com/questions/52722206/unity3d-get-animator-controller-current-animation-time?msclkid=aef6aeffce6f11ecb436e23284615f76
+    // Controlling animation in script: https://catwolf.org/qs?id=c9aa3b58-3373-4703-aae9-5e8487ae27ec&x=x
+
+//     Apparently on this site I don't have enough "rep" to comment. Animators should begin playing automatically, 
+//     so the problem is not with how you're "starting" it. Ensure that
+
+// -The animator component is enabled
+
+// -The game object is enabled
+
+// -The state you want to play is the default
+
+// -The animator isn't transitioning to another state at the beginning
+
+// Barring that, if you are trying to explicitly tell the animator what state to play, you need to name the state,
+//  not the name of the animation file
+       //this.ChangeClipAtRunTime(this.bvhAnimator, this.clipName, this.clip );
+       this.SetClipAtRunTime(this.bvhAnimator, this.clipName, this.clip );
 //https://www.telerik.com/blogs/implementing-indexers-in-c#:~:text=To%20declare%20an%20indexer%20for,value%20from%20the%20object%20instance.
         
     } // public void loadAnimation()
@@ -766,12 +788,19 @@ public class BVHAnimationLoader : MonoBehaviour
 
      animator.runtimeAnimatorController = animatorOverrideController;
 
+
+    // Transite to the new state with the new bvh motion clip
+    this.bvhAnimator.Play("ToBvh");
   } // void SetClipAtRunTime
 
    void ChangeClipAtRunTime(Animator anim, string currentClipName, AnimationClip clip ){
     //Animator anim = GetComponent<Animator>(); 
 
     AnimatorOverrideController overrideController =    new AnimatorOverrideController();
+
+    // overriderController has the following indexer:
+    // public AnimationClip this[string name] { get; set; }
+    // public AnimationClip this[AnimationClip clip] { get; set; }
 
     AnimatorStateInfo[] layerInfo = new AnimatorStateInfo[anim.layerCount];
     for (int i = 0; i < anim.layerCount; i++)
@@ -785,9 +814,17 @@ public class BVHAnimationLoader : MonoBehaviour
 
     anim.runtimeAnimatorController = overrideController;
 
-    // Force an update
-    anim.Update(0.0f);
-
+    // Force an update: Disable Animator component and then update it via API.?
+    // Animator.Update() 와 Monobehaviour.Update() 간의 관계: https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=1mi2&logNo=220928872232
+     // https://gamedev.stackexchange.com/questions/197869/what-is-animator-updatefloat-deltatime-doing
+     // => Animator.Update() is a function that you can call to step the animator forward by the given interval.
+    anim.Update(0.0f); // Update(Time.deltaTime): Animation control: https://chowdera.com/2021/08/20210823014846793k.html
+    //=>  //  Record each frame
+    //        animator.Update( 1.0f / frameRate);
+    //=> You can pass the elapsed time by which it updates, and passing zero works as expected - it updates to the first frame of the first animation state.
+    // The game logic vs animation logic: https://docs.unity3d.com/Manual/ExecutionOrder.html
+    // https://forum.unity.com/threads/forcing-animator-update.381881/#post-3045779
+    // Animation time scale: https://www.youtube.com/watch?v=4huKeRgEr4k
     // Push back state
     for (int i = 0; i < anim.layerCount; i++)
     {
@@ -835,7 +872,7 @@ public class BVHAnimationLoader : MonoBehaviour
     public void playAnimation()
     {
 
-        this.bvhAnimator.Play("BVHBehaviour");  // MJ: Animator.Play(string stateName); play a state stateName; Base Layer.Bounce, e.g.
+        //this.bvhAnimator.Play("BVHBehaviour");  // MJ: Animator.Play(string stateName); play a state stateName; Base Layer.Bounce, e.g.
                                               // "Entry" => Bounce        
 
         // if (this.bp == null)
@@ -866,7 +903,7 @@ public class BVHAnimationLoader : MonoBehaviour
     void Start()
     {
 
-        //this.getbvhAnimator(); // Get Animator component of the virtual human to which this BVHAnimationLoader component is added
+        this.getbvhAnimator(); // Get Animator component of the virtual human to which this BVHAnimationLoader component is added
         // =>   this.bvhAnimator = this.GetComponent<Animator>();
         
  
@@ -880,6 +917,8 @@ public class BVHAnimationLoader : MonoBehaviour
             this.parseFile();
 
             this.loadAnimation();
+
+            // this.bvhAnimator.Play("ToBvh");
         }
     }
 }

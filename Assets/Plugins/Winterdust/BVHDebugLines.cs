@@ -19,7 +19,7 @@ namespace Winterdust
 		// Token: 0x06000047 RID: 71 RVA: 0x00005D58 File Offset: 0x00003F58
 		private void OnRenderObject()
 		{
-			BVHDebugLines.mat.color = this.color;
+			BVHDebugLines.mat.color = this.color; // refer to 	private static Material mat;
 			BVHDebugLines.mat.SetInt("_ZTest", this.xray ? 0 : 4);
 			BVHDebugLines.mat.SetInt("_ZWrite", this.xray ? 0 : 1);
 			BVHDebugLines.mat.SetPass(0);
@@ -31,7 +31,7 @@ namespace Winterdust
 			{
 				for (int j = 0; j < componentsInChildren[i].childCount; j++)
 				{
-					GL.Begin(1);
+					GL.Begin(1); // GL.Begin(mode); mode = TRIANGLES = 4;  TRIANGLE_STRIP = 5;  QUADS = 7;  LINES = 1;   LINE_STRIP = 2;
 					GL.Vertex3(componentsInChildren[i].position.x, componentsInChildren[i].position.y, componentsInChildren[i].position.z);
 					GL.Vertex3(componentsInChildren[i].GetChild(j).position.x, componentsInChildren[i].GetChild(j).position.y, componentsInChildren[i].GetChild(j).position.z);
 					GL.End();
