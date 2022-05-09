@@ -54,5 +54,5 @@ namespace Winterdust
 		/// <summary>When true lines will be drawn from the "root transform" to all its children as well. The "root transform" is the transform of the GameObject that has this BVHDebugLines component.</summary>
 		// Token: 0x04000024 RID: 36
 		public bool alsoDrawLinesFromOrigin = true;
-	}
+	} // public class BVHDebugLines : MonoBehaviour
 }

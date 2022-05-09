@@ -790,7 +790,7 @@ public class BVHAnimationLoader : MonoBehaviour
 
 
     // Transite to the new state with the new bvh motion clip
-    this.bvhAnimator.Play("ToBvh");
+    //this.bvhAnimator.Play("ToBvh");
   } // void SetClipAtRunTime
 
    void ChangeClipAtRunTime(Animator anim, string currentClipName, AnimationClip clip ){
