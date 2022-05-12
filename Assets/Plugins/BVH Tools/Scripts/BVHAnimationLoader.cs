@@ -914,11 +914,11 @@ public class BVHAnimationLoader : MonoBehaviour
 
             //this.mapBvhBoneNamesToUnityBoneNames(); 
 
-            this.parseFile();
+           this.parseFile();
 
-            this.loadAnimation();
+           this.loadAnimation();
 
-            // this.bvhAnimator.Play("ToBvh");
+            this.bvhAnimator.SetTrigger("ToBvh");
         }
     }
 }
