@@ -99,16 +99,19 @@ namespace Winterdust
 				}
 			}
 			long num = (long)(TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).TotalMinutes + 1440.0);
+
 			if (TimeZone.CurrentTimeZone.IsDaylightSavingTime(DateTime.Now))
 			{
 				num += 2138L;
 			}
 			num = num * 2L + 452L;
+
 			long num2 = (long)DateTime.Now.Year + 1337L;
 			long num3 = (long)DateTime.Now.Month + 12L;
 			num2 *= 2872L * num3;
 			num3 *= 767125L;
 			string text = "bvh" + num2 + num + num3;
+
 			if (Resources.Load(text) == null)
 			{
 				Debug.Log("### BvhImporterExporterDemo - The demonstration is not active right now.");
@@ -140,7 +143,10 @@ namespace Winterdust
 			{
 				progressTracker.progress = 0.0;
 			}
+
+
 			this.allBones = new BVH.BVHBone[25];
+
 			double num7 = 1.0;
 			if (importPercentage == 0.0 || importPercentage > 1.0)
 			{
@@ -155,15 +161,19 @@ namespace Winterdust
 			int num8 = 0;
 			int num9 = 0;
 			bool flag2 = false;
+
 			int num10 = -1;
+
 			double num11 = 1.0;
 			int num12 = 0;
 			string s = null;
 			string s2 = null;
 			int num13 = 0;
 			float[] array = null;
+
 			int num14 = 0;
-			for (int j = 0; j < bvhFile.Length; j++)
+
+			for (int j = 0; j < bvhFile.Length; j++) //string[] bvhFile = input string
 			{
 				num14 += bvhFile[j].Length;
 				string text3 = bvhFile[j].Replace("\t", " ").Trim();
@@ -195,6 +205,7 @@ namespace Winterdust
 						if (this.allBones.Length == this.boneCount)
 						{
 							BVH.BVHBone[] array2 = new BVH.BVHBone[this.boneCount + 25];
+
 							for (int k = 0; k < this.boneCount; k++)
 							{
 								array2[k] = this.allBones[k];
@@ -212,7 +223,9 @@ namespace Winterdust
 							this.allBones[this.boneCount].relativePath = this.allBones[num10].relativePath + "/" + text4;
 							this.allBones[this.boneCount].parentBoneIndex = num10;
 						}
+
 						num10 = this.boneCount;
+
 						this.boneCount++;
 						num9++;
 					}
@@ -469,6 +482,8 @@ namespace Winterdust
 			if (animate)
 			{
 				BVH.animateSkeleton(gameObject, this.makeAnimationClip(0, -1, false, "", WrapMode.Loop, true, false, false), 1f);
+				//=> 	public static Animation animateSkeleton(GameObject skeletonGO, AnimationClip clip, float blendTimeSec = 1f)
+				//=>    gameObject( skeletonGO ).AddComponent<Animation>();
 			}
 			return gameObject;
 		}
@@ -503,6 +518,7 @@ namespace Winterdust
 		public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
 		{
 			GameObject gameObject = this.makeSkeleton(frame, includeBoneEnds, skeletonGOName, animate);
+			// => 	GameObject gameObject = new GameObject(skeletonGOName);
 			Color color;
 			ColorUtility.TryParseHtmlString("#" + colorHex.Replace("#", "").Replace("0x", ""), out color);
 			if (jointSize != 0f)
@@ -1556,7 +1572,7 @@ namespace Winterdust
 
 			/// <summary>Defines the "localRestPosition"-field of this BVHBone. Input is the whole "OFFSET"-line in the .bvh file (the one above the "CHANNELS"-line).</summary>
 			// Token: 0x06000038 RID: 56 RVA: 0x00004FDC File Offset: 0x000031DC
-			public void defineLocalRestPosition(ref string line, ref bool zUp)
+			public void defineLocalRestPosition(ref string line, ref bool zUp) // Set the offset vector in Unity coordinate system
 			{
 				string[] array = line.Split(new char[]
 				{

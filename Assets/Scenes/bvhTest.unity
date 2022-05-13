@@ -136,7 +136,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100336, guid: d978ee81cc242d94794d140b825cdbf2, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400336, guid: d978ee81cc242d94794d140b825cdbf2, type: 3}
       propertyPath: m_RootOrder
@@ -201,7 +201,7 @@ PrefabInstance:
     - target: {fileID: 9500000, guid: d978ee81cc242d94794d140b825cdbf2, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 98a1ccbdc22ae5544b21838a0ac749ad, type: 2}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d978ee81cc242d94794d140b825cdbf2, type: 3}
 --- !u!1 &522297024
@@ -357,6 +357,11 @@ MonoBehaviour:
   color: {r: 1, g: 1, b: 1, a: 1}
   xray: 0
   alsoDrawLinesFromOrigin: 1
+--- !u!95 &927220600 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 9500000, guid: d978ee81cc242d94794d140b825cdbf2, type: 3}
+  m_PrefabInstance: {fileID: 119512003}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &966210072
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -416,6 +421,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: b4fc5296d123ea544bedeab5192e088b, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: b4fc5296d123ea544bedeab5192e088b, type: 3}
     - target: {fileID: 5866666021909216657, guid: b4fc5296d123ea544bedeab5192e088b, type: 3}
       propertyPath: m_Controller
       value: 
@@ -546,7 +555,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bvhAnimator: {fileID: 899061365}
-  filename: Assets/bvhTest.bvh
+  saraAnimator: {fileID: 927220600}
+  filename: Assets/bvhFile.bvh
   blender: 0
   respectBVHTime: 1
   frameRate: 19.999998
@@ -555,7 +565,7 @@ MonoBehaviour:
   flexibleBoneNames: 1
   bvhToUnityRenamingMapArray: []
   autoPlay: 0
-  autoStart: 1
+  autoStart: 0
   anim: {fileID: 0}
   clip: {fileID: 0}
 --- !u!4 &1229214352

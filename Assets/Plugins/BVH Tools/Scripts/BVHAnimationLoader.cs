@@ -26,8 +26,8 @@ public class BVHAnimationLoader : MonoBehaviour
        
     [Header("Loader settings")]
     [Tooltip("The Animator component for the character; The bone names should be identical to those in the BVH file; All bones should be initialized with zero rotations.")]
-    public Animator bvhAnimator; // the default value of reference variable is null
-
+    public  Animator bvhAnimator; 
+    public   Animator saraAnimator; 
     [Tooltip("This is the path to the BVH file that should be loaded. **Bone offsets** are currently being ignored by this loader.")]
     public string filename;
 
@@ -474,23 +474,36 @@ public class BVHAnimationLoader : MonoBehaviour
         throw new InvalidOperationException("No path between transforms " + target.name + " and " + root.name + " found.");
     }
 
-    private void getbvhAnimator()
+    private Animator  getbvhAnimator()
     {
+       
         if (this.bvhAnimator == null)
         {
-            this.bvhAnimator = this.GetComponent<Animator>();
-            // In our seeting, Animator component is not added to bvh to which BVHAnimationLoader component (this) is added.
-            //So, this.bvhAnimator should be set in the inspector.
-            // Create Animation controller field for Animator component => This should have been done by creating Animation Controller asset and drag and drop it
-            // to Controller field of Animator component.
+            throw new InvalidOperationException("No Bvh Animator  set.");
         }
 
-        if (this.bvhAnimator == null)
+        else
         {
-            throw new InvalidOperationException("No target avatar set.");
+          return this.bvhAnimator;
         }
 
     }
+
+    private Animator  getSaraAnimator()
+    {
+       
+        if (this.saraAnimator == null)
+        {
+            throw new InvalidOperationException("No Sara Animator set.");
+        }
+
+        else
+        {
+          return this.saraAnimator;
+        }
+
+    }
+
 
     // private Dictionary<string, Transform> UnityBoneToTransformMap; // null initially
     // private Dictionary<string, string> BvhToUnityRenamingMap;
@@ -788,6 +801,10 @@ public class BVHAnimationLoader : MonoBehaviour
 
      animator.runtimeAnimatorController = animatorOverrideController;
 
+     // set the bvh's animatorOverrideController to that of Sara
+
+     //Animator saraAnimator =  this.getSaraAnimator();
+     this.saraAnimator.runtimeAnimatorController =   animatorOverrideController;
 
     // Transite to the new state with the new bvh motion clip
     //this.bvhAnimator.Play("ToBvh");
@@ -903,14 +920,23 @@ public class BVHAnimationLoader : MonoBehaviour
     void Start()
     {
 
-        this.getbvhAnimator(); // Get Animator component of the virtual human to which this BVHAnimationLoader component is added
+        this.bvhAnimator = this.getbvhAnimator(); // Get Animator component of the virtual human to which this BVHAnimationLoader component is added
         // =>   this.bvhAnimator = this.GetComponent<Animator>();
         
- 
+        this.saraAnimator =  this.getSaraAnimator();
+        this.saraAnimator.runtimeAnimatorController = this.bvhAnimator.runtimeAnimatorController;
+        
 
+
+    }
+
+    void Update()
+    {
+
+        
         if (autoStart)
         {
-            autoPlay = true;
+           // autoPlay = true;
 
             //this.mapBvhBoneNamesToUnityBoneNames(); 
 
@@ -918,7 +944,12 @@ public class BVHAnimationLoader : MonoBehaviour
 
            this.loadAnimation();
 
-            this.bvhAnimator.SetTrigger("ToBvh");
+           this.bvhAnimator.SetTrigger("ToBvh");
+
+           this.saraAnimator.SetTrigger("ToBvh");
+
+           
+
         }
     }
 }
