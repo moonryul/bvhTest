@@ -10,12 +10,15 @@ public class AnimationClipOverrides : List<KeyValuePair<AnimationClip, Animation
 
     public AnimationClip this[string name]  // indexer to AnimationClipOverides
     {
-        get { return this.Find(x => x.Key.name.Equals(name)).Value; } //  T Find(Predicate<T> match); x refers to AnimationClip
+        get { return this.Find(x => x.Key.name.Equals(name)).Value; }
+         //  T Find(Predicate<T> match); x refers to AnimationClip
+         //  x.Key.name is the name of the animation clip
         set
         {
             int index = this.FindIndex(x => x.Key.name.Equals(name)); // x.Key refers to AnimationClip, which has a name as an Object
             if (index != -1)
                 this[index] = new KeyValuePair<AnimationClip, AnimationClip>(this[index].Key, value);
+                //  List class has its own indexer defined as public T this[int index] { get; set; }
                  // The First AnimationClip refers to the original clip and the second AnimationClip to the overriding clip
         }
     }
@@ -707,7 +710,7 @@ public class BVHAnimationLoader : MonoBehaviour
 
 //this.clip.name = "BVHClip (" + (clipCount++) + ")"; // clipCount is static
 
-        this.clipName = "temp (3)|temp (4)"; //' the string name of the AnimationClip
+        this.clipName = "speechGesture"; //' the string name of the AnimationClip
         if (this.clipName != "")
          {
              this.clip.name = this.clipName;
@@ -784,7 +787,7 @@ public class BVHAnimationLoader : MonoBehaviour
 
     animatorOverrideController =    new AnimatorOverrideController( animator.runtimeAnimatorController);
     
-    
+    //   public AnimationClip[] animationClips = animator.animatorClips;
     clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
     // original clip vs override clip
     animatorOverrideController.GetOverrides(clipOverrides); // get 
@@ -936,9 +939,7 @@ public class BVHAnimationLoader : MonoBehaviour
         
         if (autoStart)
         {
-           // autoPlay = true;
-
-            //this.mapBvhBoneNamesToUnityBoneNames(); 
+           
 
            this.parseFile();
 

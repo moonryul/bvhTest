@@ -565,7 +565,7 @@ MonoBehaviour:
   flexibleBoneNames: 1
   bvhToUnityRenamingMapArray: []
   autoPlay: 0
-  autoStart: 0
+  autoStart: 1
   anim: {fileID: 0}
   clip: {fileID: 0}
 --- !u!4 &1229214352
