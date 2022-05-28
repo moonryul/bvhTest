@@ -36,7 +36,9 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\AnimationConverter\Scripts\Editor\AnimationConverterWindow.cs" />
      <Compile Include="Assets\VSCode\Plugins\Editor\VSCode.cs" />
+     <Compile Include="Assets\AnimationConverter\Scripts\Editor\AnimationConverterLogWindow.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.2f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
@@ -295,14 +297,32 @@
     <Reference Include="Unity.Plastic.Newtonsoft.Json">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.collab-proxy@1.15.16\Lib\Editor\PlasticSCM\Unity.Plastic.Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="AnimationConverterApplication">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Assets\AnimationConverter\Plugins\Application\AnimationConverterApplication.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Plastic.Antlr3.Runtime">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.collab-proxy@1.15.16\Lib\Editor\PlasticSCM\Unity.Plastic.Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Unsafe">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.burst@1.6.5\Unity.Burst.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Cecil.Mdb">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.burst@1.6.5\Unity.Burst.CodeGen\Unity.Burst.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="AnimationConverterEditor">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Assets\AnimationConverter\Plugins\Editor\AnimationConverterEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Cecil.Pdb">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.burst@1.6.5\Unity.Burst.CodeGen\Unity.Burst.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Cecil">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.burst@1.6.5\Unity.Burst.CodeGen\Unity.Burst.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="log4netPlastic">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.collab-proxy@1.15.16\Lib\Editor\PlasticSCM\log4netPlastic.dll</HintPath>
     </Reference>
-    <Reference Include="BvhImporterExporterDemo1.1.0">
-        <HintPath>D:\Dropbox\metaverse\bvhTest\Assets\Plugins\Winterdust\BvhImporterExporterDemo1.1.0.dll</HintPath>
+    <Reference Include="Unity.Burst.Cecil.Rocks">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.burst@1.6.5\Unity.Burst.CodeGen\Unity.Burst.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.nuget.newtonsoft-json@3.0.2\Runtime\Newtonsoft.Json.dll</HintPath>
@@ -940,6 +960,9 @@
     <Reference Include="Unity.TextMeshPro">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Burst.Editor">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.UI">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
@@ -958,8 +981,17 @@
     <Reference Include="Unity.Services.Core">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Services.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Animation.Rigging">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Animation.Rigging.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Services.Core.Analytics">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Services.Core.Analytics.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Burst.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Services.Core.Environments">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Services.Core.Environments.dll</HintPath>
@@ -970,11 +1002,21 @@
     <Reference Include="Unity.Timeline.Editor">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Mathematics.Editor">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Animation.Rigging.Editor">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Animation.Rigging.Editor.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
       <Project>{945f0872-95c4-ac4c-b2eb-fc39a110b7a4}</Project>
       <Name>Assembly-CSharp-firstpass</Name>
+    </ProjectReference>
+    <ProjectReference Include="Assembly-CSharp.csproj">
+      <Project>{56dd9a2f-3405-586f-0b78-0b48b6829fe4}</Project>
+      <Name>Assembly-CSharp</Name>
     </ProjectReference>
     <ProjectReference Include="Assembly-CSharp-Editor-firstpass.csproj">
       <Project>{620c33e5-83b8-cfcb-309b-b1489fc548dc}</Project>

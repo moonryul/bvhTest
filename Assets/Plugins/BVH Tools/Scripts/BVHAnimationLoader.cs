@@ -297,6 +297,17 @@ public class BVHAnimationLoader : MonoBehaviour
 
             keyframes[channel] = new Keyframe[frames];
 
+        // public Keyframe(float time, float value, float inTangent, float outTangent, float inWeight, float outWeight);
+
+        //
+        // Summary:
+        //     The time of the keyframe.
+        //public float time { get; set; }
+        //
+        // Summary:
+        //     The value of the curve at keyframe.
+        // public float value { get; set; }
+
             values[channel] = bvhNode.channels_bvhBones[channel].values; // the animation key frames (joint angles for frames)
 
             if (rotX && rotY && rotZ && keyframes[6] == null)
@@ -350,7 +361,7 @@ public class BVHAnimationLoader : MonoBehaviour
                 }
             }
             if (first) // the first bone
-            {
+            {   // public AnimationCurve(params Keyframe[] keys);
                 this.clip.SetCurve(path, typeof(Transform), props[0], new AnimationCurve(keyframes[0]));
                 this.clip.SetCurve(path, typeof(Transform), props[1], new AnimationCurve(keyframes[1]));
                 this.clip.SetCurve(path, typeof(Transform), props[2], new AnimationCurve(keyframes[2]));

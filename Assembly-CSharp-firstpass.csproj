@@ -49,7 +49,9 @@
      <Compile Include="Assets\Plugins\Winterdust\BVHDebugLines.cs" />
      <Compile Include="Assets\Plugins\MocapRetargetingTools\RetargetTarget.cs" />
      <Compile Include="Assets\Plugins\BVH Tools\Scripts\BVHAnimationLoader.cs" />
+     <Compile Include="Assets\Plugins\BVH Tools\Scripts\ExampleClasses\ConvertToHumanoidClip.cs" />
      <None Include="Assets\Plugins\Winterdust\BvhImporterExporterDemo1.1.0.xml" />
+     <None Include="Assets\Plugins\BVH Tools\Scripts\ExampleClasses\ExampleClass.txt" />
      <None Include="Assets\Plugins\MocapRetargetingTools\LICENSE.txt" />
      <None Include="Assets\Plugins\BVH Tools\AUTHORS.txt" />
      <None Include="Assets\Plugins\Winterdust\BvhImporterExporterDemoReadme.txt" />
@@ -296,8 +298,23 @@
     <Reference Include="UnityEditor.UnityConnectModule">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.2f1\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
     </Reference>
-    <Reference Include="BvhImporterExporterDemo1.1.0">
-        <HintPath>D:\Dropbox\metaverse\bvhTest\Assets\Plugins\Winterdust\BvhImporterExporterDemo1.1.0.dll</HintPath>
+    <Reference Include="AnimationConverterApplication">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Assets\AnimationConverter\Plugins\Application\AnimationConverterApplication.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Unsafe">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.burst@1.6.5\Unity.Burst.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Cecil.Mdb">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.burst@1.6.5\Unity.Burst.CodeGen\Unity.Burst.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Cecil.Pdb">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.burst@1.6.5\Unity.Burst.CodeGen\Unity.Burst.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Cecil">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.burst@1.6.5\Unity.Burst.CodeGen\Unity.Burst.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Cecil.Rocks">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.burst@1.6.5\Unity.Burst.CodeGen\Unity.Burst.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\PackageCache\com.unity.nuget.newtonsoft-json@3.0.2\Runtime\Newtonsoft.Json.dll</HintPath>
@@ -689,6 +706,9 @@
     <Reference Include="Unity.TextMeshPro">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Burst.Editor">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.UI">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
@@ -707,8 +727,17 @@
     <Reference Include="Unity.Services.Core">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Services.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Animation.Rigging">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Animation.Rigging.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.Services.Core.Analytics">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Services.Core.Analytics.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Burst.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Services.Core.Environments">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Services.Core.Environments.dll</HintPath>
@@ -718,6 +747,12 @@
     </Reference>
     <Reference Include="Unity.Timeline.Editor">
         <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Mathematics.Editor">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Animation.Rigging.Editor">
+        <HintPath>D:\Dropbox\metaverse\bvhTest\Library\ScriptAssemblies\Unity.Animation.Rigging.Editor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

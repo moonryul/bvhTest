@@ -37,7 +37,7 @@ public class MenuTest: MonoBehaviour
     }
 
     // Disable the menu item if no selection is in place.
-    [MenuItem("Examples/Create Prefab", true)]
+    [MenuItem("MyMenu/Create Prefab", true)]
     static bool ValidateCreatePrefab()
     {
         return Selection.activeGameObject != null && !EditorUtility.IsPersistent(Selection.activeGameObject);
