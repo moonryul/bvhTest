@@ -31,17 +31,6 @@ public class BVHAnimationLoaderEditor : Editor {
             bvhLoader.stopAnimation();
         }
 
-        if (GUILayout.Button("Initialize renaming map with humanoid bone names")) {
-            HumanBodyBones[] bones = (HumanBodyBones[])Enum.GetValues(typeof(HumanBodyBones));
-            // bvhToUnityRenamingMapArray 
-            // Hips = 0;.... LastBone = 55
-            bvhLoader.bvhToUnityRenamingMapArray = new BVHAnimationLoader.FakeDictionary[bones.Length - 1];
-            for (int i = 0; i < bones.Length - 1; i++) {
-                if (bones[i] != HumanBodyBones.LastBone) {
-                    bvhLoader.bvhToUnityRenamingMapArray[i].bvhName = "";
-                    bvhLoader.bvhToUnityRenamingMapArray[i].targetName = bones[i].ToString();
-                }
-            }
-        }
+        
     }
 }

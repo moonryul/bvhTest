@@ -37,6 +37,27 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\ExampleClass.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\BigNumber\BigInteger.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\UnityAnimSaver\UnityAnimationRecorder.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\UnityAnimSaver\UnityObjectAnimation.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\MayaExporter\MayaNodeDataContainer.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\FbxExporter\testFBX.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\MayaExporter\MayaAnimationRecorder.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\FbxExporter\FbxDefinitionManager.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\FbxExporter\FbxConnectionsManager.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\FbxExporter\FbxDataNode.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\FbxExporter\FbxObjectsManager.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\FbxExporter\FbxExporter.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\UnityAnimSaver\UnityBlendShapeAnimation.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\FbxExporter\FbxConnectionObj.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\FbxExporter\FbxObjectNode.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\FbxExporter\FbxObjectSubNode.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\AnimationRecorderHelper.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\General\ExportHelper.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\UnityAnimSaver\UnityCurveContainer.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\General\TransformTracker.cs" />
+     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\FbxExporter\FbxHelper.cs" />
+     <Compile Include="Assets\Unity-Humanoid-Mocap-CSV\RecordAnimation.cs" />
      <None Include="Assets\Resources\bvh163999816441213041125.txt" />
      <None Include="Assets\AnimationConverterExamples\Example2_Reuse_Animations\Example2_ReadMe.txt" />
      <None Include="Assets\AnimationConverterExamples\Example1_MoCap_to_Generic\Example1_ReadMe.txt" />
