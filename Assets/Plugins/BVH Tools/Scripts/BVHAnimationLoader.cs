@@ -167,10 +167,10 @@ public class BVHAnimationLoader : MonoBehaviour
         string bvhNameStandard = standardName(bvhName);
 
 
-        if (this.bvhToUnityRenamingMap.ContainsKey(bvhNameStandard))
-        {
-            bvhNameStandard = standardName(bvhToUnityRenamingMap[bvhNameStandard]);
-        }
+        // if (this.bvhToUnityRenamingMap.ContainsKey(bvhNameStandard))
+        // {
+        //     bvhNameStandard = standardName(bvhToUnityRenamingMap[bvhNameStandard]);
+        // }
 
         if (first)
         { // check if the bhvNode is the root node of the bvh hiearachy
@@ -179,11 +179,11 @@ public class BVHAnimationLoader : MonoBehaviour
             { 
                 return targetTransform;
             }
-        //  Try it for the case of  using Standard Unity Bone Names    
-            if (this.UnityBoneToTransformMap.ContainsKey(bvhNameStandard) && this.UnityBoneToTransformMap[bvhNameStandard] == targetTransform)
-            {
-                return targetTransform;
-            }
+        // //  Try it for the case of  using Standard Unity Bone Names    
+        //     if (this.UnityBoneToTransformMap.ContainsKey(bvhNameStandard) && this.UnityBoneToTransformMap[bvhNameStandard] == targetTransform)
+        //     {
+        //         return targetTransform;
+        //     }
 
             // None of the return statements are encountered. Then it means that an error has occurred:
             throw new InvalidOperationException( bvhName + "is supposed to be the " + targetTransform.name + " but IS NOT");
@@ -197,11 +197,11 @@ public class BVHAnimationLoader : MonoBehaviour
             if (standardName(childTransform.name) == bvhNameStandard) {
                return childTransform;
             }
-            //  Try it for the case of  using Standard Unity Bone Names    
-            if (this.UnityBoneToTransformMap.ContainsKey(bvhNameStandard) && this.UnityBoneToTransformMap[bvhNameStandard] == childTransform)
-            { // targetName is a Unity bone name
-                return childTransform;
-            }
+            // //  Try it for the case of  using Standard Unity Bone Names    
+            // if (this.UnityBoneToTransformMap.ContainsKey(bvhNameStandard) && this.UnityBoneToTransformMap[bvhNameStandard] == childTransform)
+            // { // targetName is a Unity bone name
+            //     return childTransform;
+            // }
         }
         // None of the return statements are encountered. Then it means that an error has occurred:
         throw new InvalidOperationException( bvhName + "is supposed to be under/below " + targetTransform.name + " but IS NOT");
@@ -538,44 +538,44 @@ public class BVHAnimationLoader : MonoBehaviour
             throw new InvalidOperationException("No BVH file has been parsed.");
         }
 
-        // Get the transforms for the bones of the Unity Avatar imported from say Daz3D.
-        if (this.UnityBoneToTransformMap == null)
-        {
+        // // Get the transforms for the bones of the Unity Avatar imported from say Daz3D.
+        // if (this.UnityBoneToTransformMap == null)
+        // {
 
-            if (standardBoneNames)
-            { // Use the standard Unity Human Bone Names for BVH hierarchy??
-                Dictionary<Transform, string> transformToBoneMapUnityAvatar; // Transform: string
+        //     if (standardBoneNames)
+        //     { // Use the standard Unity Human Bone Names for BVH hierarchy??
+        //         Dictionary<Transform, string> transformToBoneMapUnityAvatar; // Transform: string
 
-                BVHRecorder.populateBoneMap(out transformToBoneMapUnityAvatar, bvhAnimator);
-                // switch { transform: boneName} to { boneName: transform}
-                this.UnityBoneToTransformMap = transformToBoneMapUnityAvatar.ToDictionary(kp => standardName(kp.Value), kp => kp.Key); // switch the order of Transform and string
-            }
-            else
-            {
-                this.UnityBoneToTransformMap = new Dictionary<string, Transform>(); // create an empty UnityBoneToTransformMap dictionary
-            }
-        }
+        //         BVHRecorder.populateBoneMap(out transformToBoneMapUnityAvatar, bvhAnimator);
+        //         // switch { transform: boneName} to { boneName: transform}
+        //         this.UnityBoneToTransformMap = transformToBoneMapUnityAvatar.ToDictionary(kp => standardName(kp.Value), kp => kp.Key); // switch the order of Transform and string
+        //     }
+        //     else
+        //     {
+        //         this.UnityBoneToTransformMap = new Dictionary<string, Transform>(); // create an empty UnityBoneToTransformMap dictionary
+        //     }
+        // }
 
         // Use the 
 
         // Get the map that maps  vbh bone names to unity bone names
         // this.bp.boneList contains the list of bvh bones; this.bp.boneList[i].name is the bvh bone name
-        this.bvhToUnityRenamingMap = new Dictionary<string, string>(); // create an empty dict ={  bvh bone name : unity bone name }
+        // this.bvhToUnityRenamingMap = new Dictionary<string, string>(); // create an empty dict ={  bvh bone name : unity bone name }
 
-        // Create an mapping from bvh bone names to the target bone names used in Unity
-        if (this.bvhToUnityRenamingMapArray != null) // if the bvhToUnityBoneName reNaiming map is defined by the user in the inspector
-        {
+        // // Create an mapping from bvh bone names to the target bone names used in Unity
+        // if (this.bvhToUnityRenamingMapArray != null) // if the bvhToUnityBoneName reNaiming map is defined by the user in the inspector
+        // {
 
-            foreach (FakeDictionary entry in this.bvhToUnityRenamingMapArray)
-            {
+        //     foreach (FakeDictionary entry in this.bvhToUnityRenamingMapArray)
+        //     {
 
-                if (entry.bvhName != "" && entry.targetName != "")
-                {
+        //         if (entry.bvhName != "" && entry.targetName != "")
+        //         {
 
-                    bvhToUnityRenamingMap.Add(standardName(entry.bvhName), standardName(entry.targetName));
-                }
-            }
-        }
+        //             bvhToUnityRenamingMap.Add(standardName(entry.bvhName), standardName(entry.targetName));
+        //         }
+        //     }
+        // }
         // if this.boneBvhToUnityRenamingMap is not created by the user in Inspector, then BvhToUnityRenamingMap will be null.
 
         // BvhToUnityRenamingMap == this.boneBvhToUnityRenamingMap
@@ -590,14 +590,14 @@ public class BVHAnimationLoader : MonoBehaviour
         // BvhToUnityRenamingMap.ContainsKey(rootBoneTransformNameBvh) is false when
         // this.boneBvhToUnityRenamingMap is not created by the user; 
         // Check if the root bone name from bvh file is mapped to a Unity standard bone name
-        if (bvhToUnityRenamingMap.Count != 0)
-        {
-            if (bvhToUnityRenamingMap.ContainsKey(bvhRootBoneName))
-            {
-                bvhRootBoneName = standardName(bvhToUnityRenamingMap[bvhRootBoneName]); // get the unity root bone name
-            }
+        // if (bvhToUnityRenamingMap.Count != 0)
+        // {
+        //     if (bvhToUnityRenamingMap.ContainsKey(bvhRootBoneName))
+        //     {
+        //         bvhRootBoneName = standardName(bvhToUnityRenamingMap[bvhRootBoneName]); // get the unity root bone name
+        //     }
 
-        }
+        // }
 
         // Check if  rootBoneTransformNameUnity to used as the root of the bvh character in Unity corresponds to some bone in the "Avatar" hierarchy imported in the Unity scene, e.g., imported from Daz3D humanoid
         while (transformsInImportedAvatar.Any())
@@ -612,12 +612,12 @@ public class BVHAnimationLoader : MonoBehaviour
                 break;
             }
 
-            if (UnityBoneToTransformMap.ContainsKey(bvhRootBoneName) && UnityBoneToTransformMap[bvhRootBoneName] == transformInImportedAvatar)
-            {
-                this.bvhRootTransform = transformInImportedAvatar;
+            // if (UnityBoneToTransformMap.ContainsKey(bvhRootBoneName) && UnityBoneToTransformMap[bvhRootBoneName] == transformInImportedAvatar)
+            // {
+            //     this.bvhRootTransform = transformInImportedAvatar;
 
-                break;
-            }
+            //     break;
+            // }
             // Otherwise, add the children nodes of  transformInImportedAvatar to the queue, in order to 
             // check if the root node of the bvh hierarchy is equal to  some child node of the Unity avatar;
             // It means that the avatar gameObject has other nodes than the the root of the bvh body.
@@ -638,7 +638,7 @@ public class BVHAnimationLoader : MonoBehaviour
         // The rootBoneTransform was not identified so far:
         if (this.bvhRootTransform == null)
         {
-            Debug.LogWarning("The name of the bvh root should be the same as the real root, say 'hips' of the Unity character model");
+           // Debug.LogWarning("The name of the bvh root should be the same as the real root, say 'hips' of the Unity character model");
 
             throw new InvalidOperationException("The bvh root bone \"" + bp.bvhRootNode.name + "\" not found in the Unity character model");
         }
@@ -684,7 +684,7 @@ public class BVHAnimationLoader : MonoBehaviour
         this.getCurves(this.prefix, this.bp.bvhRootNode, this.bvhRootTransform, true); // true: first
                                                                                        //  this.bvhRootTransform is the transform of bp.bvhRootNode
 
-        //this.getCurves(this.prefix, this.bp.bvhRootNode,true); // true: first
+        this.getCurves(this.prefix, this.bp.bvhRootNode,true); // true: first
 
         this.bvhAnimator.transform.position = bvhAnimatorPosition;
         this.bvhAnimator.transform.rotation = bvhAnimatorRotation;
