@@ -34,7 +34,7 @@ public class BVHParser {
         // It calls the default parameterless constructor of the struct, which initializes all the members to their default value of the specified data type.
         public struct BVHChannel {
             public bool enabled; // the default value of a boolean is false
-            public float[] values;
+            public float[] values; // the frame values for each channel
         }
 
         public BVHBone(BVHParser parser, bool isRoot) {
