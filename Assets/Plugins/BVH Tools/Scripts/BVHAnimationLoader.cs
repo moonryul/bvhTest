@@ -582,7 +582,7 @@ public class BVHAnimationLoader : MonoBehaviour
 
         Queue<Transform> transformsInImportedAvatar = new Queue<Transform>();
 
-        transformsInImportedAvatar.Enqueue(this.bvhAnimator.transform); // add the root transform of the avatar to Unity transforms queue
+        transformsInImportedAvatar.Enqueue(this.bvhAnimator.gameObject.transform); // add the root transform of the avatar to Unity transforms queue
         //  this.bvhAnimator.transform = 'avatar'
         string bvhRootBoneName = standardName(this.bp.bvhRootNode.name); // this.bp.bvhRootNode.name = "Hips"; bvhRootBoneName ='hips'
 
@@ -609,6 +609,7 @@ public class BVHAnimationLoader : MonoBehaviour
             if (standardName(transformInImportedAvatar.name) == bvhRootBoneName)
             {
                 this.bvhRootTransform = transformInImportedAvatar;
+
                 break;
             }
 
@@ -681,7 +682,7 @@ public class BVHAnimationLoader : MonoBehaviour
 
         this.clip = new AnimationClip();
         // Create the animation clip to this.clip by   this.clip.SetCurve(path, typeof(Transform), props[0], new AnimationCurve(keyframes[0]));
-        this.getCurves(this.prefix, this.bp.bvhRootNode, this.bvhRootTransform, true); // true: first
+        this.getCurves(this.prefix, this.bp.bvhRootNode, this.bvhRootTransform, true); // true: first:  this.bvhRootTransform = "Skeleton/hips"
                                                                                        //  this.bvhRootTransform is the transform of bp.bvhRootNode
 
         this.getCurves(this.prefix, this.bp.bvhRootNode,true); // true: first
