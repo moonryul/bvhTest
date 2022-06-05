@@ -402,7 +402,7 @@ PrefabInstance:
     - target: {fileID: 5866666021909216657, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
       propertyPath: m_Avatar
       value: 
-      objectReference: {fileID: 9000000, guid: 3f414a8ea1421524bb36317c6c4fd6a5, type: 3}
+      objectReference: {fileID: 9000000, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
     - target: {fileID: 5866666021909216657, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
       propertyPath: m_Controller
       value: 
@@ -413,6 +413,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
+--- !u!95 &696265402 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
+  m_PrefabInstance: {fileID: 696265401}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &696265403 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 572617754110402786, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
+  m_PrefabInstance: {fileID: 696265401}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &860621512
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -602,7 +612,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ee2a62eb57b88147a40fefce0dc64eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bvhAnimator: {fileID: 0}
+  bvhAvatar: {fileID: 9000000, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
+  bvhAvatarRoot: {fileID: 696265403}
+  bvhAnimator: {fileID: 696265402}
   saraAnimator: {fileID: 927220600}
   filename: Assets/bvhFile.bvh
   blender: 0
@@ -611,111 +623,7 @@ MonoBehaviour:
   clipName: 
   standardBoneNames: 0
   flexibleBoneNames: 0
-  bvhToUnityRenamingMapArray:
-  - bvhName: Hips
-    targetName: Hips
-  - bvhName: Spine
-    targetName: Spine
-  - bvhName: Spine1
-    targetName: Chest
-  - bvhName: Spine3
-    targetName: Upper Chest
-  - bvhName: LeftShoulder
-    targetName: LeftShoulder
-  - bvhName: LeftArm
-    targetName: 'LeftUpperArm '
-  - bvhName: LeftForeArm
-    targetName: LeftLowerArm
-  - bvhName: LeftHand
-    targetName: LeftHand
-  - bvhName: RightShoulder
-    targetName: RightShoulder
-  - bvhName: RightArm
-    targetName: RightUpperArm
-  - bvhName: RightForeArm
-    targetName: RightLowerArm
-  - bvhName: RightHand
-    targetName: RightHand
-  - bvhName: LeftUpLeg
-    targetName: LeftUpperLeg
-  - bvhName: LeftLeg
-    targetName: LeftLowerLeg
-  - bvhName: LeftFoot
-    targetName: LeftFoot
-  - bvhName: LeftToeBase
-    targetName: LeftToes
-  - bvhName: RightUpLeg
-    targetName: RightUpperLeg
-  - bvhName: LeftLeg
-    targetName: LeftLowerLeg
-  - bvhName: ' LeftFoot'
-    targetName: LeftFoot
-  - bvhName: LeftToeBase
-    targetName: LeftToes
-  - bvhName: Neck
-    targetName: Neck
-  - bvhName: Neck1
-    targetName: Head
-  - bvhName: LeftHandThumb1
-    targetName: LeftThumbProximal
-  - bvhName: LeftHandThumb2
-    targetName: LeftThumbIntermediate
-  - bvhName: LeftHandThumb3
-    targetName: LeftThumbDistal
-  - bvhName: LeftHandIndex1
-    targetName: LeftIndexProximal
-  - bvhName: LeftHandIndex2
-    targetName: LeftIndexIntermediate
-  - bvhName: LeftHandIndex3
-    targetName: LeftIndexDistal
-  - bvhName: LeftHandMiddle1
-    targetName: LeftMiddleProximal
-  - bvhName: LeftHandMiddle2
-    targetName: LeftMiddleIntermediate
-  - bvhName: LeftHandMiddle3
-    targetName: LeftMiddleDistal
-  - bvhName: LeftHandRing1
-    targetName: LeftRingProximal
-  - bvhName: LeftHandRing2
-    targetName: LeftRingIntermediate
-  - bvhName: LeftHandRing3
-    targetName: LeftRingDistal
-  - bvhName: LeftHandPinky1
-    targetName: LeftLittleProximal
-  - bvhName: LeftHandPinky2
-    targetName: LeftLittleIntermediate
-  - bvhName: LeftHandPinky3
-    targetName: LeftLittleDistal
-  - bvhName: RightHandThumb1
-    targetName: RightThumbProximal
-  - bvhName: RightHandThumb2
-    targetName: RightThumbIntermediate
-  - bvhName: RightHandThumb3
-    targetName: RightThumbDistal
-  - bvhName: RightHandIndex1
-    targetName: RightIndexProximal
-  - bvhName: RightHandIndex2
-    targetName: RightIndexIntermediate
-  - bvhName: RightHandIndex3
-    targetName: RightIndexDistal
-  - bvhName: RightHandMiddle1
-    targetName: RightMiddleProximal
-  - bvhName: RightHandMiddle2
-    targetName: RightMiddleIntermdediate
-  - bvhName: RightHandMiddle3
-    targetName: RightMiddleDistal
-  - bvhName: RightHandRing1
-    targetName: RightRingProximal
-  - bvhName: RightHandRing2
-    targetName: RightRingIntermediate
-  - bvhName: RightHandRing3
-    targetName: RightRingDistal
-  - bvhName: RightHandPinky1
-    targetName: RightLittleProximal
-  - bvhName: RightHandPinky2
-    targetName: RightLittleIntermediate
-  - bvhName: RightHandPinky3
-    targetName: RightLittleDistal
+  bvhToUnityRenamingMapArray: []
   autoPlay: 0
   autoStart: 1
   anim: {fileID: 0}

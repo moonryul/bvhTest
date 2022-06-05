@@ -50,6 +50,8 @@
      <Compile Include="Assets\Plugins\MocapRetargetingTools\RetargetTarget.cs" />
      <Compile Include="Assets\Plugins\BVH Tools\Scripts\BVHAnimationLoader.cs" />
      <Compile Include="Assets\Plugins\BVH Tools\Scripts\ExampleClasses\ConvertToHumanoidClip.cs" />
+     <Compile Include="Assets\Plugins\BVH Tools\Scripts\GenericRecorder.cs" />
+     <Compile Include="Assets\Plugins\BVH Tools\Scripts\HumanoidRecorder.cs" />
      <None Include="Assets\Plugins\Winterdust\BvhImporterExporterDemo1.1.0.xml" />
      <None Include="Assets\Plugins\BVH Tools\Scripts\ExampleClasses\ExampleClass.txt" />
      <None Include="Assets\Plugins\MocapRetargetingTools\LICENSE.txt" />

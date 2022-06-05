@@ -37,7 +37,6 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\AnimationConverter\Scripts\Editor\AnimationConverterWindow.cs" />
-     <Compile Include="Assets\VSCode\Plugins\Editor\VSCode.cs" />
      <Compile Include="Assets\AnimationConverter\Scripts\Editor\AnimationConverterLogWindow.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.2f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>

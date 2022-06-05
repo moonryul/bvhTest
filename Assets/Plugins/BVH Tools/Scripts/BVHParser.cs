@@ -29,9 +29,12 @@ public class BVHParser {
         private BVHParser bp;
 
         // 0 = Xpos, 1 = Ypos, 2 = Zpos, 3 = Xrot, 4 = Yrot, 5 = Zrot
+
+        //  a C# struct is associated with value-type semantic and a value-type is not required to have a constructor.
+        // It calls the default parameterless constructor of the struct, which initializes all the members to their default value of the specified data type.
         public struct BVHChannel {
-            public bool enabled;
-            public float[] values;
+            public bool enabled; // the default value of a boolean is false
+            public float[] values; // the frame values for each channel
         }
 
         public BVHBone(BVHParser parser, bool isRoot) {
@@ -74,7 +77,7 @@ public class BVHParser {
                 int channelId;
                 bp.assure("channel ID", bp.getChannel(out channelId));
                 this.channelOrder[i] = channelId;
-                this.channels_bvhBones[channelId].enabled = true;
+                this.channels_bvhBones[channelId].enabled = true; // // the default value of a boolean is false
             }
 
             char peek = ' ';
@@ -439,6 +442,8 @@ public class BVHParser {
         foreach (BVHBone bone in this.boneList) {
             
             totalChannels += bone.channelNumber; // add all the channel number  of each bone to totalChannels.
+            // CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation  
+            // CHANNELS 3 Zrotation Xrotation Yrotation
         }
         int channel = 0; // channel = DOF
 
