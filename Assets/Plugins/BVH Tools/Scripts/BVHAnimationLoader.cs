@@ -219,6 +219,55 @@ public class BVHAnimationLoader : MonoBehaviour
     //     throw new InvalidOperationException("Could not find bone \"" + bvhName + "\" under bone \"" + transform.name + "\".");
     // }
 
+<<<<<<< HEAD
+=======
+    private Transform getBoneTransformByName(string bvhName, Transform targetTransform, bool first)
+    {
+        // first = true means that bvhName is the root node
+        string bvhNameStandard = standardName(bvhName);
+
+
+        // if (this.bvhToUnityRenamingMap.ContainsKey(bvhNameStandard))
+        // {
+        //     bvhNameStandard = standardName(bvhToUnityRenamingMap[bvhNameStandard]);
+        // }
+
+        if (first)
+        { // check if the bhvNode is the root node of the bvh hiearachy
+        // Try it for the case of NOT using Standard Unity Bone Names
+            if (standardName(targetTransform.name) == bvhNameStandard)
+            { 
+                return targetTransform;
+            }
+        // //  Try it for the case of  using Standard Unity Bone Names    
+        //     if (this.UnityBoneToTransformMap.ContainsKey(bvhNameStandard) && this.UnityBoneToTransformMap[bvhNameStandard] == targetTransform)
+        //     {
+        //         return targetTransform;
+        //     }
+
+            // None of the return statements are encountered. Then it means that an error has occurred:
+            throw new InvalidOperationException( bvhName + "is supposed to be the " + targetTransform.name + " but IS NOT");
+        }
+        // first is NOT true:  Try to find bvhName among the children of targetTransform;
+       
+        for (int i = 0; i < targetTransform.childCount; i++)
+        {
+            Transform childTransform = targetTransform.GetChild(i);
+             //// Try it for the case of NOT using Standard Unity Bone Names
+            if (standardName(childTransform.name) == bvhNameStandard) {
+               return childTransform;
+            }
+            // //  Try it for the case of  using Standard Unity Bone Names    
+            // if (this.UnityBoneToTransformMap.ContainsKey(bvhNameStandard) && this.UnityBoneToTransformMap[bvhNameStandard] == childTransform)
+            // { // targetName is a Unity bone name
+            //     return childTransform;
+            // }
+        }
+        // None of the return statements are encountered. Then it means that an error has occurred:
+        throw new InvalidOperationException( bvhName + "is supposed to be under/below " + targetTransform.name + " but IS NOT");
+    }
+
+>>>>>>> 6c6cf553235626f7fe057181f2e93aa9df4fe678
     //private void getCurves(string path, BVHParser.BVHBone bvhNode, bool first) {
 
     //this.getCurves(this.prefix, this.bp.bvhRootNode, this.bvhRootTransform, true) when first called. 
@@ -1064,7 +1113,7 @@ public class BVHAnimationLoader : MonoBehaviour
             throw new InvalidOperationException("No BVH file has been parsed.");
         }
 
-
+        
         this.frames = this.bp.frames;
 
 
