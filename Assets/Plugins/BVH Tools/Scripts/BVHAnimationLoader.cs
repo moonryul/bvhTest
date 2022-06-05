@@ -30,324 +30,13 @@ public class AnimationClipOverrides : List<KeyValuePair<AnimationClip, Animation
 }
 
 
-public class HumanoidRecorder
-{
-    float time = 0;
-    // public Avatar avatar;
-
-    HumanPoseHandler humanPoseHandler;
-    HumanPose humanPose = new HumanPose();
-
-    //    class AnimationCurve:
-    //         public Keyframe this[int index] { get; }
-
-    //         //
-    //         // Summary:
-    //         //     The number of keys in the curve. (Read Only)
-    //         public int length { get; }
-    //         //
-    //         // Summary:
-    //         //     All keys defined in the animation curve.
-    //         public Keyframe[] keys { get; set; }
-
-    Dictionary<int, AnimationCurve> muscleCurves = new Dictionary<int, AnimationCurve>();
-    Dictionary<string, AnimationCurve> rootCurves = new Dictionary<string, AnimationCurve>();
-
-    Vector3 rootOffset;
-
-//} // public class HumanoidRecoder
-
-    //     public struct HumanPose
-    // {
-    //     //
-    //     // Summary:
-    //     //     The human body position for that pose.
-    //     public Vector3 bodyPosition;
-    //     //
-    //     // Summary:
-    //     //     The human body orientation for that pose.
-    //     public Quaternion bodyRotation;
-    //     //
-    //     // Summary:
-    //     //     The array of muscle values for that pose.
-    //     public float[] muscles;
-    // }
-
-
-    //   public class Avatar : Object
-    //     {
-    //         //
-    //         // Summary:
-    //         //     Return true if this avatar is a valid mecanim avatar. It can be a generic avatar
-    //         //     or a human avatar.
-    //         public bool isValid { get; }
-    //         //
-    //         // Summary:
-    //         //     Return true if this avatar is a valid human avatar.
-    //         public bool isHuman { get; }
-    //         //
-    //         // Summary:
-    //         //     Returns the HumanDescription used to create this Avatar.
-    //         public HumanDescription humanDescription { get; }
-    //     }
-
-    //  public struct HumanDescription
-    //     {
-    //         //
-    //         // Summary:
-    //         //     Mapping between Mecanim bone names and bone names in the rig.
-    //         [NativeNameAttribute("m_Human")]
-    //         public HumanBone[] human;
-    //         //
-    //         // Summary:
-    //         //     List of bone Transforms to include in the model.
-    //         [NativeNameAttribute("m_Skeleton")]
-    //         public SkeletonBone[] skeleton;
-
-
-    // // public HumanoidRecoder(Animator animator, HumanBodyBones[] humanBodyBones)
-    public HumanoidRecorder(Animator animator) 
-    {
-        this.rootOffset = animator.transform.position;
-
-
-        // public HumanPoseHandler(Avatar avatar, Transform root);
-        // Creates a human pose handler from an avatar and the root transform 
-        this.humanPoseHandler = new HumanPoseHandler(animator.avatar, animator.transform);
-
-        HumanBone[] humanBones = animator.avatar.humanDescription.human;
-
-        //int bonesLength = this.avatar.humanDescription.skeleton[i].name
-        int bonesLength = humanBones.Length; // = 56
-                                             //HumanBodyBones.LastBone == 55 
-
-        // Create placeholders for the root keys and muscle keys
-
-        for (int i = 0; i < bonesLength; i++)  // unityBoneType may be 55, Lastbone, which is not a bone.
-        {
-            for (int dofIndex = 0; dofIndex < 3; dofIndex++)
-            {
-
-                //   Obtain the muscle index for a particular bone index and "degree of freedom".
-                // Parameters:   
-                //  dofIndex:   Number representing a "degree of freedom": 0 for X-Axis, 1 for Y-Axis, 2 for    Z-Axis.
-
-                int eachMuscle = HumanTrait.MuscleFromBone(i, dofIndex);
-
-                if (eachMuscle != -1) // unityBoneType = 55 will not have muscle defined for it.
-                                      //this.muscleCurves is a  Dictionary<int, AnimationCurve>();
-                    this.muscleCurves.Add(eachMuscle, new AnimationCurve()); // Generic Rig/Animation does not have use muscles
-            }
-        }
-
-        this.rootCurves.Add("RootT.x", new AnimationCurve());
-        this.rootCurves.Add("RootT.y", new AnimationCurve());
-        this.rootCurves.Add("RootT.z", new AnimationCurve());
-
-    } // HumanoidRecoder(Animator animators)
-
-
-    // public class Avatar : Object
-    //     {
-    //         //
-    //         // Summary:
-    //         //     Return true if this avatar is a valid mecanim avatar. It can be a generic avatar
-    //         //     or a human avatar.
-    //         public bool isValid { get; }
-    //         //
-    //         // Summary:
-    //         //     Return true if this avatar is a valid human avatar.
-    //         public bool isHuman { get; }
-    //         //
-    //         // Summary:
-    //         //     Returns the HumanDescription used to create this Avatar.
-    //         public HumanDescription humanDescription { get; }
-    //     }
-
-    //        void Update()
-    //         {
-    //             if (this.isRecording)
-    //                 this.recordable.TakeSnapshot(Time.deltaTime);
-    //         }
-
-    public void TakeSnapshot(float deltaTime) // a method of Interface  IRecordable
-    {
-        time += deltaTime;
-
-        this.humanPoseHandler.GetHumanPose(ref this.humanPose); // https://forum.unity.com/threads/humanpose-issue-continued.484128/
-
-        //     void LateUpdate() {
-        //     handler.GetHumanPose(ref humanPose);
-        //     humanPose.bodyPosition = humanPose.bodyPosition.y * Vector3.up;
-        //     humanPose.bodyRotation = Quaternion.identity;
-        //     for (int i = 0; i < muscleIndices.Length; ++i)
-        //         humanPose.muscles[muscleIndices[i]] = values[i];
-        //     handler.SetHumanPose(ref humanPose);
-        // }
-
-        // https://unity928.rssing.com/chan-30531769/article714855.html
-        // https://forum.unity.com/threads/how-can-i-animate-a-humanoid-avatar-using-only-a-csv-file-s-o-s.485117/
-
-
-        // Summary:
-        //     Retargetable humanoid pose.
-        // public struct HumanPose  ==> this.humanPose.muscles
-        // {
-        //     //
-        //     // Summary:
-        //     //     The human body position for that pose.
-        //     public Vector3 bodyPosition;
-        //     //
-        //     // Summary:
-        //     //     The human body orientation for that pose.
-        //     public Quaternion bodyRotation;
-        //     //
-        //     // Summary:
-        //     //     The array of muscle values for that pose.
-        //     public float[] muscles;
-        // }
-
-
-        // fill the key for the current time for  each muscle anim key data
-        foreach (KeyValuePair<int, AnimationCurve> muscleCurve in this.muscleCurves)
-        {   //  currentPose.muscles[i]
-            Keyframe timedKey = new Keyframe(time, this.humanPose.muscles[muscleCurve.Key]); // public float[] muscles;
-
-            muscleCurve.Value.AddKey(timedKey); //   public int AddKey(Keyframe key); => fill muscleCurve data with key
-                                       // data.Value refer to AnimationCurve (list), the value part of the dict, to which each key is added
-                                       //         //  // Summary:
-                                       // //     The number of keys in the curve. (Read Only)
-                                       //         public int length { get; }
-                                       // //
-                                       // // Summary:
-                                       // //     All keys defined in the animation curve.
-                                       //           public Keyframe[] keys { get; set; }
-                                       // //
-        }
-
-        Vector3 rootPosition = this.humanPose.bodyPosition - rootOffset;
-
-        this.AddRootKey("RootT.x", rootPosition.x);
-        this.AddRootKey("RootT.y", rootPosition.y);
-        this.AddRootKey("RootT.z", rootPosition.z);
-    } //   public void TakeSnapshot(float deltaTime) // a method of Interface  IRecordable
-
-    void AddRootKey(string property, float value)
-    {
-        Keyframe key = new Keyframe(time, value);
-        this.rootCurves[property].AddKey(key);
-    }
-
-    public AnimationClip GetClip() // a method of  Interface IRecordable
-    {
-
-
-        AnimationClip muscleClip = new AnimationClip();
-
-        foreach (KeyValuePair<int, AnimationCurve> muscleCurve in this.muscleCurves)
-        {
-            muscleClip.SetCurve("", typeof(Animator), HumanTrait.MuscleName[muscleCurve.Key], muscleCurve.Value);
-
-        }
-
-
-        // https://blog.unity.com/technology/mecanim-humanoids:
-        //A "Muscle" is a normalized value [-1,1] that moves a bone for one axis between range [min,max]. 
-        //Note that the Muscle normalized value can go below or over [-1,1] to overshoot the range. 
-        //The range is not a hard limit, instead it defines the normal motion span for a Muscle.
-        // A specific Humanoid Rig can augment or reduce the range of a Muscle Referential to augment or reduce its motion span.
-        // The Muscle Space is the set of all Muscle normalized values for the Humanoid Rig. 
-        //It is a Normalized Humanoid pose. A range of zero (min= max) for a bone axis means that there is no Muscle for it.
-        // For example, the Elbow does not have a muscle for its Y axis, 
-        //as it only stretches in and out (Z-Axis) and roll in and out (X-Axis). 
-        //In the end, the Muscle Space is composed of at most 47 Muscle values
-        // that completely describe a Humanoid body pose.
-
-
-        // One beautiful thing about Muscle Space, is that it is completely abstracted from its original or any skeleton rig. It can be directly applied to any Humanoid Rig and it always create a believable pose.  
-        // Another beautiful thing is how well Muscle Space interpolates. Compare to standard skeleton pose, 
-        // Muscle Space will always interpolate naturally between animation key frames, during state machine transition or when mixed in a blend tree.
-
-        // Computation-wise it also performs as the Muscle Space can be treated as a vector of a scalar
-        //  that you can linearly interpolate as opposed to quaternions or Euler angles.
-
-        // An approximation of human body and human motion
-        // Every new skeleton rig built for a humanoid character or any animation captured will be
-        //  an approximation of the human body and human motion. 
-        //  No matter how many bones or how good your MOCAP hardware is, the result will be an approximation of the real thing.
-
-        // This is a tough one. Why 2, not 3? or an arbitrary number of spines bones?  
-        // Lets discard the latest, it is not about biomedical research.
-        //  (Note that you can always use a Generic Rig if you absolutely need this level of precision).
-        //  One spine bone is clearly under defined.
-        foreach (KeyValuePair<string, AnimationCurve> rootCurve in this.rootCurves)
-        {
-            muscleClip.SetCurve("", typeof(Animator), rootCurve.Key, rootCurve.Value); // data.key = string, data.Value=AnimationCurve
-        }
-
-        // https://extra-ordinary.tv/2020/10/12/animating-hand-poses-in-unity/
-        // => Rather than having a transform, position, and rotate to be animated, there is a single number to control how far each joint bends. 
-        //The number is effectively the strength of the muscles around that joint.
-        //  If relativePath is empty it refers to the game object the animation clip is attached to.
-        // This gameObject may be a humanoid avatar
-        // If relativePath is empty it refers to the GameObject the Animation/Animator component is attached to.
-        // typeof(BlendShapesClip): https://forum.unity.com/threads/add-key-via-c-script-in-custom-clip.597142/
-
-        //               ==>  
-        // Keyframe[] keys;
-        // keys = new Keyframe[3];
-        // keys[0] = new Keyframe(0.0f, 0.0f);
-        // keys[1] = new Keyframe(1.1f, 1.5f);
-        // keys[2] = new Keyframe(2.0f, 0.0f);
-        // curve = new AnimationCurve(keys);
-
-        // var newCustomClip = track.CreateClip<BlendShapesClip>();
-
-        // newCustomClip.displayName = "My New Clip";
-        // newCustomClip.duration = 3f;
-
-        // typeof(TimelineClip).GetMethod("AllocateAnimatedParameterCurves", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(newCustomClip,new object[]{});
-        // newCustomClip.curves.SetCurve("", typeof(BlendShapesClip), "ShapeWeight", curve);
-
-
-
-        return muscleClip;
-
-    } //  public AnimationClip GetClip() // a method of  Interface IRecordable
-
-    //https://gamedev.stackexchange.com/questions/183186/animation-via-animatorcontroller-created-in-script-does-not-play-in-unity
-
-
-    // Compare the two versions of GetClip: The following is the version of GenericRecorder:
-    // public AnimationClip GetClip
-    // {
-    //     get
-    //     {
-    //         AnimationClip clip = new AnimationClip(); // an animation clip for the character, the whole subpaths of the character
-
-    //         foreach (ObjectAnimation animation in objectAnimations) // animation for each joint, which is animation.Path
-    //         {
-    //             foreach (CurveContainer container in animation.Curves) // container for each DOF in animation of the current joint
-
-    //             {
-    //                 if (container.Curve.keys.Length > 1)
-    //                     clip.SetCurve(animation.Path, typeof(Transform), container.Property, container.Curve);
-    //             }
-    //         }
-
-    //         return clip;
-    //     }
-    // }
-
-} // public class HumanoidRecorder
-
 public class BVHAnimationLoader : MonoBehaviour
 {
 
     public Avatar bvhAvatar;
 
     public Transform bvhAvatarRootTransform;
-     HumanPose currentHumanPose = new HumanPose();
+    HumanPose humanPose;
 
     
     List<string> jointPaths = new List<string>(); // emtpy one
@@ -355,6 +44,8 @@ public class BVHAnimationLoader : MonoBehaviour
     HumanPoseHandler humanPoseHandler; 
     HumanoidRecorder humanoidRecorder;
     NativeArray<float> avatarPose;
+
+    GenericRecorder genericRecorder;
 
    float[][] values = new float[6][]; // the root transform data at keyframe for the current bvh file
    Keyframe[][] keyframes = new Keyframe[7][]; // the joint tansform data at key keyframes for the curernt bvh file
@@ -398,6 +89,49 @@ public class BVHAnimationLoader : MonoBehaviour
     private Dictionary<string, string> pathToBone;  // the default value of reference variable is null
     private Dictionary<string, string[]> boneToMuscles;  // the default value of reference variable is null
     
+
+    public class Trans
+ {
+ 
+     public Vector3 localPosition;
+     public Quaternion localRotation;
+     public Vector3 localScale;
+ 
+ // https://answers.unity.com/questions/156698/copy-a-transform.html
+     public Trans (Vector3 newPosition, Quaternion newRotation, Vector3 newLocalScale)
+     {
+         this.localPosition = newPosition;
+         this.localRotation = newRotation;
+         this.localScale = newLocalScale;
+     }
+ 
+     public Trans ()
+     {
+         this.localPosition = Vector3.zero;
+         this.localRotation = Quaternion.identity;
+         this.localScale = Vector3.one;
+     }
+ 
+     public Trans (Transform transform)
+     {
+         this.copyFrom (transform);
+     }
+ 
+     public void copyFrom (Transform transform)
+     {
+         this.localPosition = transform.position;
+         this.localRotation = transform.rotation;
+         this.localScale = transform.localScale;
+     }
+ 
+     public void copyTo (Transform transform)
+     {
+         transform.localPosition = this.localPosition;
+         transform.localRotation = this.localRotation;
+         transform.localScale = this.localScale;
+     }
+ 
+ }
 
     void ParseAvatarTransformRecursive(Transform child, string parentPath, List<string> jointPaths, List<Transform> transforms)
     {
@@ -721,16 +455,16 @@ public class BVHAnimationLoader : MonoBehaviour
 
 
 // this.SetMusclePoseEachFrame(i,  this.bp.bvhRootNode, this.bvhAvatarRootTransform); // true: first
- void GetbvhTransformsForAllFrames(BVHParser.BVHBone bvhNode, List<string> jointPaths, List<Transform> bvhTransforms ) 
+ void GetbvhTransformsForCurrentFrame(int i, BVHParser.BVHBone rootBvhNode, Transform rootTransform, List<string> jointPaths, List<Transform> bvhTransforms )
     {
-        jointPaths.Add(""); // root tranform path is the empty string
+       // jointPaths.Add(""); // root tranform path is the empty string
 
         // Get the rootTransform corresponding to the offet of the Hips joint + this.bvhAnimator.gameObject.transform
 
         // Get the bvh transform (position + quaternion) corresponding to bvhNode
         //  bvhTransforms.Add(rootTransform);
 
-        Transform rootTransform;
+        //Transform rootTransform;
 
         // first = true means bvhNode is the root node
         bool posX = false;
@@ -746,11 +480,13 @@ public class BVHAnimationLoader : MonoBehaviour
 
         string[] props = new string[7];
 
+        //Trans oldTrans = new Trans( rootTransform ); // save the rootTransform to oldTrans
+
         // This needs to be changed to gather from all channels into two vector3, invert the coordinate system transformation and then make keyframes from it
         // Construct the data structure for frame data for each channel for the current node or joint
         for (int channel = 0; channel < 6; channel++) // 6 or 3 channels
-        {
-            if ( !bvhNode.channels_bvhBones[channel].enabled)
+         {
+            if (!rootBvhNode.channels_bvhBones[channel].enabled)
             {
                 continue;
             }
@@ -782,15 +518,12 @@ public class BVHAnimationLoader : MonoBehaviour
                     props[channel] = "localRotation.z";
                     break;
                 default:
-                    channel = -1;
-                    break;
-            }
-            if (channel == -1)
-            {
-                continue;
+                    throw new InvalidOperationException("Invalid Channel Number (should be 0 to 5):" + channel);
+                  
             }
 
-            this.keyframes[channel] = new Keyframe[frames];
+
+             this.keyframes[channel] = new Keyframe[this.frames];
 
             // public Keyframe(float time, float value, float inTangent, float outTangent, float inWeight, float outWeight);
 
@@ -803,146 +536,205 @@ public class BVHAnimationLoader : MonoBehaviour
             //     The value of the curve at keyframe.
             // public float value { get; set; }
 
-            this.values[channel] = bvhNode.channels_bvhBones[channel].values; // the animation key frames (joint angles for frames)
+            this.values[channel] = rootBvhNode.channels_bvhBones[channel].values; // the animation key frames (joint angles for frames)
+            // Note that  this.keyframes[0][i].value = -this.values[0][i];
 
-            if (rotX && rotY && rotZ && tihs.keyframes[6] == null)
-            {
-                this.keyframes[6] = new Keyframe[frames];
-                props[6] = "localRotation.w";
-            }
         } // for (int channel = 0; channel < 6; channel++)
+
+        //if (rotX && rotY && rotZ && this.keyframes[6] == null)
+        {
+            this.keyframes[6] = new Keyframe[this.frames];
+            props[6] = "localRotation.w";
+        }
 
         float time = 0f;
 
-        // Get the position data of the current joint/node  for each frame
-        if (posX && posY && posZ) // the position value of the joint center
+        // Get the position data of the root node for the current frame
+        // if (posX && posY && posZ) // the position value of the joint center
+        // {
+        Vector3 offset; //  used for the root node
+
+
+        if (this.blender) //  //  the BVH file will be assumed to have the Z axis as up and the Y axis as forward, X rightward as in Blender
         {
-            //Vector3 offset; //  used for the root node
-
-
-            // if (this.blender) //  //  the BVH file will be assumed to have the Z axis as up and the Y axis as forward, X rightward as in Blender
-            // {
-            //     offset = new Vector3(-bvhNode.offsetX, bvhNode.offsetZ, -bvhNode.offsetY); // => Unity frame
-            // }
-            // else //  //  the BVH file will be assumed to have the normal BVH convention: Y up; Z backward; X right (OpenGL: right handed)
-            // {
-            //     offset = new Vector3(-bvhNode.offsetX, bvhNode.offsetY, bvhNode.offsetZ);  // To unity Frame
-            //     // Unity:  Y: up, Z: forward, X = right or Y: up, Z =backward, X left (The above transform follows the second)
-            // }
-            for (int i = 0; i < this.frames; i++)
-            {
-                time += 1f / this.frameRate;
-                this.keyframes[0][i].time = time;
-                this.keyframes[1][i].time = time;
-                this.keyframes[2][i].time = time;
-                if (blender)
-                {
-                    this.keyframes[0][i].value = -this.values[0][i];
-                    this.keyframes[1][i].value = this.values[2][i];
-                    this.keyframes[2][i].value = -this.values[1][i];
-                }
-                else
-                {
-                    this.keyframes[0][i].value = -this.values[0][i]; // From BVH to Unity: the sign of the x coordinate changes because of the frame change from BVH to Unity
-                    this.keyframes[1][i].value = this.values[1][i];
-                    this.keyframes[2][i].value = this.values[2][i];
-                }
-
-                 Vector3 bvhPositionLocal = targetTransform.transform.parent.InverseTransformPoint(new Vector3(keyframes[0][i].value, keyframes[1][i].value, keyframes[2][i].value) + bvhAnimator.transform.position + offset);
-                 this.keyframes[0][i].value = bvhPositionLocal.x * this.bvhAnimator.transform.localScale.x;
-                 this.keyframes[1][i].value = bvhPositionLocal.y * this.bvhAnimator.transform.localScale.y;
-                 tihs.keyframes[2][i].value = bvhPositionLocal.z * this.bvhAnimator.transform.localScale.z;
-
-                // if (first) // use the offset of the joint to compute the location of the root joint relative to the world space, when it is the root joint.
-                // {
-                //     Vector3 bvhPositionLocal = targetTransform.transform.parent.InverseTransformPoint(new Vector3(keyframes[0][i].value, keyframes[1][i].value, keyframes[2][i].value) + bvhAnimator.transform.position + offset);
-                //     this.keyframes[0][i].value = bvhPositionLocal.x * this.bvhAnimator.transform.localScale.x;
-                //     this.keyframes[1][i].value = bvhPositionLocal.y * this.bvhAnimator.transform.localScale.y;
-                //     tihs.keyframes[2][i].value = bvhPositionLocal.z * this.bvhAnimator.transform.localScale.z;
-                // }
-            } //   for (int i = 0; i < this.frames; i++)
-            
-            // if (first) // the first bone
-            // {   // public AnimationCurve(params Keyframe[] keys);
-            //     this.clip.SetCurve(path, typeof(Transform), props[0], new AnimationCurve(keyframes[0]));
-            //     this.clip.SetCurve(path, typeof(Transform), props[1], new AnimationCurve(keyframes[1]));
-            //     this.clip.SetCurve(path, typeof(Transform), props[2], new AnimationCurve(keyframes[2]));
-            // }
-            // else
-            // {
-            //     Debug.LogWarning("Position information on bones other than the root bone is currently not supported and has been ignored. If you exported this file from Blender, please tick the \"Root Translation Only\" option next time.");
-            // }
-        } // if (posX && posY && posZ) // the position value of the joint center
-
-        time = 0f;
-        if (rotX && rotY && rotZ) // the rotatation value of the joint center
+            offset = new Vector3(-rootBvhNode.offsetX, rootBvhNode.offsetZ, -rootBvhNode.offsetY); // => Unity frame
+        }
+        else //  //  the BVH file will be assumed to have the normal BVH convention: Y up; Z backward; X right (OpenGL: right handed)
         {
-            Quaternion oldRotation = targetTransform.transform.rotation;
-
-            for (int i = 0; i < frames; i++)
-            {
-
-                Vector3 eulerBVH = new Vector3(wrapAngle(values[3][i]), wrapAngle(values[4][i]), wrapAngle(values[5][i]));
-                Quaternion rot = fromEulerZXY(eulerBVH);
-                if (blender)
-                {
-                    keyframes[3][i].value = rot.x;
-                    keyframes[4][i].value = -rot.z;
-                    keyframes[5][i].value = rot.y;
-                    keyframes[6][i].value = rot.w;
-                    //rot2 = new Quaternion(rot.x, -rot.z, rot.y, rot.w);
-                }
-                else
-                {
-                    keyframes[3][i].value = rot.x;
-                    keyframes[4][i].value = -rot.y;
-                    keyframes[5][i].value = -rot.z;
-                    keyframes[6][i].value = rot.w;
-                    //rot2 = new Quaternion(rot.x, -rot.y, -rot.z, rot.w);
-                }
-
-                if (first)
-                { // first == true means that the curve is generated for the bvh root node
-                    targetTransform.transform.rotation = new Quaternion(keyframes[3][i].value, keyframes[4][i].value, keyframes[5][i].value, keyframes[6][i].value);
-
-                    // public Quaternion localRotation { get; set; }:  The rotation of the transform relative to the transform rotation of the parent.
-                    // position and rotation atrributes are the values relative to the world space.
-
-                    keyframes[3][i].value = targetTransform.transform.localRotation.x;
-                    keyframes[4][i].value = targetTransform.transform.localRotation.y;
-                    keyframes[5][i].value = targetTransform.transform.localRotation.z;
-                    keyframes[6][i].value = targetTransform.transform.localRotation.w;
-                }
-                /*Vector3 euler = rot2.eulerAngles;
-
-                keyframes[3][i].value = wrapAngle(euler.x);
-                keyframes[4][i].value = wrapAngle(euler.y);
-                keyframes[5][i].value = wrapAngle(euler.z);*/
-
-                time += 1f / this.frameRate;
-                keyframes[3][i].time = time;
-                keyframes[4][i].time = time;
-                keyframes[5][i].time = time;
-                keyframes[6][i].time = time;
-            } //   for (int i = 0; i < frames; i++) 
-
-
-
-        bvhTransforms.Add(rootTransform);
-
-        foreach (BVHParser.BVHBone child in bvhNode.children)
+            offset = new Vector3(-rootBvhNode.offsetX, rootBvhNode.offsetY, rootBvhNode.offsetZ);  // To unity Frame
+            // Unity:  Y: up, Z: forward, X = right or Y: up, Z =backward, X left (The above transform follows the second)
+        }
+        //  for (int i = 0; i < this.frames; i++)
+        //  {
+        time += 1f / this.frameRate;
+        this.keyframes[0][i].time = time;
+        this.keyframes[1][i].time = time;
+        this.keyframes[2][i].time = time;
+        // Change the coordinate system from BVH to Unity
+        if (blender)
         {
-             GetbvhTransformsForAllFramesRecursive(child, "", jointPaths, bvhTransforms);
+            this.keyframes[0][i].value = -this.values[0][i];
+            this.keyframes[1][i].value = this.values[2][i];
+            this.keyframes[2][i].value = -this.values[1][i];
+        }
+        else
+        {
+            this.keyframes[0][i].value = -this.values[0][i]; // From BVH to Unity: the sign of the x coordinate changes because of the frame change from BVH to Unity
+            this.keyframes[1][i].value = this.values[1][i];
+            this.keyframes[2][i].value = this.values[2][i];
         }
 
-    }
- 
- private void GetbvhTransformsForAllFramesRecursive( BVHParser.BVHBone bvhNode,  string parentPath,
-                                                                                  List<string> jointPaths, List<Transform> transforms)
+        //  transform.transform has the same effect as transform.GetComponent(Transform).
+        // Correct, just use transform; you would never need to use transform.transform. 
+        // It's true that you'd prefer transform over GetComponent(Transform), though the speed difference is small.
+
+        //new Vector3(keyframes[0][i].value, keyframes[1][i].value, keyframes[2][i].value) + bvhAnimator.transform.position + offset 
+        // is the position of the root bvh node relative to the world coordinate system
+        // => Transform it to the local vector relative to the coordinate system of the root node.
+
+        // vector * vector could be interpreted as dot product or a cross product or the "component wise" product, 
+        //so I totally agree with the decision of not implementing a custom * operator to force the developers to call the appropriate method.
+        // And it happens that Vector3.Scale is already doing this.
+        Vector3 bvhPositionLocal = rootTransform.transform.parent.InverseTransformPoint(new Vector3(keyframes[0][i].value, keyframes[1][i].value, keyframes[2][i].value) + bvhAnimator.transform.position + offset);
+        bvhPositionLocal =  Vector3.Scale(bvhPositionLocal, this.bvhAnimator.transform.localScale);
+
+     
+        //rootTransform.transform.localPosition = bvhPositionLocal;
+       
+        
+        
+        // this.keyframes[0][i].value = bvhPositionLocal.x * this.bvhAnimator.transform.localScale.x;
+        // this.keyframes[1][i].value = bvhPositionLocal.y * this.bvhAnimator.transform.localScale.y;
+        // this.keyframes[2][i].value = bvhPositionLocal.z * this.bvhAnimator.transform.localScale.z;
+
+        this.keyframes[0][i].value = bvhPositionLocal.x; 
+        this.keyframes[1][i].value = bvhPositionLocal.y;
+        this.keyframes[2][i].value = bvhPositionLocal.z;
+
+        // if (first) // use the offset of the joint to compute the location of the root joint relative to the world space, when it is the root joint.
+        // {
+        //     Vector3 bvhPositionLocal = targetTransform.transform.parent.InverseTransformPoint(new Vector3(keyframes[0][i].value, keyframes[1][i].value, keyframes[2][i].value) + bvhAnimator.transform.position + offset);
+        //     this.keyframes[0][i].value = bvhPositionLocal.x * this.bvhAnimator.transform.localScale.x;
+        //     this.keyframes[1][i].value = bvhPositionLocal.y * this.bvhAnimator.transform.localScale.y;
+        //     tihs.keyframes[2][i].value = bvhPositionLocal.z * this.bvhAnimator.transform.localScale.z;
+        // }
+        // } //   for (int i = 0; i < this.frames; i++)
+
+        // if (first) // the first bone
+        // {   // public AnimationCurve(params Keyframe[] keys);
+        //     this.clip.SetCurve(path, typeof(Transform), props[0], new AnimationCurve(keyframes[0]));
+        //     this.clip.SetCurve(path, typeof(Transform), props[1], new AnimationCurve(keyframes[1]));
+        //     this.clip.SetCurve(path, typeof(Transform), props[2], new AnimationCurve(keyframes[2]));
+        // }
+        // else
+        // {
+        //     Debug.LogWarning("Position information on bones other than the root bone is currently not supported and has been ignored. If you exported this file from Blender, please tick the \"Root Translation Only\" option next time.");
+        // }
+        //} // if (posX && posY && posZ) // the position value of the root joint
+
+        time = 0f;
+        //  if (rotX && rotY && rotZ) // the rotatation value of the root joint
+        //  {
+        // Save the rotation of the root bvh node transform because it is used as a temporary variable to hold the orientation of the bvh node
+        // at each frame i, below.
+
+        // Quaternion oldRotation = rootTransform.transform.rotation;
+
+        //  for (int i = 0; i < frames; i++)
+        //   {
+
+        Vector3 eulerBVH = new Vector3(wrapAngle(values[3][i]), wrapAngle(values[4][i]), wrapAngle(values[5][i]));
+        Quaternion rot = fromEulerZXY(eulerBVH); // Get the quaternion for the BVH ZXY Euler angles
+
+        Quaternion rot2;
+        // Change the coordinate system from BVH to Unity
+        if (blender)
+        {
+            keyframes[3][i].value = rot.x;
+            keyframes[4][i].value = -rot.z;
+            keyframes[5][i].value = rot.y;
+            keyframes[6][i].value = rot.w;
+            rot2 = new Quaternion(rot.x, -rot.z, rot.y, rot.w);
+        }
+        else
+        {
+            keyframes[3][i].value = rot.x;
+            keyframes[4][i].value = -rot.y;
+            keyframes[5][i].value = -rot.z;
+            keyframes[6][i].value = rot.w;
+            rot2 = new Quaternion(rot.x, -rot.y, -rot.z, rot.w);
+        }
+
+        // if (first)
+        // first == true means that the curve is generated for the bvh root node
+        //rootTransform.transform.rotation = new Quaternion(keyframes[3][i].value, keyframes[4][i].value, keyframes[5][i].value, keyframes[6][i].value);
+
+       // rootTransform.transform.rotation = new Quaternion(keyframes[3][i].value, keyframes[4][i].value, keyframes[5][i].value, keyframes[6][i].value);
+
+       //Transform newRootTransform = new Trans( bvhPositionLocal, rot2,  rootTransform.localScale);
+
+      // Store the new root transform to the current rootTransform, which is used as a temporary variable to store the transform at the current frame i;
+      // Changing the rootTransform is OK because when the generated animation clip will be used to play the virtual character.
+      // The original pose of the virtual character will be set to the first frame of the animation clip, when the clip is played.
+       rootTransform.localPosition =  bvhPositionLocal;
+       rootTransform.localRotation = rot2;
+
+
+        // public Quaternion localRotation { get; set; }:  The rotation of the transform relative to the transform rotation of the parent.
+        // position and rotation atrributes are the values relative to the world space.
+
+        // => Change the transform of the root bvh node to the local transform relative the root coordinate system.
+        // The original bvh data is considered to be measured relative to the world coordinate system.
+
+        // keyframes[3][i].value = rootTransform.transform.localRotation.x;
+        // keyframes[4][i].value = rootTransform.transform.localRotation.y;
+        // keyframes[5][i].value = rootTransform.transform.localRotation.z;
+        // keyframes[6][i].value = rootTransform.transform.localRotation.w;
+
+        
+
+
+        /*Vector3 euler = rot2.eulerAngles;
+
+        keyframes[3][i].value = wrapAngle(euler.x);
+        keyframes[4][i].value = wrapAngle(euler.y);
+        keyframes[5][i].value = wrapAngle(euler.z);*/
+
+        time += 1f / this.frameRate;
+        keyframes[3][i].time = time;
+        keyframes[4][i].time = time;
+        keyframes[5][i].time = time;
+        keyframes[6][i].time = time;
+        // } //   for (int i = 0; i < frames; i++) 
+
+          
+
+        // } //  if (rotX && rotY && rotZ) // the rotatation value of the root joint
+        jointPaths.Add(""); // root tranform path is the empty string
+
+        bvhTransforms.Add( rootTransform); // bvhTransforms is the contrainer of transforms in the skeleton path
+        // restore the original root bvh node transform
+       // rootTransform.transform.rotation = oldRotation;
+        // Get the frame data for each child of the root node, recursively.
+        foreach (BVHParser.BVHBone child in rootBvhNode.children)
+        {
+            Transform childTransform = rootTransform.Find(child.name);
+
+            GetbvhTransformsForCurrentFrameRecursive(i, child, childTransform, "", jointPaths, bvhTransforms); // "" refers to the root node of the skeleton path
+           // GetbvhTransformsForCurrentFrameRecursive(i, child, "", jointPaths, bvhTrans); // "" refers to the root node of the skeleton path
+        }
+
+    } // void GetbvhTransformsForCurrentFrame(i, BVHParser.BVHBone bvhNode, Transform rootTransform, List<string> jointPaths, List<Transform> bvhTransforms )
+
+    private void GetbvhTransformsForCurrentFrameRecursive( int i, BVHParser.BVHBone bvhNode,  Transform bvhNodeTransform, string parentPath,
+                                                                                   List<string> jointPaths, List<Transform> bvhTransforms)
+
+    //private void GetbvhTransformsForCurrentFrameRecursive( int i, BVHParser.BVHBone bvhNode,   string parentPath,
+//                                                                                  List<string> jointPaths, List<Trans> bvhTrans)
     {
 
-        string jointPath = parentPath.Length == 0 ? bvhNode.name : parentPath + "/" + bvhNode.name;
-        jointPaths.Add(jointPath);
+        // string jointPath = parentPath.Length == 0 ? bvhNode.name : parentPath + "/" + bvhNode.name;
+        // jointPaths.Add(jointPath);
 
         // Get the bvh transform (position + quaternion) corresponding to bvhNode
         //  transforms.Add(child);
@@ -997,13 +789,10 @@ public class BVHAnimationLoader : MonoBehaviour
                     props[channel] = "localRotation.z";
                     break;
                 default:
-                    channel = -1;
-                    break;
+                    throw new InvalidOperationException("Invalid Channel Number (should be 0 to 5):" + channel);
+               
             }
-            if (channel == -1)
-            {
-                continue;
-            }
+
 
             this.keyframes[channel] = new Keyframe[frames];
 
@@ -1020,144 +809,169 @@ public class BVHAnimationLoader : MonoBehaviour
 
             this.values[channel] = bvhNode.channels_bvhBones[channel].values; // the animation key frames (joint angles for frames)
 
-            if (rotX && rotY && rotZ && tihs.keyframes[6] == null)
-            {
-                this.keyframes[6] = new Keyframe[frames];
-                props[6] = "localRotation.w";
-            }
+
         } // for (int channel = 0; channel < 6; channel++)
+
+
+        {
+            this.keyframes[6] = new Keyframe[frames];
+            props[6] = "localRotation.w";
+        }
+
 
         float time = 0f;
 
-        // Get the position data of the current joint/node  for each frame
-        if (posX && posY && posZ) // the position value of the joint center
+        // // Get the position data of the current joint/node  for each frame
+        // if (posX && posY && posZ) // the position value of the joint center
+        // {
+        //     //Vector3 offset; //  used for the root node
+
+
+        //     // if (this.blender) //  //  the BVH file will be assumed to have the Z axis as up and the Y axis as forward, X rightward as in Blender
+        //     // {
+        //     //     offset = new Vector3(-bvhNode.offsetX, bvhNode.offsetZ, -bvhNode.offsetY); // => Unity frame
+        //     // }
+        //     // else //  //  the BVH file will be assumed to have the normal BVH convention: Y up; Z backward; X right (OpenGL: right handed)
+        //     // {
+        //     //     offset = new Vector3(-bvhNode.offsetX, bvhNode.offsetY, bvhNode.offsetZ);  // To unity Frame
+        //     //     // Unity:  Y: up, Z: forward, X = right or Y: up, Z =backward, X left (The above transform follows the second)
+        //     // }
+        //   //  for (int i = 0; i < this.frames; i++)
+        //     {
+        //         time += 1f / this.frameRate;
+        //         this.keyframes[0][i].time = time;
+        //         this.keyframes[1][i].time = time;
+        //         this.keyframes[2][i].time = time;
+        //         if (blender)
+        //         {
+        //             this.keyframes[0][i].value = -this.values[0][i];
+        //             this.keyframes[1][i].value = this.values[2][i];
+        //             this.keyframes[2][i].value = -this.values[1][i];
+        //         }
+        //         else
+        //         {
+        //             this.keyframes[0][i].value = -this.values[0][i]; // From BVH to Unity: the sign of the x coordinate changes because of the frame change from BVH to Unity
+        //             this.keyframes[1][i].value = this.values[1][i];
+        //             this.keyframes[2][i].value = this.values[2][i];
+        //         }
+        //         // if (first) // use the offset of the joint to compute the location of the root joint relative to the world space, when it is the root joint.
+        //         // {
+        //         //     Vector3 bvhPositionLocal = targetTransform.transform.parent.InverseTransformPoint(new Vector3(keyframes[0][i].value, keyframes[1][i].value, keyframes[2][i].value) + bvhAnimator.transform.position + offset);
+        //         //     this.keyframes[0][i].value = bvhPositionLocal.x * this.bvhAnimator.transform.localScale.x;
+        //         //     this.keyframes[1][i].value = bvhPositionLocal.y * this.bvhAnimator.transform.localScale.y;
+        //         //     tihs.keyframes[2][i].value = bvhPositionLocal.z * this.bvhAnimator.transform.localScale.z;
+        //         // }
+
+
+        //     } //   for (int i = 0; i < this.frames; i++)
+
+
+   
+
+            // //if (first) // the first bone
+            // {   // public AnimationCurve(params Keyframe[] keys);
+
+            //     this.clip.SetCurve(path, typeof(Transform), props[0], new AnimationCurve(keyframes[0]));
+            //     this.clip.SetCurve(path, typeof(Transform), props[1], new AnimationCurve(keyframes[1]));
+            //     this.clip.SetCurve(path, typeof(Transform), props[2], new AnimationCurve(keyframes[2]));
+            // }
+            // else
+            // {
+            //     Debug.LogWarning("Position information on bones other than the root bone is currently not supported and has been ignored. If you exported this file from Blender, please tick the \"Root Translation Only\" option next time.");
+            // }
+        //} // if (posX && posY && posZ) // the position value of the joint center
+
+        time = 0f;
+        Quaternion rot2; 
+        if (rotX && rotY && rotZ) // the rotatation value of the joint center
         {
-            //Vector3 offset; //  used for the root node
+            // Quaternion oldRotation = bvhNodeTransform.transform.rotation;
 
+            //  for (int i = 0; i < frames; i++)
+            //  {
 
-            // if (this.blender) //  //  the BVH file will be assumed to have the Z axis as up and the Y axis as forward, X rightward as in Blender
-            // {
-            //     offset = new Vector3(-bvhNode.offsetX, bvhNode.offsetZ, -bvhNode.offsetY); // => Unity frame
-            // }
-            // else //  //  the BVH file will be assumed to have the normal BVH convention: Y up; Z backward; X right (OpenGL: right handed)
-            // {
-            //     offset = new Vector3(-bvhNode.offsetX, bvhNode.offsetY, bvhNode.offsetZ);  // To unity Frame
-            //     // Unity:  Y: up, Z: forward, X = right or Y: up, Z =backward, X left (The above transform follows the second)
-            // }
-            for (int i = 0; i < this.frames; i++)
+            Vector3 eulerBVH = new Vector3(wrapAngle(values[3][i]), wrapAngle(values[4][i]), wrapAngle(values[5][i]));
+            Quaternion rot = fromEulerZXY(eulerBVH); // BVH Euler: CHANNELS 3 Zrotation Xrotation Yrotation
+                                                     // Change the coordinate system from the standard right hand system (Opengl) to that of Blender or of Unity
+            if (blender)
             {
-                time += 1f / this.frameRate;
-                this.keyframes[0][i].time = time;
-                this.keyframes[1][i].time = time;
-                this.keyframes[2][i].time = time;
-                if (blender)
-                {
-                    this.keyframes[0][i].value = -this.values[0][i];
-                    this.keyframes[1][i].value = this.values[2][i];
-                    this.keyframes[2][i].value = -this.values[1][i];
-                }
-                else
-                {
-                    this.keyframes[0][i].value = -this.values[0][i]; // From BVH to Unity: the sign of the x coordinate changes because of the frame change from BVH to Unity
-                    this.keyframes[1][i].value = this.values[1][i];
-                    this.keyframes[2][i].value = this.values[2][i];
-                }
-                // if (first) // use the offset of the joint to compute the location of the root joint relative to the world space, when it is the root joint.
-                // {
-                //     Vector3 bvhPositionLocal = targetTransform.transform.parent.InverseTransformPoint(new Vector3(keyframes[0][i].value, keyframes[1][i].value, keyframes[2][i].value) + bvhAnimator.transform.position + offset);
-                //     this.keyframes[0][i].value = bvhPositionLocal.x * this.bvhAnimator.transform.localScale.x;
-                //     this.keyframes[1][i].value = bvhPositionLocal.y * this.bvhAnimator.transform.localScale.y;
-                //     tihs.keyframes[2][i].value = bvhPositionLocal.z * this.bvhAnimator.transform.localScale.z;
-                // }
-            } //   for (int i = 0; i < this.frames; i++)
-
-            if (first) // the first bone
-            {   // public AnimationCurve(params Keyframe[] keys);
-                this.clip.SetCurve(path, typeof(Transform), props[0], new AnimationCurve(keyframes[0]));
-                this.clip.SetCurve(path, typeof(Transform), props[1], new AnimationCurve(keyframes[1]));
-                this.clip.SetCurve(path, typeof(Transform), props[2], new AnimationCurve(keyframes[2]));
+                keyframes[3][i].value = rot.x;
+                keyframes[4][i].value = -rot.z;
+                keyframes[5][i].value = rot.y;
+                keyframes[6][i].value = rot.w;
+                rot2 = new Quaternion(rot.x, -rot.z, rot.y, rot.w);
             }
             else
             {
-                Debug.LogWarning("Position information on bones other than the root bone is currently not supported and has been ignored. If you exported this file from Blender, please tick the \"Root Translation Only\" option next time.");
+                keyframes[3][i].value = rot.x;
+                keyframes[4][i].value = -rot.y;
+                keyframes[5][i].value = -rot.z;
+                keyframes[6][i].value = rot.w;
+                rot2 = new Quaternion(rot.x, -rot.y, -rot.z, rot.w);
             }
-        } // if (posX && posY && posZ) // the position value of the joint center
 
-        time = 0f;
-        if (rotX && rotY && rotZ) // the rotatation value of the joint center
-        {
-            Quaternion oldRotation = targetTransform.transform.rotation;
+            // if (first)
+            // { // first == true means that the curve is generated for the bvh root node
+            //     targetTransform.transform.rotation = new Quaternion(keyframes[3][i].value, keyframes[4][i].value, keyframes[5][i].value, keyframes[6][i].value);
 
-            for (int i = 0; i < frames; i++)
-            {
+            //     // public Quaternion localRotation { get; set; }:  The rotation of the transform relative to the transform rotation of the parent.
+            //     // position and rotation atrributes are the values relative to the world space.
 
-                Vector3 eulerBVH = new Vector3(wrapAngle(values[3][i]), wrapAngle(values[4][i]), wrapAngle(values[5][i]));
-                Quaternion rot = fromEulerZXY(eulerBVH);
-                if (blender)
-                {
-                    keyframes[3][i].value = rot.x;
-                    keyframes[4][i].value = -rot.z;
-                    keyframes[5][i].value = rot.y;
-                    keyframes[6][i].value = rot.w;
-                    //rot2 = new Quaternion(rot.x, -rot.z, rot.y, rot.w);
-                }
-                else
-                {
-                    keyframes[3][i].value = rot.x;
-                    keyframes[4][i].value = -rot.y;
-                    keyframes[5][i].value = -rot.z;
-                    keyframes[6][i].value = rot.w;
-                    //rot2 = new Quaternion(rot.x, -rot.y, -rot.z, rot.w);
-                }
+            //     keyframes[3][i].value = targetTransform.transform.localRotation.x;
+            //     keyframes[4][i].value = targetTransform.transform.localRotation.y;
+            //     keyframes[5][i].value = targetTransform.transform.localRotation.z;
+            //     keyframes[6][i].value = targetTransform.transform.localRotation.w;
+            // }
 
-                if (first)
-                { // first == true means that the curve is generated for the bvh root node
-                    targetTransform.transform.rotation = new Quaternion(keyframes[3][i].value, keyframes[4][i].value, keyframes[5][i].value, keyframes[6][i].value);
+            /*Vector3 euler = rot2.eulerAngles;
 
-                    // public Quaternion localRotation { get; set; }:  The rotation of the transform relative to the transform rotation of the parent.
-                    // position and rotation atrributes are the values relative to the world space.
+            keyframes[3][i].value = wrapAngle(euler.x);
+            keyframes[4][i].value = wrapAngle(euler.y);
+            keyframes[5][i].value = wrapAngle(euler.z);*/
 
-                    keyframes[3][i].value = targetTransform.transform.localRotation.x;
-                    keyframes[4][i].value = targetTransform.transform.localRotation.y;
-                    keyframes[5][i].value = targetTransform.transform.localRotation.z;
-                    keyframes[6][i].value = targetTransform.transform.localRotation.w;
-                }
-                /*Vector3 euler = rot2.eulerAngles;
-
-                keyframes[3][i].value = wrapAngle(euler.x);
-                keyframes[4][i].value = wrapAngle(euler.y);
-                keyframes[5][i].value = wrapAngle(euler.z);*/
-
-                time += 1f / this.frameRate;
-                keyframes[3][i].time = time;
-                keyframes[4][i].time = time;
-                keyframes[5][i].time = time;
-                keyframes[6][i].time = time;
-            } //   for (int i = 0; i < frames; i++) 
-
-            targetTransform.transform.rotation = oldRotation;
+            time += 1f / this.frameRate;
+            keyframes[3][i].time = time;
+            keyframes[4][i].time = time;
+            keyframes[5][i].time = time;
+            keyframes[6][i].time = time;
+            // } 
+            // bvhNodeTransform.transform.rotation = oldRotation;
 
             //public void SetCurve(string relativePath, Type type, string propertyName, AnimationCurve curve);
             // https://docs.unity3d.com/ScriptReference/AnimationClip.SetCurve.html
             // The root node of path is the game object to which AnimationClip component is attached, and
             // the tip of the path is the game object to which Animation Curive will be applied.
-            this.clip.SetCurve(path, typeof(Transform), props[3], new AnimationCurve(keyframes[3])); // Material as well as Transform can be animated
-            this.clip.SetCurve(path, typeof(Transform), props[4], new AnimationCurve(keyframes[4]));
-            this.clip.SetCurve(path, typeof(Transform), props[5], new AnimationCurve(keyframes[5]));
-            this.clip.SetCurve(path, typeof(Transform), props[6], new AnimationCurve(keyframes[6]));
+
+            // this.clip.SetCurve(path, typeof(Transform), props[3], new AnimationCurve(keyframes[3])); // Material as well as Transform can be animated
+            // this.clip.SetCurve(path, typeof(Transform), props[4], new AnimationCurve(keyframes[4]));
+            // this.clip.SetCurve(path, typeof(Transform), props[5], new AnimationCurve(keyframes[5]));
+            // this.clip.SetCurve(path, typeof(Transform), props[6], new AnimationCurve(keyframes[6]));
 
         } //if (rotX && rotY && rotZ) // the rotatation value of the joint center 
+        else {
+            throw new InvalidOperationException("The joints other than the root joint should have three Euler angles"); 
+        }
 
+        // Change the rotation of bvhNodeTransform
+
+        bvhNodeTransform.localRotation = rot2;
+
+        string jointPath = parentPath.Length == 0 ? bvhNode.name : parentPath + "/" + bvhNode.name;
+        jointPaths.Add(jointPath);
+
+        bvhTransforms.Add(bvhNodeTransform); // bvhTransforms is the contrainer of transforms in the skeleton path
 
         foreach (BVHParser.BVHBone child in bvhNode.children)
         {
-            GetbvhTransformsForAllFramesRecursive(child, jointPath, jointPaths, transforms);
+            Transform childTransform = bvhNodeTransform.Find( child.name);
+
+            GetbvhTransformsForCurrentFrameRecursive(i, child,  childTransform, jointPath, jointPaths, bvhTransforms);
 
         }
 
 
 
-    } //  GetbvhTransformsForAllFramesRecursive( BVHParser.BVHBone bvhNode,  string parentPath, 
+    } //  GetbvhTransformsForCurrentFrameRecursive( int i, BVHParser.BVHBone bvhNode,  string parentPath, 
       //                                         List<string> jointPaths, List<Transform> transforms) 
 
     // first call: this.prefix = getPathBetween(this.bvhRootTransform, this.bvhAnimator.transform, true, true);
@@ -1262,14 +1076,65 @@ public class BVHAnimationLoader : MonoBehaviour
         //this.bvhAnimator.transform =  this.bvhAnimator.gameObject.transform, 
         // where  this.bvhAnimator.gameObjectrefers to the gameObject to which this.bvhAnimator is attached
         // this.bvhAvatarRoot refers to the "Hips' joint of the bvh avatar hierarchy, which is NOT the same as the gameObject to which this.bvhAnimator is attached
-        ParseAvatarRootTransform(this.bvhAvatarRootTransform, this.jointPaths, this.avatarTransforms);
+        // ParseAvatarRootTransform(this.bvhAvatarRootTransform, this.jointPaths, this.avatarTransforms);
         // HumanPose currentHumanPose = new HumanPose(); 
+        //  bvhAvatarRootTransform : set in the inspector
+
+        //this.SetMusclePoseEachFrame(this.bp.bvhRootNode, this.bvhAvatarRootTransform); // true: first
+
         for (int i = 0; i < this.frames; i++)
         {
-            this.SetMusclePoseEachFrame(i, this.bp.bvhRootNode, this.bvhAvatarRootTransform); // true: first
-                                                                                                                                          // ParseAvatarTransformRecursive(child, "", jointPaths, transforms);
-           
-        }
+            // GetbvhTransformsForCurrentFrame(int i, BVHParser.BVHBone rootBvhNode, Transform rootTransform, List<string> jointPaths, List<Transform> bvhTransforms )
+           // this.GetbvhTransformsForCurrentFrame(i, this.bp.bvhRootNode, this.bvhAvatarRootTransform, this.jointPaths, this.avatarTransforms);      
+           this.GetbvhTransformsForCurrentFrame(i, this.bp.bvhRootNode, this.bvhAvatarRootTransform, this.jointPaths, this.avatarTransforms);                                                                                                                            // ParseAvatarTransformRecursive(child, "", jointPaths, transforms);
+           // ParseAvatarTransformRecursive(child, "", jointPaths, transforms);
+
+
+            for (int j = 0; j < this.jointPaths.Count; ++j)
+            {
+                Vector3 position = this.avatarTransforms[j].localPosition;
+                Quaternion rotation = this.avatarTransforms[j].localRotation;
+
+                this.avatarPose[7 * j] = position.x;
+                this.avatarPose[7 * j + 1] = position.y;
+                this.avatarPose[7 * j + 2] = position.z;
+                this.avatarPose[7 * j + 3] = rotation.x;
+                this.avatarPose[7 * j + 4] = rotation.y;
+                this.avatarPose[7 * j + 5] = rotation.z;
+                this.avatarPose[7 * j + 6] = rotation.w;
+            }
+
+           // MJ, temporary:  this.humanPoseHandler.SetInternalAvatarPose(this.avatarPose);  // If the human pose handler was constructed with a skeleton root transform, this method does nothing.
+
+
+            //    // (1) GetHumanPose:	Computes a human pose from the avatar skeleton bound to humanPoseHandler, stores the pose in the human pose handler, and returns the human pose.
+            //    // Converts an avatar pose to a human pose and stores it as the internal human pose inside the human pose handler
+
+            //     (2) this.humanPoseHandler.SetInternalAvatarPose(this.avatarPose);  // If the human pose handler was constructed with a skeleton root transform, this method does nothing.
+
+            //     (3)  HumanPoseHandler.GetInternalHumanPose: Gets the internal human pose stored in the human pose handler
+
+
+            //this.avatarPose.Dispose();
+            //this.humanPoseHandler.Dispose();
+
+            // this.avatar = this.saraAnimator.avatar;
+            // Transform hipTransform = this.avatar.GetBoneTransform(HumanBodyBones.Hips);
+            // humanPoseHandler = new HumanPoseHandler(this.avatar, hips.transform);
+            // humanPose = new HumanPose();
+            // humanPoseHandler.GetHumanPose(ref humanPose);
+
+
+            //MJ temporary, test GenericRecorder
+
+             //public GenericRecorder(Transform rootTransform, List<string> jointPaths, Transform[] recordableTransforms )
+
+              this.genericRecorder = new GenericRecorder(this.jointPaths, this.avatarTransforms);
+              float deltaTime = 1f / this.frameRate;
+              this.genericRecorder.TakeSnapshot( deltaTime);
+
+
+        } // 
 
 
 
@@ -1277,10 +1142,11 @@ public class BVHAnimationLoader : MonoBehaviour
 
 
         //this.getCurves(this.prefix, this.bp.bvhRootNode, this.bvhRootTransform, true); // first = true means that this.bp.bvhRootNode is the root node
-        //  this.bvhRootTransform is the transform of bp.bvhRootNode
+        //  this.bvhAvatarRootTransform is the transform corresponding to bp.bvhRootNode
+
         // Save the humanoid animation curves for each muscle as muscle AnimationClip
-        this.clip = this.humanoidRecorder.GetClip();
-       
+        this.clip = this.humanoidRecorder.GetClip;
+
         //this.getCurves(this.prefix, this.bp.bvhRootNode,true); // true: first
 
         //this.bvhAnimator.transform.position = bvhAnimatorPosition;
@@ -1321,7 +1187,7 @@ public class BVHAnimationLoader : MonoBehaviour
 
         this.clip.name = "speechGesture"; //' the string name of the AnimationClip
 
-        
+
 
         //Use the Legacy Animation using Animation component
         // this.clip.legacy = true; // MJ
@@ -1385,26 +1251,27 @@ public class BVHAnimationLoader : MonoBehaviour
         //  not the name of the animation file
         //this.ChangeClipAtRunTime(this.bvhAnimator, this.clipName, this.clip );
 
-        this.SetClipAtRunTime( this.bvhAnimator, this.clip.name, this.clip);
+        this.SetClipAtRunTime(this.bvhAnimator, this.clip.name, this.clip);
 
         //https://www.telerik.com/blogs/implementing-indexers-in-c#:~:text=To%20declare%20an%20indexer%20for,value%20from%20the%20object%20instance.
 
     } // public void loadAnimation(Animator animator)
 
-    void SetClipAtRunTime(Animator animator, string currentClipName, AnimationClip animClip ){
-    //Animator anim = GetComponent<Animator>(); 
+    void SetClipAtRunTime(Animator animator, string currentClipName, AnimationClip animClip)
+    {
+        //Animator anim = GetComponent<Animator>(); 
 
-    animatorOverrideController =    new AnimatorOverrideController( animator.runtimeAnimatorController);
-    
-    //   public AnimationClip[] animationClips = animator.animatorClips;
-    clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
-    // original clip vs override clip
-    animatorOverrideController.GetOverrides(clipOverrides); // get 
+        animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
 
-     //var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
+        //   public AnimationClip[] animationClips = animator.animatorClips;
+        clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
+        // original clip vs override clip
+        animatorOverrideController.GetOverrides(clipOverrides); // get 
 
-    
-     clipOverrides[currentClipName] =  animClip;
+        //var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
+
+
+        clipOverrides[currentClipName] =  animClip;
 
      AnimationClip animClipToOverride =  clipOverrides[currentClipName];
      Debug.Log( animClipToOverride );
@@ -1544,7 +1411,7 @@ public class BVHAnimationLoader : MonoBehaviour
 //  If the HumanPoseHander was constructed from an avatar and jointPaths, the human pose is not bound to a transform hierarchy.
 
 
-        // Make ready to record the motion of the bvh file as a humanoid muscle clip
+        // Setup for Humanoid Animation: Make ready to record the motion of the bvh file as a humanoid muscle clip
         this.humanoidRecorder = new HumanoidRecorder( this.bvhAnimator);
 
         // Create humanPoseHandler using the root transform of the avatar
@@ -1556,11 +1423,17 @@ public class BVHAnimationLoader : MonoBehaviour
 
        // https://docs.unity3d.com/ScriptReference/HumanPoseHandler-ctor.html:
        // Create the set of joint paths, this.jointPaths, and the corresponding transforms, this.avatarTransforms,  from this.bvhAvatarRoot
-       ParseAvatarRootTransform(this.bvhAvatarRoot, this.jointPaths, this.avatarTransforms);
 
-       // this.humanPoseHandler = new HumanPoseHandler(this.bvhAvatar, this.jointPaths.ToArray());
+       // Parse the avatar skeleton path and set the transfrom "container" for each joint in the path 
+       ParseAvatarRootTransform(this.bvhAvatarRootTransform, this.jointPaths, this.avatarTransforms);
+      
+       this.humanPoseHandler = new HumanPoseHandler(this.bvhAvatar, this.jointPaths.ToArray() );
 
-       // this.avatarPose = new NativeArray<float>(this.jointPaths.Count * 7, Allocator.Persistent);
+       this.avatarPose = new NativeArray<float>(this.jointPaths.Count * 7, Allocator.Persistent);
+
+       // Setup for Generic Animation
+
+      // this.genericRecorder = new GenericRecorder( this.bvhAvatarRootTransform, this.jointPaths, this.avatarTransforms);
 
     //     for (int i = 0; i < this.jointPaths.Count; ++i)
     //     {
@@ -1574,6 +1447,8 @@ public class BVHAnimationLoader : MonoBehaviour
     //         this.avatarPose[7 * i + 5] = rotation.z;
     //         this.avatarPose[7 * i + 6] = rotation.w;
     //     }
+
+ //     (2) this.humanPoseHandler.SetInternalAvatarPose(this.avatarPose);  // If the human pose handler was constructed with a skeleton root transform, this method does nothing.
 
 
     //    // (1) GetHumanPose:	Computes a human pose from the avatar skeleton bound to humanPoseHandler, stores the pose in the human pose handler, and returns the human pose.
@@ -1617,34 +1492,6 @@ public class BVHAnimationLoader : MonoBehaviour
 
         // }
 
-
-          // https://forum.unity.com/threads/mecanim-animationclip-at-runtime.525983/
-
-        //this.setPose(this.prefix, this.bp.bvhRootNode, this.bvhRootTransform, true); // true: first
-        //for (int i = 0; i < this.jointPaths.Count; ++i)
-    //     {
-    //         Vector3 position = this.avatarTransforms[i].localPosition;
-    //         Quaternion rotation = this.avatarTransforms[i].localRotation;
-    //         this.avatarPose[7 * i] = position.x;
-    //         this.avatarPose[7 * i + 1] = position.y;
-    //         this.avatarPose[7 * i + 2] = position.z;
-    //         this.avatarPose[7 * i + 3] = rotation.x;
-    //         this.avatarPose[7 * i + 4] = rotation.y;
-    //         this.avatarPose[7 * i + 5] = rotation.z;
-    //         this.avatarPose[7 * i + 6] = rotation.w;
-    //     }
-
-
-    //    // GetHumanPose:	Computes a human pose from the avatar skeleton bound to humanPoseHandler, stores the pose in the human pose handler, and returns the human pose.
-    //    // Converts an avatar pose to a human pose and stores it as the internal human pose inside the human pose handler
-
-    //    // HumanPoseHandler.GetInternalHumanPose: Gets the internal human pose stored in the human pose handler.
-    //     this.humanPoseHandler.SetInternalAvatarPose(this.avatarPose);
-
-    //     HumanPose humanPose = new HumanPose();
-    //     this.humanPoseHandler.GetInternalHumanPose( ref humanPose);
-
-        // Read muscles from humanPose and create muscle animation clip
 
     }
 } // public class BVHAnimationLoader : MonoBehaviour

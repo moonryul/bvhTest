@@ -37,10 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\AnimationConverter\Scripts\Editor\AnimationConverterWindow.cs" />
-     <Compile Include="Assets\VSCode\Plugins\Editor\VSCode.cs" />
      <Compile Include="Assets\AnimationConverter\Scripts\Editor\AnimationConverterLogWindow.cs" />
-     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\MayaExporter\Editor\MayaAnimationRecorderEditor.cs" />
-     <Compile Include="Assets\Unity-Runtime-Animation-Recorder\Unity Runtime Recorder\Scripts\UnityAnimSaver\Editor\UnityAnimationRecorderEditor.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.2f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
