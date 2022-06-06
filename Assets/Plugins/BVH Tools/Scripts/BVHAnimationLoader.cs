@@ -152,7 +152,7 @@ public class BVHAnimationLoader : MonoBehaviour
 
     void ParseAvatarRootTransform(Transform rootTransform, List<string> jointPaths, List<Transform> avatarTransforms)
     {
-        jointPaths.Add(""); // root tranform path is the empty string
+        jointPaths.Add(""); // The name of the root tranform path is the empty string
         avatarTransforms.Add(rootTransform);
 
         foreach (Transform child in rootTransform) // rootTransform class implements IEnuerable interface
@@ -222,7 +222,7 @@ public class BVHAnimationLoader : MonoBehaviour
 
 
 
- void GetbvhTransformsForCurrentFrame(int i, BVHParser.BVHBone rootBvhNode, Transform rootTransform, List<string> jointPaths, List<Transform> bvhTransforms )
+ void GetbvhTransformsForCurrentFrame(int i, BVHParser.BVHBone rootBvhNode, Transform avatarRootTransform, List<string> jointPaths, List<Transform> bvhTransforms )
     {
        // jointPaths.Add(""); // root tranform path is the empty string
 
@@ -303,7 +303,7 @@ public class BVHAnimationLoader : MonoBehaviour
             //     The value of the curve at keyframe.
             // public float value { get; set; }
 
-            this.values[channel] = rootBvhNode.channels_bvhBones[channel].values; // the animation key frames (joint angles for frames)
+            this.values[channel] = rootBvhNode.channels_bvhBones[channel].values; // the animation key frames of the bvh root node (Hips)
             // Note that  this.keyframes[0][i].value = -this.values[0][i];
 
         } // for (int channel = 0; channel < 6; channel++)
@@ -362,8 +362,17 @@ public class BVHAnimationLoader : MonoBehaviour
         // vector * vector could be interpreted as dot product or a cross product or the "component wise" product, 
         //so I totally agree with the decision of not implementing a custom * operator to force the developers to call the appropriate method.
         // And it happens that Vector3.Scale is already doing this.
-        Vector3 bvhPositionLocal = rootTransform.transform.parent.InverseTransformPoint(new Vector3(keyframes[0][i].value, keyframes[1][i].value, keyframes[2][i].value) + bvhAnimator.transform.position + offset);
-        bvhPositionLocal =  Vector3.Scale(bvhPositionLocal, this.bvhAnimator.transform.localScale);
+
+// ROOT Hips
+//{
+//   OFFSET -14.6414 90.2777 -84.916
+//   CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation
+        Vector3 rootTranslation = new Vector3(keyframes[0][i].value, keyframes[1][i].value, keyframes[2][i].value);
+
+        Vector3 globalRootPos = bvhAnimator.gameObject.transform.position + offset + rootTranslation;
+        Vector3 bvhPositionLocal = avatarRootTransform.transform.parent.InverseTransformPoint(  globalRootPos  );
+
+        bvhPositionLocal =  Vector3.Scale(bvhPositionLocal, this.bvhAnimator.gameObject.transform.localScale);
 
      
         //rootTransform.transform.localPosition = bvhPositionLocal;
@@ -443,8 +452,8 @@ public class BVHAnimationLoader : MonoBehaviour
       // Store the new root transform to the current rootTransform, which is used as a temporary variable to store the transform at the current frame i;
       // Changing the rootTransform is OK because when the generated animation clip will be used to play the virtual character.
       // The original pose of the virtual character will be set to the first frame of the animation clip, when the clip is played.
-       rootTransform.localPosition =  bvhPositionLocal;
-       rootTransform.localRotation = rot2;
+       avatarRootTransform.localPosition =  bvhPositionLocal;
+       avatarRootTransform.localRotation = rot2;
 
 
         // public Quaternion localRotation { get; set; }:  The rotation of the transform relative to the transform rotation of the parent.
@@ -479,13 +488,13 @@ public class BVHAnimationLoader : MonoBehaviour
         // } //  if (rotX && rotY && rotZ) // the rotatation value of the root joint
         jointPaths.Add(""); // root tranform path is the empty string
 
-        bvhTransforms.Add( rootTransform); // bvhTransforms is the contrainer of transforms in the skeleton path
+        bvhTransforms.Add( avatarRootTransform); // bvhTransforms is the contrainer of transforms in the skeleton path
         // restore the original root bvh node transform
        // rootTransform.transform.rotation = oldRotation;
         // Get the frame data for each child of the root node, recursively.
         foreach (BVHParser.BVHBone child in rootBvhNode.children)
         {
-            Transform childTransform = rootTransform.Find(child.name);
+            Transform childTransform = avatarRootTransform.Find(child.name);
 
             GetbvhTransformsForCurrentFrameRecursive(i, child, childTransform, "", jointPaths, bvhTransforms); // "" refers to the root node of the skeleton path
            // GetbvhTransformsForCurrentFrameRecursive(i, child, "", jointPaths, bvhTrans); // "" refers to the root node of the skeleton path
@@ -867,11 +876,23 @@ public class BVHAnimationLoader : MonoBehaviour
         this.parse(File.ReadAllText(this.filename));
     }
 
+
+    public void loadAnimation()
+    {
+      this.Start();
+    }
+
     public void playAnimation()
     {
 
-        this.bvhAnimator.Play("BVHBehaviour");  // MJ: Animator.Play(string stateName); play a state stateName; Base Layer.Bounce, e.g.
-                                              // "Entry" => Bounce        
+        this.bvhAnimator.Play("bvhPlay");  // MJ: Animator.Play(string stateName); play a state stateName; Base Layer.Bounce, e.g.
+                                              // "Entry" => Bounce    
+
+        this.bvhAnimator.Update(0.0f); // Update(Time.deltaTime): Animation control: https://chowdera.com/2021/08/20210823014846793k.html
+                               //=>  //  Record each frame
+                               //        animator.Update( 1.0f / frameRate);
+                               //=> You can pass the elapsed time by which it updates, and passing zero works as expected - **it updates to the first frame of the first animation state**
+                               // The game logic vs animation logic: https://docs.unity3d.com/Manual/ExecutionOrder.html    
 
         // if (this.bp == null)
         // {
@@ -1071,8 +1092,8 @@ public class BVHAnimationLoader : MonoBehaviour
             this.clip.name = "speechGesture"; //' the string name of the AnimationClip
 
             this.clip.legacy = true; // MJ
-            this.clip.wrapMode = WrapMode.Loop;
-            this.SetClipAtRunTime(this.bvhAnimator, this.clip.name, this.clip);
+            //this.clip.wrapMode = WrapMode.Loop;
+           // this.SetClipAtRunTime(this.bvhAnimator, this.clip.name, this.clip);
         }
         else {
             throw new InvalidOperationException("Invalid Anim Type");

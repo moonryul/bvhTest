@@ -16,11 +16,11 @@ public class GenericRecorder
     // Implicit Implementation of Interface Methods: https://www.tutorialsteacher.com/csharp/csharp-interface#:~:text=In%20C%23%2C%20an%20interface%20can,functionalities%20for%20the%20file%20operations.
 
 
-   // public GenericRecorder(Transform rootTransform, List<string> jointPaths, Transform[] recordableTransforms )
-   public GenericRecorder( List<string> jointPaths, List<Transform> recordableTransforms )
+    // public GenericRecorder(Transform rootTransform, List<string> jointPaths, Transform[] recordableTransforms )
+    public GenericRecorder(List<string> jointPaths, List<Transform> recordableTransforms)
     {
-       // foreach (Transform transform in recordableTransform)
-       for (int i=0; i < jointPaths.Count; i++)
+        // foreach (Transform transform in recordableTransform)
+        for (int i = 0; i < jointPaths.Count; i++)
         {
             //string path = AnimationUtility.CalculateTransformPath(transform, rootTransform);
             string path = jointPaths[i];
@@ -43,23 +43,23 @@ public class GenericRecorder
 
     public AnimationClip GetClip()
     {
-      
-            AnimationClip clip = new AnimationClip(); // an animation clip for the character, the whole subpaths of the character
 
-            foreach (ObjectAnimation animation in this.objectAnimations) // animation for each joint, which is animation.Path
+        AnimationClip clip = new AnimationClip(); // an animation clip for the character, the whole subpaths of the character
+
+        foreach (ObjectAnimation animation in this.objectAnimations) // animation for each joint, which is animation.Path
+        {
+            foreach (CurveContainer container in animation.CurveContainers) // container for each DOF in animation of the current joint
+
             {
-                foreach (CurveContainer container in animation.CurveContainers) // container for each DOF in animation of the current joint
-
-                {
-                    if (container.Curve.keys.Length > 1)
-                        clip.SetCurve(animation.Path, typeof(Transform), container.Property, container.Curve);
-                }
+                if (container.Curve.keys.Length > 1)
+                    clip.SetCurve(animation.Path, typeof(Transform), container.Property, container.Curve);
             }
+        }
 
-            return clip;
-     
-    }
-}
+        return clip;
+
+    } //   public AnimationClip GetClip()
+} // public class GenericRecorder
 
 class ObjectAnimation
 {
@@ -74,7 +74,12 @@ class ObjectAnimation
         this.Path = hierarchyPath;
         this.transform = recordableTransform;
 
-        this.CurveContainers = new List<CurveContainer>
+        // check if this.Path is the root node or not
+        if (this.Path == "")
+        {
+            // the root node
+
+            this.CurveContainers = new List<CurveContainer>
             {
                 new CurveContainer("localPosition.x"),
                 new CurveContainer("localPosition.y"),
@@ -85,20 +90,46 @@ class ObjectAnimation
                 new CurveContainer("localRotation.z"),
                 new CurveContainer("localRotation.w")
             };
-    }
+        }
+        else
+        {
+            this.CurveContainers = new List<CurveContainer>
+            {
+
+                new CurveContainer("localRotation.x"),
+                new CurveContainer("localRotation.y"),
+                new CurveContainer("localRotation.z"),
+                new CurveContainer("localRotation.w")
+            };
+        } //  if (this.Path == "")
+    } //  public ObjectAnimation(string hierarchyPath, Transform recordableTransform)
 
     public void TakeSnapshot(float time)
     {
-        this.CurveContainers[0].AddValue(time, this.transform.localPosition.x); // this.CurveContainers[0].Property = "localPosition.x"
-        this.CurveContainers[1].AddValue(time, this.transform.localPosition.y); // "localPosition.y"
-        this.CurveContainers[2].AddValue(time, this.transform.localPosition.z);
 
-        this.CurveContainers[3].AddValue(time, this.transform.localRotation.x);
-        this.CurveContainers[4].AddValue(time, this.transform.localRotation.y);
-        this.CurveContainers[5].AddValue(time, this.transform.localRotation.z);
-        this.CurveContainers[6].AddValue(time, this.transform.localRotation.w); // "localRotation.w"
-    }
-}
+        if (this.Path == "")
+        {
+
+            this.CurveContainers[0].AddValue(time, this.transform.localPosition.x); // this.CurveContainers[0].Property = "localPosition.x"
+            this.CurveContainers[1].AddValue(time, this.transform.localPosition.y); // "localPosition.y"
+            this.CurveContainers[2].AddValue(time, this.transform.localPosition.z);
+
+            this.CurveContainers[3].AddValue(time, this.transform.localRotation.x);
+            this.CurveContainers[4].AddValue(time, this.transform.localRotation.y);
+            this.CurveContainers[5].AddValue(time, this.transform.localRotation.z);
+            this.CurveContainers[6].AddValue(time, this.transform.localRotation.w); // "localRotation.w"
+        }
+
+        else
+        {
+            this.CurveContainers[0].AddValue(time, this.transform.localRotation.x);
+            this.CurveContainers[1].AddValue(time, this.transform.localRotation.y);
+            this.CurveContainers[2].AddValue(time, this.transform.localRotation.z);
+            this.CurveContainers[3].AddValue(time, this.transform.localRotation.w); // "localRotation.w" 
+        }
+    }//public void TakeSnapshot(float time)
+
+} // class ObjectAnimation
 
 class CurveContainer
 {
@@ -122,4 +153,5 @@ class CurveContainer
             this.lastValue = value;
         }
     }
-}
+} //    class CurveContainer
+
