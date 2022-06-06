@@ -472,6 +472,7 @@ namespace Winterdust
 		public GameObject makeSkeleton(int frame = -1, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool animate = false)
 		{
 			GameObject gameObject = new GameObject(skeletonGOName);
+			
 			for (int i = 0; i < this.boneCount; i++)
 			{
 				if (this.allBones[i].parentBoneIndex == -1)
@@ -518,6 +519,7 @@ namespace Winterdust
 		public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
 		{
 			GameObject gameObject = this.makeSkeleton(frame, includeBoneEnds, skeletonGOName, animate);
+
 			// => 	GameObject gameObject = new GameObject(skeletonGOName);
 			Color color;
 			ColorUtility.TryParseHtmlString("#" + colorHex.Replace("#", "").Replace("0x", ""), out color);
@@ -532,6 +534,7 @@ namespace Winterdust
 				Material material = new Material(Shader.Find("Legacy Shaders/Diffuse"));
 				material.color = color;
 				Transform[] componentsInChildren = gameObject.GetComponentsInChildren<Transform>();
+
 				for (int i = 0; i < componentsInChildren.Length; i++)
 				{
 					if (componentsInChildren[i] != gameObject.transform)

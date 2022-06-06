@@ -186,10 +186,10 @@ public class HumanoidRecorder
         this.rootCurves[property].AddKey(key);
     }
 
-    public AnimationClip GetClip // a method of  Interface IRecordable
+    public AnimationClip GetClip() // a method of  Interface IRecordable
     {
-        get
-        {
+      
+        
             AnimationClip clip = new AnimationClip();
 
             foreach (KeyValuePair<int, AnimationCurve> data in this.muscleCurves)
@@ -260,7 +260,7 @@ public class HumanoidRecorder
 
 
             return clip;
-        }
+        
     } //  public AnimationClip GetClip // a method of  Interface IRecordable
 
     //https://gamedev.stackexchange.com/questions/183186/animation-via-animatorcontroller-created-in-script-does-not-play-in-unity

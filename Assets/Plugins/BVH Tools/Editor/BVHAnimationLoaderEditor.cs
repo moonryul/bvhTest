@@ -15,21 +15,21 @@ public class BVHAnimationLoaderEditor : Editor {
         //    public UnityEngine.Object target { get; set; }
         //
 
-        if (GUILayout.Button("Load animation")) {
-            bvhLoader.parseFile();
-            bvhLoader.loadAnimation(); 
-            Debug.Log("Loading animation done.");
-        }
+        // if (GUILayout.Button("Load animation")) {
+        //     bvhLoader.parseFile();
+        //     bvhLoader.loadAnimation(); 
+        //     Debug.Log("Loading animation done.");
+        // }
 
-        if (GUILayout.Button("Play animation")) {
-            bvhLoader.playAnimation();
-            Debug.Log("Playing animation.");
-        }
+        // if (GUILayout.Button("Play animation")) {
+        //     bvhLoader.playAnimation();
+        //     Debug.Log("Playing animation.");
+        // }
 
-        if (GUILayout.Button("Stop animation")) {
-            Debug.Log("Stopping animation.");
-            bvhLoader.stopAnimation();
-        }
+        // if (GUILayout.Button("Stop animation")) {
+        //     Debug.Log("Stopping animation.");
+        //     bvhLoader.stopAnimation();
+        // }
 
         
     }

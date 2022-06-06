@@ -41,10 +41,9 @@ public class GenericRecorder
         }
     }
 
-    public AnimationClip GetClip
+    public AnimationClip GetClip()
     {
-        get
-        {
+      
             AnimationClip clip = new AnimationClip(); // an animation clip for the character, the whole subpaths of the character
 
             foreach (ObjectAnimation animation in this.objectAnimations) // animation for each joint, which is animation.Path
@@ -58,7 +57,7 @@ public class GenericRecorder
             }
 
             return clip;
-        }
+     
     }
 }
 
