@@ -409,7 +409,7 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 98a1ccbdc22ae5544b21838a0ac749ad, type: 2}
     - target: {fileID: 5866666021909216657, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
       propertyPath: m_ApplyRootMotion
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
@@ -616,7 +616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ee2a62eb57b88147a40fefce0dc64eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animType: 1
+  animType: 0
   bvhAvatar: {fileID: 9000000, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
   bvhAvatarRootTransform: {fileID: 696265403}
   bvhAnimator: {fileID: 696265402}
@@ -627,6 +627,7 @@ MonoBehaviour:
   frameRate: 19.999998
   clipName: 
   clip: {fileID: 0}
+  animation: {fileID: 0}
 --- !u!4 &1229214352
 Transform:
   m_ObjectHideFlags: 0
@@ -656,8 +657,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1429637037}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42780058685cadc4d9e7c9e55edcef3b, type: 3}
+  m_Script: {fileID: 11500000, guid: 255ea6611deed9445a6a8ea8d1e434a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cosScale: 0.05
-  color: {r: 1, g: 0, b: 0, a: 1}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  xray: 0
+  alsoDrawLinesFromOrigin: 1

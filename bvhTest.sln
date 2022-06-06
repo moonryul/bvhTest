@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor-firs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{abe620db-2506-af9f-702d-cd84af02e799}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "animation-retargeting", "animation-retargeting.csproj", "{a2634dee-fe89-4b15-9824-daa608da7bd9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,8 +22,6 @@ Global
 		{620c33e5-83b8-cfcb-309b-b1489fc548dc}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{abe620db-2506-af9f-702d-cd84af02e799}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{abe620db-2506-af9f-702d-cd84af02e799}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{a2634dee-fe89-4b15-9824-daa608da7bd9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{a2634dee-fe89-4b15-9824-daa608da7bd9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
