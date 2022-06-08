@@ -72,7 +72,7 @@ public class HumanoidRecorder
         HumanBone[] humanBones = avatar.humanDescription.human;
 
         //foreach (HumanBodyBones unityBoneType in humanBodyBones) // unityBoneType may be 55, Lastbone, which is not a bone.
-        for (int i=0; i < humanBones.Length; i++) // < humanBones.Length = 56
+        for (int i=0; i < humanBones.Length; i++) // < humanBones.Length = 56; bvh skelenton bones = 57, which is 2 more than Humanbodybones.
         {
             for (int dofIndex = 0; dofIndex < 3; dofIndex++)
             {
@@ -173,7 +173,7 @@ public class HumanoidRecorder
                                     // //
         }
 
-        Vector3 rootPosition = this.humanPose.bodyPosition - rootOffset;
+        Vector3 rootPosition = this.humanPose.bodyPosition - this.rootOffset; // this.rootOffset = animator.transform.position;
 
         this.AddRootKey("RootT.x", rootPosition.x);
         this.AddRootKey("RootT.y", rootPosition.y);

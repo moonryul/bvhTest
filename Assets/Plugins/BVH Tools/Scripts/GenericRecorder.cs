@@ -10,6 +10,7 @@ using System.Collections.Generic;
 public class GenericRecorder
 {
     float time = 0.0f;
+    int jointPathsCount;
 
     List<ObjectAnimation> objectAnimations = new List<ObjectAnimation>();
 
@@ -17,27 +18,29 @@ public class GenericRecorder
 
 
     // public GenericRecorder(Transform rootTransform, List<string> jointPaths, Transform[] recordableTransforms )
-    public GenericRecorder(List<string> jointPaths, List<Transform> recordableTransforms)
+   // public GenericRecorder(List<string> jointPaths, List<Transform> recordableTransforms)
+
+    public GenericRecorder(List<string> jointPaths)
     {
         // foreach (Transform transform in recordableTransform)
-        for (int i = 0; i < jointPaths.Count; i++)
+        this.jointPathsCount = jointPaths.Count;
+        for (int i = 0; i < this.jointPathsCount; i++)
         {
             //string path = AnimationUtility.CalculateTransformPath(transform, rootTransform);
-            string path = jointPaths[i];
+            string path = jointPaths[i];         
 
-            Transform transform = recordableTransforms[i];
-
-            this.objectAnimations.Add(new ObjectAnimation(path, transform));
+            this.objectAnimations.Add(new ObjectAnimation(path));
         }
     }
 
-    public void TakeSnapshot(float deltaTime) // defined in IRecordable; TakeSnapShots for all objects in the character
+    public void TakeSnapshot(float deltaTime, List<Transform> bvhTransforms) // defined in IRecordable; TakeSnapShots for all objects in the character
     {
         this.time += deltaTime;
 
-        foreach (ObjectAnimation objAnimation in this.objectAnimations)
+        for (int i = 0; i < this.jointPathsCount; i++)
+       // foreach (ObjectAnimation objAnimation in this.objectAnimations)
         {
-            objAnimation.TakeSnapshot(this.time);
+            this.objectAnimations[i].TakeSnapshot(this.time, bvhTransforms[i]);
         }
     }
 
@@ -46,13 +49,13 @@ public class GenericRecorder
 
         AnimationClip clip = new AnimationClip(); // an animation clip for the character, the whole subpaths of the character
 
-        foreach (ObjectAnimation animation in this.objectAnimations) // animation for each joint, which is animation.Path
+        foreach (ObjectAnimation objAnimation in this.objectAnimations) // animation for each joint, which is animation.Path
         {
-            foreach (CurveContainer container in animation.CurveContainers) // container for each DOF in animation of the current joint
+            foreach (CurveContainer container in objAnimation.CurveContainers) // container for each DOF in animation of the current joint
 
             {
                 if (container.Curve.keys.Length > 1)
-                    clip.SetCurve(animation.Path, typeof(Transform), container.Property, container.Curve);
+                    clip.SetCurve( objAnimation.Path, typeof(Transform), container.Property, container.Curve);
             }
         }
 
@@ -63,16 +66,18 @@ public class GenericRecorder
 
 class ObjectAnimation
 {
-    Transform transform;
+   // Transform transform;
 
     public List<CurveContainer> CurveContainers { get; private set; }
 
     public string Path { get; private set; }
 
-    public ObjectAnimation(string hierarchyPath, Transform recordableTransform)
+   // public ObjectAnimation(string hierarchyPath, Transform recordableTransform)
+
+     public ObjectAnimation(string hierarchyPath)
     {
         this.Path = hierarchyPath;
-        this.transform = recordableTransform;
+        //this.transform = recordableTransform; // reference type
 
         // check if this.Path is the root node or not
         if (this.Path == "")
@@ -104,28 +109,28 @@ class ObjectAnimation
         } //  if (this.Path == "")
     } //  public ObjectAnimation(string hierarchyPath, Transform recordableTransform)
 
-    public void TakeSnapshot(float time)
+    public void TakeSnapshot(float time, Transform transform)
     {
 
         if (this.Path == "")
         {
 
-            this.CurveContainers[0].AddValue(time, this.transform.localPosition.x); // this.CurveContainers[0].Property = "localPosition.x"
-            this.CurveContainers[1].AddValue(time, this.transform.localPosition.y); // "localPosition.y"
-            this.CurveContainers[2].AddValue(time, this.transform.localPosition.z);
+            this.CurveContainers[0].AddValue(time, transform.localPosition.x); // this.CurveContainers[0].Property = "localPosition.x"
+            this.CurveContainers[1].AddValue(time, transform.localPosition.y); // "localPosition.y"
+            this.CurveContainers[2].AddValue(time, transform.localPosition.z);
 
-            this.CurveContainers[3].AddValue(time, this.transform.localRotation.x);
-            this.CurveContainers[4].AddValue(time, this.transform.localRotation.y);
-            this.CurveContainers[5].AddValue(time, this.transform.localRotation.z);
-            this.CurveContainers[6].AddValue(time, this.transform.localRotation.w); // "localRotation.w"
+            this.CurveContainers[3].AddValue(time, transform.localRotation.x);
+            this.CurveContainers[4].AddValue(time, transform.localRotation.y);
+            this.CurveContainers[5].AddValue(time, transform.localRotation.z);
+            this.CurveContainers[6].AddValue(time, transform.localRotation.w); // "localRotation.w"
         }
 
         else
         {
-            this.CurveContainers[0].AddValue(time, this.transform.localRotation.x);
-            this.CurveContainers[1].AddValue(time, this.transform.localRotation.y);
-            this.CurveContainers[2].AddValue(time, this.transform.localRotation.z);
-            this.CurveContainers[3].AddValue(time, this.transform.localRotation.w); // "localRotation.w" 
+            this.CurveContainers[0].AddValue(time, transform.localRotation.x);
+            this.CurveContainers[1].AddValue(time, transform.localRotation.y);
+            this.CurveContainers[2].AddValue(time, transform.localRotation.z);
+            this.CurveContainers[3].AddValue(time, transform.localRotation.w); // "localRotation.w" 
         }
     }//public void TakeSnapshot(float time)
 

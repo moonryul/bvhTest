@@ -399,6 +399,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Skeleton
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
+      propertyPath: m_TagString
+      value: Skeleton
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
       propertyPath: m_Avatar
       value: 
@@ -413,16 +417,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
---- !u!95 &696265402 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
-  m_PrefabInstance: {fileID: 696265401}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &696265403 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 572617754110402786, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
-  m_PrefabInstance: {fileID: 696265401}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &860621512
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -618,8 +612,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animType: 0
   bvhAvatar: {fileID: 9000000, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
-  bvhAvatarRootTransform: {fileID: 696265403}
-  bvhAnimator: {fileID: 696265402}
+  bvhAvatarRootTransform: {fileID: 1429637040}
+  bvhAnimator: {fileID: 0}
   saraAnimator: {fileID: 927220600}
   filename: Assets/bvhFile.bvh
   blender: 0
@@ -663,3 +657,8 @@ MonoBehaviour:
   color: {r: 1, g: 1, b: 1, a: 1}
   xray: 0
   alsoDrawLinesFromOrigin: 1
+--- !u!4 &1429637040 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1c0e51340cc37f844ad58f0f47577209, type: 3}
+  m_PrefabInstance: {fileID: 696265401}
+  m_PrefabAsset: {fileID: 0}

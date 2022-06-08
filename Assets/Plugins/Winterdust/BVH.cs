@@ -480,11 +480,14 @@ namespace Winterdust
 					this.allBones[i].makeGO(ref frame, ref includeBoneEnds, ref this.allBones, i).transform.parent = gameObject.transform;
 				}
 			}
-			if (animate)
+			if (animate) //=> create an animation clip and add it to Animation component
 			{
 				BVH.animateSkeleton(gameObject, this.makeAnimationClip(0, -1, false, "", WrapMode.Loop, true, false, false), 1f);
+				// 	public AnimationClip makeAnimationClip(int fromFrame = 0, int toFrame = -1, bool addExtraLoopKeyframe = false, string pathToSkeletonGO = "",
+				//                                  WrapMode wrapMode = WrapMode.Loop, bool legacy = true, bool keyRestPositions = false, bool keyEndPositions = false)
+
 				//=> 	public static Animation animateSkeleton(GameObject skeletonGO, AnimationClip clip, float blendTimeSec = 1f)
-				//=>    gameObject( skeletonGO ).AddComponent<Animation>();
+				//=>    gameObject( ==skeletonGO ).AddComponent<Animation>();
 			}
 			return gameObject;
 		}
@@ -518,11 +521,15 @@ namespace Winterdust
 		// Token: 0x0600000F RID: 15 RVA: 0x00003138 File Offset: 0x00001338
 		public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
 		{
-			GameObject gameObject = this.makeSkeleton(frame, includeBoneEnds, skeletonGOName, animate);
+			GameObject gameObject = this.makeSkeleton(frame, includeBoneEnds, skeletonGOName, animate); 
+			// By default, create a rest skeleton , create an animation clip and add it to the Animation component
+			// The animation clips simply contain the animation curves for the bones (or anything else you want to animate). 
+			// The actual skinning information is stored in the mesh itself, and can be programitically assigned using Mesh.boneWeights and Mesh.bindposes.
 
 			// => 	GameObject gameObject = new GameObject(skeletonGOName);
 			Color color;
 			ColorUtility.TryParseHtmlString("#" + colorHex.Replace("#", "").Replace("0x", ""), out color);
+
 			if (jointSize != 0f)
 			{
 				bool flag = false;
@@ -573,7 +580,7 @@ namespace Winterdust
 			bvhdebugLines.xray = xray;
 			bvhdebugLines.alsoDrawLinesFromOrigin = originLine;
 			return gameObject;
-		}
+		} // 	public GameObject makeDebugSkeleto
 
 		/// <summary>Makes several debug skeletons that together visualize the whole animation at once (or a part of the animation if you change fromFrame/toFrame). The stick figures shift from green to yellow to red, where green is the beginning and red is the end. Xray will make the skeletons visible through walls.</summary>
 		// Token: 0x06000010 RID: 16 RVA: 0x0000339C File Offset: 0x0000159C
@@ -612,7 +619,7 @@ namespace Winterdust
 				}
 			}
 			return gameObject;
-		}
+		}// GameObject makeDebugSkeleton
 
 		// Token: 0x06000011 RID: 17 RVA: 0x00002156 File Offset: 0x00000356
 		private void fixFromFrameAndToFrame(ref int fromFrame, ref int toFrame)
@@ -725,6 +732,7 @@ namespace Winterdust
 				toFrame = num;
 			}
 			BVH.PreparedAnimationClip preparedAnimationClip = new BVH.PreparedAnimationClip();
+
 			preparedAnimationClip.name = this.alias;
 			preparedAnimationClip.legacy = legacy;
 			preparedAnimationClip.wrapMode = wrapMode;
@@ -859,7 +867,7 @@ namespace Winterdust
 				progressTracker.progress = 1.0;
 			}
 			return preparedAnimationClip;
-		}
+		} // public BVH.PreparedAnimationClip prepareAnimationClip
 
 		// Token: 0x06000016 RID: 22 RVA: 0x00003EE4 File Offset: 0x000020E4
 		private AnimationCurve prepCurve(ref Keyframe[] keyframes)
@@ -884,13 +892,15 @@ namespace Winterdust
 		public static Animation animateSkeleton(GameObject skeletonGO, AnimationClip clip, float blendTimeSec = 1f)
 		{
 			Animation animation = skeletonGO.GetComponent<Animation>();
+
 			if (animation == null)
 			{
 				animation = skeletonGO.AddComponent<Animation>();
 			}
 			if (animation.clip == null)
 			{
-				animation.clip = clip;
+				animation.clip = clip; // set the default animation to play
+				//   Adds a clip to the animation with name newName.
 				animation.AddClip(animation.clip, animation.clip.name);
 				animation.Play();
 			}
@@ -907,9 +917,9 @@ namespace Winterdust
 				animation.Blend("BBB", 1f, blendTimeSec);
 			}
 			else
-			{
+			{  // animation has 3 or more clips
 				bool flag = true;
-				foreach (object obj in animation)
+				foreach (object obj in animation) //   public sealed class Animation : Behaviour, IEnumerable
 				{
 					AnimationState animationState = (AnimationState)obj;
 					if (animationState.clip.name != "")
@@ -936,7 +946,7 @@ namespace Winterdust
 				}
 			}
 			return animation;
-		}
+		} // public static Animation animateSkeleton
 
 		/// <summary>Makes it so that the first root bone's rest position and animation origin is at [0,?,0] of the skeleton, where ? is the original value of its position on the up axis (Y). I recommend calling this AFTER any rotation methods, including align(), since the rest pose usually isn't repositioned by rotateAnimationBy() unless alsoAffectRestPose is true. (Returns this BVH instead of void, for chaining.) Note: This is a shortcut for myBvh.setAnimationOrigin(Vector3.zero, true, false, true, false);</summary>
 		// Token: 0x06000019 RID: 25 RVA: 0x0000217F File Offset: 0x0000037F
@@ -982,7 +992,7 @@ namespace Winterdust
 				this.repositionFirstRootBone(this.allBones[0].localFramePositions[i] - vector, i, keepOldX, keepOldY, keepOldX);
 			}
 			return this;
-		}
+		} // public BVH setAnimationOrigin
 
 		// Token: 0x0600001D RID: 29 RVA: 0x0000420C File Offset: 0x0000240C
 		private void repositionFirstRootBone(Vector3 localPosition, int frame, bool keepOldX, bool keepOldY, bool keepOldZ)
@@ -1800,6 +1810,7 @@ namespace Winterdust
 					allBones[array[i]].makeGO(ref frame, ref includeBoneEnds, ref allBones, array[i]).transform.parent = gameObject.transform;
 				}
 				this.setLocalPosRot(gameObject.transform, ref frame);
+
 				if (includeBoneEnds && this.endPosition.sqrMagnitude != 0f)
 				{
 					GameObject gameObject2 = new GameObject(this.getName() + "End");
@@ -1875,7 +1886,7 @@ namespace Winterdust
 			// Token: 0x06000040 RID: 64 RVA: 0x00005A24 File Offset: 0x00003C24
 			public void setLocalPosRot(Transform boneTransform, ref int frame)
 			{
-				if (frame == -1)
+				if (frame == -1) // the test pose
 				{
 					boneTransform.localPosition = this.localRestPosition;
 					boneTransform.localRotation = Quaternion.identity;
@@ -1912,7 +1923,7 @@ namespace Winterdust
 			/// <summary>Representation of the bone's channels in the .bvh file (the order of its frame data). Created and read using bitwise operations. See summary for defineChannels() for more info. Example: 786571 translates to "Zrotation Xrotation Yrotation" and 1644460 to "Xposition Yposition Zposition Zrotation Xrotation Yrotation" (any order is supported but these two are the most common ones and .bvh files using them gets a minor speed boost during import).</summary>
 			// Token: 0x04000011 RID: 17
 			public int channels;
-		}
+		} // public struct BVHBone
 
 		/// <summary>Create an instance of this class and give it to the BVH constructor or myBvh.prepareAnimationClip() if you want to be able to check the progress from a different thread.</summary>
 		// Token: 0x02000004 RID: 4
@@ -1955,9 +1966,10 @@ namespace Winterdust
 			/// <summary>The BVH class writes to this double while working. Is always reset to 0 when work starts. When this is 1.0 the work has finished.</summary>
 			// Token: 0x04000012 RID: 18
 			public double progress;
-		}
+		} // ProgressTracker
 
-		/// <summary>An AnimationClip, just not in existence yet. This can be created by any thread and then finished by Unity's main thread via the make() call. You can call make() several times to make several AnimationClips from the same mould, feel free to change stuff in-between. Note: This is used by both myBvh.prepareAnimationClip() and myBvh.makeAnimationClip().</summary>
+		/// <summary>An AnimationClip, just not in existence yet. This can be created by any thread and then finished by Unity's main thread via the make() call. You can call make() several times to make several AnimationClips from the same mould, feel free to change stuff in-between.
+		// Note: This is used by both myBvh.prepareAnimationClip() and myBvh.makeAnimationClip().</summary>
 		// Token: 0x02000005 RID: 5
 		public class PreparedAnimationClip
 		{
@@ -1970,6 +1982,7 @@ namespace Winterdust
 				animationClip.legacy = this.legacy;
 				animationClip.wrapMode = this.wrapMode;
 				animationClip.frameRate = this.frameRate;
+
 				for (int i = 0; i < this.data.Length; i++)
 				{
 					if (this.data[i].posX != null)
@@ -1988,7 +2001,7 @@ namespace Winterdust
 				}
 				animationClip.EnsureQuaternionContinuity();
 				return animationClip;
-			}
+			} // public AnimationClip make()
 
 			// Token: 0x04000013 RID: 19
 			private static readonly Type typeOfTransform = typeof(Transform);
@@ -2048,7 +2061,7 @@ namespace Winterdust
 				/// <summary>Unless rotX is null this curve will animate the localRotation.w property of the GameObject's transform (part of Quaternion).</summary>
 				// Token: 0x04000020 RID: 32
 				public AnimationCurve rotW;
-			}
-		}
-	}
-}
+			} // 	public struct CurveBlock
+		} // PreparedAnimationClip
+	} // BVH class
+} // Winterdust
