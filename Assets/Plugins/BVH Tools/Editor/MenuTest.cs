@@ -7,7 +7,15 @@ using UnityEditor;
 
 public class MenuTest: MonoBehaviour
 {
-    // Creates a new menu item 'Examples > Create Prefab' in the main menu.
+    // Creates a new menu item 'My Menu > Create Prefab' in the main menu.
+    //https://forum.unity.com/threads/save-mesh-as-prefab-with-mesh-renderer-material.619465/
+    // https://docs.unity3d.com/ScriptReference/PrefabUtility.html
+    //https://forum.unity.com/threads/material-is-lost-when-saving-a-prefab-from-script.906902/
+    //
+    //    The key is to use
+    //Object prefab = PrefabUtility.CreatePrefab(localPath, obj);
+    //    PrefabUtility.ReplacePrefab(obj, prefab, ReplacePrefabOptions.ConnectToPrefab);
+
     [MenuItem("MyMenu/Create Prefab")]
     static void CreatePrefab()
     {
@@ -33,6 +41,9 @@ public class MenuTest: MonoBehaviour
                 Debug.Log("Prefab was saved successfully");
             else
                 Debug.Log("Prefab failed to save" + prefabSuccess);
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
     }
 

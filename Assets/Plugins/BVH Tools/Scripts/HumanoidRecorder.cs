@@ -12,8 +12,10 @@ public class HumanoidRecorder
 {
     float time = 0;
 
+    BvhSkeleton bvhSkeleton = new BvhSkeleton();
+
     HumanPoseHandler humanPoseHandler;
-    //HumanPose humanPose = new HumanPose();
+    public HumanPose humanPose = new HumanPose();
 
     //    class AnimationCurve:
     //         public Keyframe this[int index] { get; }
@@ -31,7 +33,7 @@ public class HumanoidRecorder
     Dictionary<string, AnimationCurve> rootCurves = new Dictionary<string, AnimationCurve>();
 
     Vector3 rootOffset;
-    HumanPose humanPose;
+    //HumanPose humanPose;
 
     //     public struct HumanPose
     // {
@@ -50,42 +52,65 @@ public class HumanoidRecorder
     // }
 
 
-    public HumanoidRecorder(Animator animator)
+    // public HumanoidRecorder(Animator animator, Transform rootTransform, HumanPoseHandler humanPoseHandler)
+
+    public HumanoidRecorder(Animator animator, Transform rootTransform)
     {
-        this.rootOffset = animator.transform.position;
+        //this.rootOffset = animator.transform.position; // The position of the avatar root, Hips, relative to the world coordinate system.
+
+         this.rootOffset  = rootTransform.position;
 
         // public HumanPoseHandler(Avatar avatar, Transform root);
+
         // Creates a human pose handler from an avatar and the root transform 
-        //this.humanPoseHandler = new HumanPoseHandler(animator.avatar, animator.transform);
+        
+       // this.humanPoseHandler = new HumanPoseHandler(animator.avatar, animator.transform);
+       // this.humanPoseHandler =humanPoseHandler; 
+
         Avatar avatar = animator.avatar;
 
-    //     public struct HumanDescription
-    // {
-    //     Mapping between Mecanim bone names and bone names in the rig.
-    //     [NativeNameAttribute("m_Human")]
-    //     public HumanBone[] human;
-    //     //
-    //     List of bone Transforms to include in the model.
-    //     [NativeNameAttribute("m_Skeleton")]
-    //     public SkeletonBone[] skeleton;
+        string[] muscleNames = HumanTrait.MuscleName; // 95 muscles
+        // https://blog.unity.com/technology/mecanim-humanoids:
+        // Humanoid Rigs don’t support twist bones, but Mecanim solver let you specify a percentage of twist to be taken out of the parent
+        //  and put onto the child of the limb.It is defaulted at 50% and greatly helps to prevent skin deformation problem.
+        string[] boneNames = HumanTrait.BoneName; // 55 human bones
+        int boneCount = HumanTrait.BoneCount;
 
-        HumanBone[] humanBones = avatar.humanDescription.human;
 
-        //foreach (HumanBodyBones unityBoneType in humanBodyBones) // unityBoneType may be 55, Lastbone, which is not a bone.
-        for (int i=0; i < humanBones.Length; i++) // < humanBones.Length = 56; bvh skelenton bones = 57, which is 2 more than Humanbodybones.
+
+        //     public struct HumanDescription
+        // {
+        //     Mapping between Mecanim bone names and bone names in the rig.
+        //     [NativeNameAttribute("m_Human")]
+        //     public HumanBone[] human;
+        //     //
+        //     List of bone Transforms to include in the model.
+        //     [NativeNameAttribute("m_Skeleton")]
+        //     public SkeletonBone[] skeleton;
+
+        //HumanBone[] humanBones = avatar.humanDescription.human; // 0 ~ 51 in Avatar Mapping: 52, while the number of Unity bones is 55 (0 ~ 54)'
+
+
+
+        // HumanBodyBones
+
+        foreach (HumanBodyBones unityBoneId in bvhSkeleton.GetHumanBodyBones) // unityBoneType may be 55, Lastbone, which is not a bone.
+                                                                              //for (int i=0; i < humanBones.Length; i++) // < humanBones.Length = 55, 3 of which (Left Eye, Right Eye, Jaw) do not correspond to bvh bones +>
+                                                                              // The effective Human bones are 52. All of these human bones correspond to 52 bvh skeleton bones; 
+                                                                              //                                             4 of which do not correspond to human bones => 52 = 56 -4
         {
-            for (int dofIndex = 0; dofIndex < 3; dofIndex++)
+            for (int dofIndex = 0; dofIndex < 3; dofIndex++) // 52 x 3 = (50 + 2) x 3 = 150 + 6 = 156
             {
 
                 //   Obtain the muscle index for a particular bone index and "degree of freedom".
                 // Parameters:   
                 //  dofIndex:   Number representing a "degree of freedom": 0 for X-Axis, 1 for Y-Axis, 2 for    Z-Axis.
+                // https://forum.unity.com/threads/problem-with-muscle-settings-in-humanoid-configuration.707714/
+                int eachMuscle = HumanTrait.MuscleFromBone((int)unityBoneId, dofIndex); // Hips.0,.1,.2 = -1; spine.0 => 2
 
-                int eachMuscle = HumanTrait.MuscleFromBone( i , dofIndex);
-
-                if (eachMuscle != -1) // unityBoneType = 55 will not have muscle defined for it.
+                if (eachMuscle != -1) // if the muscle is valid
                                       //this.muscleCurves is a  Dictionary<int, AnimationCurve>();
-                    this.muscleCurves.Add(eachMuscle, new AnimationCurve()); // Generic Rig/Animation does not have use muscles
+                    this.muscleCurves.Add(eachMuscle, new AnimationCurve()); // Generic Rig/Animation does not have use muscles: muscleCurves has 89 entries
             }
         }
 
@@ -118,20 +143,27 @@ public class HumanoidRecorder
     //                 this.recordable.TakeSnapshot(Time.deltaTime);
     //         }
 
-    public void TakeSnapshot(float deltaTime) // a method of Interface  IRecordable
+    public void SaveSnapshotAsKeys(HumanPoseHandler  humanPoseHandler, float deltaTime) // a method of Interface  IRecordable
+    // public void SaveSnapshotAsKeys(float deltaTime) // a method of Interface  IRecordable
     {
         time += deltaTime;
+       // Get the current human pose currently being updated.
+       // Trying to read avatar skeleton transforms, but the HumanPoseHandler isn't bound to an avatar skeleton root transform
+        // UnityEngine.HumanPoseHandler:GetHumanPose (UnityEngine.HumanPose&)
+        //this.humanPoseHandler.GetHumanPose(ref this.humanPose); // https://forum.unity.com/threads/humanpose-issue-continued.484128/: humanPose.muscles[95]
 
-        this.humanPoseHandler.GetHumanPose(ref this.humanPose); // https://forum.unity.com/threads/humanpose-issue-continued.484128/
+        humanPoseHandler.GetHumanPose(ref this.humanPose);
+       // public void GetInternalHumanPose(ref HumanPose humanPose);
+        //this.humanPoseHandler.GetInternalHumanPose( ref this.humanPose);
 
-        //     void LateUpdate() {
-        //     handler.GetHumanPose(ref humanPose);
-        //     humanPose.bodyPosition = humanPose.bodyPosition.y * Vector3.up;
-        //     humanPose.bodyRotation = Quaternion.identity;
-        //     for (int i = 0; i < muscleIndices.Length; ++i)
-        //         humanPose.muscles[muscleIndices[i]] = values[i];
-        //     handler.SetHumanPose(ref humanPose);
-        // }
+        ////     void LateUpdate() {
+        ////     handler.GetHumanPose(ref humanPose);
+        ////     humanPose.bodyPosition = humanPose.bodyPosition.y * Vector3.up;
+        ////     humanPose.bodyRotation = Quaternion.identity;
+        ////     for (int i = 0; i < muscleIndices.Length; ++i)
+        ////         humanPose.muscles[muscleIndices[i]] = values[i];
+        ////     handler.SetHumanPose(ref humanPose);
+        //// 
 
         // https://unity928.rssing.com/chan-30531769/article714855.html
         // https://forum.unity.com/threads/how-can-i-animate-a-humanoid-avatar-using-only-a-csv-file-s-o-s.485117/
@@ -157,9 +189,10 @@ public class HumanoidRecorder
 
 
 
-        foreach (KeyValuePair<int, AnimationCurve> data in this.muscleCurves)
+        foreach (KeyValuePair<int, AnimationCurve> data in this.muscleCurves) // muscleCurves[0...89]
         {
-            Keyframe key = new Keyframe(time, this.humanPose.muscles[data.Key]);
+           Keyframe key = new Keyframe(time, this.humanPose.muscles[data.Key]);
+          // Keyframe key = new Keyframe(time, humanPose.muscles[data.Key]);
 
             data.Value.AddKey(key); //   public int AddKey(Keyframe key); => fill muscleCurve data with key
                                     // data.Value refer to AnimationCurve (list), the value part of the dict, to which each key is added
@@ -173,7 +206,8 @@ public class HumanoidRecorder
                                     // //
         }
 
-        Vector3 rootPosition = this.humanPose.bodyPosition - this.rootOffset; // this.rootOffset = animator.transform.position;
+       Vector3 rootPosition = this.humanPose.bodyPosition - this.rootOffset; // this.rootOffset = animator.transform.position;
+       //  this.rootOffset  = rootTransform.position;
 
         this.AddRootKey("RootT.x", rootPosition.x);
         this.AddRootKey("RootT.y", rootPosition.y);

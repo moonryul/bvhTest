@@ -41,15 +41,15 @@ namespace Winterdust
 		}
 
 		// Token: 0x04000021 RID: 33
-		private static Material mat;
+		private static Material mat;    //  class Material : Object
 
-		/// <summary>The color of all the lines.</summary>
-		// Token: 0x04000022 RID: 34
-		public Color color = Color.white;
+        /// <summary>The color of all the lines.</summary>
+        // Token: 0x04000022 RID: 34
+        public Color color = Color.white;     // public struct Color : 
 
-		/// <summary>Should the lines be visible through walls?</summary>
-		// Token: 0x04000023 RID: 35
-		public bool xray;
+        /// <summary>Should the lines be visible through walls?</summary>
+        // Token: 0x04000023 RID: 35
+        public bool xray;
 
 		/// <summary>When true lines will be drawn from the "root transform" to all its children as well. The "root transform" is the transform of the GameObject that has this BVHDebugLines component.</summary>
 		// Token: 0x04000024 RID: 36

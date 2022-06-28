@@ -20,7 +20,7 @@ public class GenericRecorder
     // public GenericRecorder(Transform rootTransform, List<string> jointPaths, Transform[] recordableTransforms )
    // public GenericRecorder(List<string> jointPaths, List<Transform> recordableTransforms)
 
-    public GenericRecorder(List<string> jointPaths)
+    public GenericRecorder(List<string> jointPaths) // Create containers for the animation curves of each joint
     {
         // foreach (Transform transform in recordableTransform)
         this.jointPathsCount = jointPaths.Count;
@@ -33,14 +33,14 @@ public class GenericRecorder
         }
     }
 
-    public void TakeSnapshot(float deltaTime, List<Transform> bvhTransforms) // defined in IRecordable; TakeSnapShots for all objects in the character
+    public void SaveSnapshotAsKeys(float deltaTime, List<Transform> bvhTransforms) // defined in IRecordable; TakeSnapShots for all objects in the character
     {
         this.time += deltaTime;
 
         for (int i = 0; i < this.jointPathsCount; i++)
        // foreach (ObjectAnimation objAnimation in this.objectAnimations)
         {
-            this.objectAnimations[i].TakeSnapshot(this.time, bvhTransforms[i]);
+            this.objectAnimations[i].SaveSnapshotAsKeys(this.time, bvhTransforms[i]);
         }
     }
 
@@ -109,7 +109,7 @@ class ObjectAnimation
         } //  if (this.Path == "")
     } //  public ObjectAnimation(string hierarchyPath, Transform recordableTransform)
 
-    public void TakeSnapshot(float time, Transform transform)
+    public void SaveSnapshotAsKeys(float time, Transform transform)
     {
 
         if (this.Path == "")

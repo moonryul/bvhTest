@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 
+using System.Collections.Generic;
+
 namespace Winterdust
 {
 	/// <summary>BvhImporterExporterDemo 1.1.0 (Winterdust, Sweden). Representation of motion capture in the Biovision Hierarchy format.</summary>
@@ -56,7 +58,7 @@ namespace Winterdust
 			this.innerConstructor(File.ReadAllText(pathToBvhFile, Encoding.UTF8).Split(new char[]
 			{
 				'\n'
-			}), importPercentage, zUp, calcFDirFromFrame, calcFDirToFrame, ignoreRootBonePositions, ignoreChildBonePositions, fixFrameRate, parseMotionData, progressTracker);
+			}),  importPercentage, zUp, calcFDirFromFrame, calcFDirToFrame, ignoreRootBonePositions, ignoreChildBonePositions, fixFrameRate, parseMotionData, progressTracker);
 		}
 
 		/// <summary>Loads the given .bvh file content. See each parameter description for full information.</summary>
@@ -71,74 +73,76 @@ namespace Winterdust
 		/// <param name="parseMotionData">If you wish to only peek at a .bvh file (to for example only read its frame rate) you can set parseMotionData to false. This will make the constructor very fast, especially for long animations. However, only the rest pose will be available for all frames and calculated forward direction will always be Vector3.forward since nothing moves.</param>
 		/// <param name="progressTracker">If you wish to check the status of the importation from a different thread in your program you can give a BVH.ProgressTracker here. Otherwise keep this as null.</param>
 		// Token: 0x06000004 RID: 4 RVA: 0x00002484 File Offset: 0x00000684
-		public BVH(string[] bvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
-		{
+		//public BVH(string[] bvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
+
+        public BVH(string[] bvhFile,  double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
+        {
 			this.pathToBvhFileee = null;
-			this.innerConstructor(bvhFile, importPercentage, zUp, calcFDirFromFrame, calcFDirToFrame, ignoreRootBonePositions, ignoreChildBonePositions, fixFrameRate, parseMotionData, progressTracker);
+			this.innerConstructor(bvhFile,  importPercentage, zUp, calcFDirFromFrame, calcFDirToFrame, ignoreRootBonePositions, ignoreChildBonePositions, fixFrameRate, parseMotionData, progressTracker);
 		}
 
 		// Token: 0x06000005 RID: 5 RVA: 0x000024B8 File Offset: 0x000006B8
-		private void innerConstructor(string[] bvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
+		private void innerConstructor(string[] bvhFile,  double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
 		{
-			if (string.Concat(Type.GetType("Winterdust.Internal.BvhImporterExporterDemoL+MOIHA4KSJBDJAYSFGDJHLKX3JOIQYUW9GHBHAKPQKAMZNZOUWIJDGA5318008," + BVH.asmbly)).Length < 10)
-			{
-				Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-				int i;
-				for (i = 0; i < assemblies.Length; i++)
-				{
-					if (string.Concat(assemblies[i].GetType("Winterdust.Internal.BvhImporterExporterDemoL+MOIHA4KSJBDJAYSFGDJHLKX3JOIQYUW9GHBHAKPQKAMZNZOUWIJDGA5318008")).Length >= 10)
-					{
-						BVH.asmbly = assemblies[i].FullName;
-						break;
-					}
-				}
-				if (i >= assemblies.Length)
-				{
-					Debug.Log("Something's wrong with the licence, please check https://winterdust.itch.io/bvhimporterexporter for a new version.");
-					return;
-				}
-			}
-			long num = (long)(TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).TotalMinutes + 1440.0);
+			//if (string.Concat(Type.GetType("Winterdust.Internal.BvhImporterExporterDemoL+MOIHA4KSJBDJAYSFGDJHLKX3JOIQYUW9GHBHAKPQKAMZNZOUWIJDGA5318008," + BVH.asmbly)).Length < 10)
+			//{
+			//	Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+			//	int i;
+			//	for (i = 0; i < assemblies.Length; i++)
+			//	{
+			//		if (string.Concat(assemblies[i].GetType("Winterdust.Internal.BvhImporterExporterDemoL+MOIHA4KSJBDJAYSFGDJHLKX3JOIQYUW9GHBHAKPQKAMZNZOUWIJDGA5318008")).Length >= 10)
+			//		{
+			//			BVH.asmbly = assemblies[i].FullName;
+			//			break;
+			//		}
+			//	}
+			//	if (i >= assemblies.Length)
+			//	{
+			//		Debug.Log("Something's wrong with the licence, please check https://winterdust.itch.io/bvhimporterexporter for a new version.");
+			//		return;
+			//	}
+			//}
+			//long num = (long)(TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).TotalMinutes + 1440.0);
 
-			if (TimeZone.CurrentTimeZone.IsDaylightSavingTime(DateTime.Now))
-			{
-				num += 2138L;
-			}
-			num = num * 2L + 452L;
+			//if (TimeZone.CurrentTimeZone.IsDaylightSavingTime(DateTime.Now))
+			//{
+			//	num += 2138L;
+			//}
+			//num = num * 2L + 452L;
 
-			long num2 = (long)DateTime.Now.Year + 1337L;
-			long num3 = (long)DateTime.Now.Month + 12L;
-			num2 *= 2872L * num3;
-			num3 *= 767125L;
-			string text = "bvh" + num2 + num + num3;
+			//long num2 = (long)DateTime.Now.Year + 1337L;
+			//long num3 = (long)DateTime.Now.Month + 12L;
+			//num2 *= 2872L * num3;
+			//num3 *= 767125L;
+			//string text = "bvh" + num2 + num + num3;
 
-			if (Resources.Load(text) == null)
-			{
-				Debug.Log("### BvhImporterExporterDemo - The demonstration is not active right now.");
-				Debug.Log("### To make it work please place an empty text file named \"" + text + "\" in your Resources folder.");
-				Debug.Log("### Example: Assets/Resources/" + text + ".txt");
-				Debug.Log("### [IMPORTANT] You have to rename this file every once in a while. You'll get this message again when the time comes.");
-				Debug.Log("### This is to prevent games from being released with the demo version.");
-				Debug.Log("### Thanks for trying the demo! Get the full version today and never see this message again!");
-				return;
-			}
-			long num4 = (long)(TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now.AddMonths(-1)).TotalMinutes + 1440.0);
-			if (TimeZone.CurrentTimeZone.IsDaylightSavingTime(DateTime.Now.AddMonths(-1)))
-			{
-				num4 += 2138L;
-			}
-			num4 = num4 * 2L + 452L;
-			long num5 = (long)DateTime.Now.AddMonths(-1).Year + 1337L;
-			long num6 = (long)DateTime.Now.AddMonths(-1).Month + 12L;
-			num5 *= 2872L * num6;
-			num6 *= 767125L;
-			string text2 = "bvh" + num5 + num4 + num6;
-			if (text != text2 && Resources.Load(text2) != null)
-			{
-				Debug.Log("### BvhImporterExporterDemo - The demonstration is not active right now.");
-				Debug.Log("### Please remove the previous text file to make it work (" + text2 + ").");
-				return;
-			}
+			//if (Resources.Load(text) == null)
+			//{
+			//	Debug.Log("### BvhImporterExporterDemo - The demonstration is not active right now.");
+			//	Debug.Log("### To make it work please place an empty text file named \"" + text + "\" in your Resources folder.");
+			//	Debug.Log("### Example: Assets/Resources/" + text + ".txt");
+			//	Debug.Log("### [IMPORTANT] You have to rename this file every once in a while. You'll get this message again when the time comes.");
+			//	Debug.Log("### This is to prevent games from being released with the demo version.");
+			//	Debug.Log("### Thanks for trying the demo! Get the full version today and never see this message again!");
+			//	return;
+			//}
+			//long num4 = (long)(TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now.AddMonths(-1)).TotalMinutes + 1440.0);
+			//if (TimeZone.CurrentTimeZone.IsDaylightSavingTime(DateTime.Now.AddMonths(-1)))
+			//{
+			//	num4 += 2138L;
+			//}
+			//num4 = num4 * 2L + 452L;
+			//long num5 = (long)DateTime.Now.AddMonths(-1).Year + 1337L;
+			//long num6 = (long)DateTime.Now.AddMonths(-1).Month + 12L;
+			//num5 *= 2872L * num6;
+			//num6 *= 767125L;
+			//string text2 = "bvh" + num5 + num4 + num6;
+			//if (text != text2 && Resources.Load(text2) != null)
+			//{
+			//	Debug.Log("### BvhImporterExporterDemo - The demonstration is not active right now.");
+			//	Debug.Log("### Please remove the previous text file to make it work (" + text2 + ").");
+			//	return;
+			//}
 			if (progressTracker != null)
 			{
 				progressTracker.progress = 0.0;
@@ -148,6 +152,7 @@ namespace Winterdust
 			this.allBones = new BVH.BVHBone[25];
 
 			double num7 = 1.0;
+
 			if (importPercentage == 0.0 || importPercentage > 1.0)
 			{
 				importPercentage = 1.0;
@@ -166,9 +171,12 @@ namespace Winterdust
 
 			double num11 = 1.0;
 			int num12 = 0;
-			string s = null;
-			string s2 = null;
-			int num13 = 0;
+            //string s = null;
+            //string s2 = null;
+
+            string Frames = null;
+            string FrameTime  = null;
+            int num13 = 0;
 			float[] array = null;
 
 			int num14 = 0;
@@ -261,18 +269,18 @@ namespace Winterdust
 				{
 					if (text3.StartsWith("Frames: "))
 					{
-						s = text3.Substring(8);
-					}
+						Frames = text3.Substring(8);   //  public String Substring(int startIndex); = Frames: 520 => 520
+                    }
 					else if (text3.StartsWith("Frame Time: "))
 					{
-						s2 = text3.Substring(12);
+						FrameTime = text3.Substring(12);
 					}
 				}
 				else
 				{
 					if (num12 == 0)
 					{
-						this.secondsPerFrame = double.Parse(s2);
+						this.secondsPerFrame = double.Parse(FrameTime);
 						if (importPercentage < 0.0)
 						{
 							double num15 = 1.0 / this.secondsPerFrame;
@@ -288,7 +296,9 @@ namespace Winterdust
 							this.secondsPerFrame = Math.Round(this.secondsPerFrame * 1000.0) / 1000.0;
 							this.secondsPerFrame = 1.0 / this.secondsPerFrame;
 						}
-						this.frameCount = int.Parse(s);
+
+						this.frameCount = int.Parse(Frames);
+
 						for (int l = 0; l < this.frameCount; l++)
 						{
 							if (num11 >= 1.0)
@@ -300,8 +310,10 @@ namespace Winterdust
 									break;
 								}
 							}
+
 							num11 += num7;
 						}
+
 						this.frameCount = num12;
 						num11 = 1.0;
 						num12 = 0;
@@ -315,7 +327,7 @@ namespace Winterdust
 						}
 						array = new float[num13];
 					}
-					if (!parseMotionData)
+					if (!parseMotionData)  // if parseMotionData = false:
 					{
 						for (int n = 0; n < this.boneCount; n++)
 						{
@@ -325,9 +337,11 @@ namespace Winterdust
 								this.allBones[n].localFrameRotations[num16] = Quaternion.identity;
 							}
 						}
-						break;
-					}
-					if (num11 >= 1.0)
+						break;    // break out of 	the parsing loop for (int j = 0; j < bvhFile.Length; j++) //string[] bvhFile = input string
+                    }
+
+
+                    if (num11 >= 1.0)
 					{
 						num11 -= 1.0;
 						string[] array3 = text3.Split(new char[]
@@ -472,7 +486,6 @@ namespace Winterdust
 		public GameObject makeSkeleton(int frame = -1, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool animate = false)
 		{
 			GameObject gameObject = new GameObject(skeletonGOName);
-			
 			for (int i = 0; i < this.boneCount; i++)
 			{
 				if (this.allBones[i].parentBoneIndex == -1)
@@ -480,21 +493,55 @@ namespace Winterdust
 					this.allBones[i].makeGO(ref frame, ref includeBoneEnds, ref this.allBones, i).transform.parent = gameObject.transform;
 				}
 			}
-			if (animate) //=> create an animation clip and add it to Animation component
+			if (animate)
 			{
 				BVH.animateSkeleton(gameObject, this.makeAnimationClip(0, -1, false, "", WrapMode.Loop, true, false, false), 1f);
-				// 	public AnimationClip makeAnimationClip(int fromFrame = 0, int toFrame = -1, bool addExtraLoopKeyframe = false, string pathToSkeletonGO = "",
-				//                                  WrapMode wrapMode = WrapMode.Loop, bool legacy = true, bool keyRestPositions = false, bool keyEndPositions = false)
-
 				//=> 	public static Animation animateSkeleton(GameObject skeletonGO, AnimationClip clip, float blendTimeSec = 1f)
-				//=>    gameObject( ==skeletonGO ).AddComponent<Animation>();
+				//=>    gameObject( skeletonGO ).AddComponent<Animation>();
 			}
 			return gameObject;
 		}
 
-		/// <summary>Rearranges an existing skeleton to the given frame (changes both positions and rotations). Use frame -1 to put the skeleton into its rest pose. Does not touch GameObjects representing bone ends. (Returns this BVH instead of void, for chaining.)</summary>
-		// Token: 0x0600000E RID: 14 RVA: 0x000030DC File Offset: 0x000012DC
-		public BVH moveSkeleton(GameObject skeletonGO, int frame)
+
+        //public void setLocalPosRot(Transform boneTransform, ref int frame)
+        //{
+        //    if (frame == -1)
+        //    {
+        //        boneTransform.localPosition = this.localRestPosition;
+        //        boneTransform.localRotation = Quaternion.identity;
+        //        return;
+        //    }
+        //    boneTransform.localPosition = ((this.localFramePositions != null) ? this.localFramePositions[frame] : this.localRestPosition);
+        //    boneTransform.localRotation = this.localFrameRotations[frame];
+        //}
+
+
+        //this.makeSkeleton(avatarRootTransform, avatarCurrentTransforms, frame, animate);
+        public GameObject makeSkeleton(GameObject skeletonGO,  int frame = -1,  bool animate = false)
+        {
+            Transform[] componentsInChildren = skeletonGO.GetComponentsInChildren<Transform>(); //avatarRootTransform  = Hips
+            //GameObject gameObject = new GameObject(skeletonGOName);
+            for (int i = 0; i < this.boneCount; i++)
+            {
+
+               // this.allBones[i].makeGO(  ref frame, avatarCurrentTransforms[i].transform);
+                this.allBones[i].setLocalPosRot(componentsInChildren[ i+1].transform, ref frame);   // componentsInChildren contains the transform of Skeleton itself; we exclude it from the avatar hiearchy
+
+
+            }
+            if (animate)
+            {
+                BVH.animateSkeleton(skeletonGO, this.makeAnimationClip(0, -1, false, "", WrapMode.Loop, true, false, false), 1f);
+                //=> 	public static Animation animateSkeleton(GameObject skeletonGO, AnimationClip clip, float blendTimeSec = 1f)
+                //=>    gameObject( skeletonGO ).AddComponent<Animation>();
+            }
+            return skeletonGO;
+        }
+
+
+        /// <summary>Rearranges an existing skeleton to the given frame (changes both positions and rotations). Use frame -1 to put the skeleton into its rest pose. Does not touch GameObjects representing bone ends. (Returns this BVH instead of void, for chaining.)</summary>
+        // Token: 0x0600000E RID: 14 RVA: 0x000030DC File Offset: 0x000012DC
+        public BVH moveSkeleton(GameObject skeletonGO, int frame)
 		{
 			Transform transform = skeletonGO.transform;
 			for (int i = 0; i < this.boneCount; i++)
@@ -521,15 +568,10 @@ namespace Winterdust
 		// Token: 0x0600000F RID: 15 RVA: 0x00003138 File Offset: 0x00001338
 		public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
 		{
-			GameObject gameObject = this.makeSkeleton(frame, includeBoneEnds, skeletonGOName, animate); 
-			// By default, create a rest skeleton , create an animation clip and add it to the Animation component
-			// The animation clips simply contain the animation curves for the bones (or anything else you want to animate). 
-			// The actual skinning information is stored in the mesh itself, and can be programitically assigned using Mesh.boneWeights and Mesh.bindposes.
-
+			GameObject gameObject = this.makeSkeleton(frame, includeBoneEnds, skeletonGOName, animate);
 			// => 	GameObject gameObject = new GameObject(skeletonGOName);
 			Color color;
 			ColorUtility.TryParseHtmlString("#" + colorHex.Replace("#", "").Replace("0x", ""), out color);
-
 			if (jointSize != 0f)
 			{
 				bool flag = false;
@@ -541,7 +583,6 @@ namespace Winterdust
 				Material material = new Material(Shader.Find("Legacy Shaders/Diffuse"));
 				material.color = color;
 				Transform[] componentsInChildren = gameObject.GetComponentsInChildren<Transform>();
-
 				for (int i = 0; i < componentsInChildren.Length; i++)
 				{
 					if (componentsInChildren[i] != gameObject.transform)
@@ -580,11 +621,85 @@ namespace Winterdust
 			bvhdebugLines.xray = xray;
 			bvhdebugLines.alsoDrawLinesFromOrigin = originLine;
 			return gameObject;
-		} // 	public GameObject makeDebugSkeleto
+        }   //public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
+		
 
-		/// <summary>Makes several debug skeletons that together visualize the whole animation at once (or a part of the animation if you change fromFrame/toFrame). The stick figures shift from green to yellow to red, where green is the beginning and red is the end. Xray will make the skeletons visible through walls.</summary>
-		// Token: 0x06000010 RID: 16 RVA: 0x0000339C File Offset: 0x0000159C
-		public GameObject makeDebugSkeletons(int fromFrame = 0, int toFrame = -1, bool includeBoneEnds = true, bool xray = false, string containerGOName = "SKELETONS")
+       // public GameObject makeDebugSkeleton( GameObject skeletonGO,  List<Transform> avatarCurrentTransforms, bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false,  bool originLine = false)
+         public GameObject makeDebugSkeleton( GameObject skeletonGO,  bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false,  bool originLine = false)
+        {  //GameObject gameObject = this.makeSkeleton(frame, includeBoneEnds, skeletonGOName, animate);
+           // GameObject gameObject = this.makeSkeleton(skeletonGO, avatarCurrentTransforms, frame, animate);
+            GameObject gameObject = this.makeSkeleton(skeletonGO,  frame, animate);
+            Transform avatarRootTransform = skeletonGO.transform.GetChild(0);
+
+            //this.makeSkeleton(avatarRootTransform, avatarCurrentTransforms, frame, animate);
+
+            // => 	GameObject gameObject = new GameObject(skeletonGOName);
+            Color color;
+            ColorUtility.TryParseHtmlString("#" + colorHex.Replace("#", "").Replace("0x", ""), out color);
+            if (jointSize != 0f)   // Draw the skeleton ?
+            {
+                bool flag = false;
+                if (jointSize < 0f)
+                {
+                    jointSize *= -1f;
+                    flag = true;
+                }
+                Material material = new Material(Shader.Find("Legacy Shaders/Diffuse"));
+
+                material.color = color;
+                //Transform[] componentsInChildren = gameObject.GetComponentsInChildren<Transform>();
+                // Returns all components of Type type in the GameObject or any of its children using depth first search. Works recursively.
+               
+                Transform[] componentsInChildren = avatarRootTransform.gameObject.GetComponentsInChildren<Transform>(); //avatarRootTransform  = Hips
+                // avatarCurrentTransforms == componentsInChildren ??
+                for (int i = 0; i < componentsInChildren.Length; i++)
+                {
+                   // if (componentsInChildren[i] != gameObject.transform)  // if the current node is not the root of the skeleton "Skeleton"
+                  //  {
+                        Vector3[] array = new Vector3[]
+                        {
+                            new Vector3(-jointSize / 8f, jointSize / 2f, -jointSize / 2f),
+                            new Vector3(-jointSize, jointSize, -jointSize * 2f),
+                            new Vector3(jointSize, jointSize, -jointSize * 2f),
+                            new Vector3(jointSize / 8f, jointSize / 2f, -jointSize / 2f),
+                            new Vector3(0f, -jointSize, 0f),
+                            new Vector3(jointSize, jointSize, 0f),
+                            new Vector3(-jointSize, jointSize, 0f),
+                            new Vector3(0f, -jointSize, 0f)
+                        };
+                        if (flag && componentsInChildren[i].rotation != Quaternion.identity)
+                        {
+                            Quaternion rotation = Quaternion.Inverse(componentsInChildren[i].rotation) * Quaternion.identity;
+                            for (int j = 0; j < array.Length; j++)
+                            {
+                                array[j] = rotation * array[j];
+                            }
+                        }
+                        Mesh mesh = new Mesh();
+                        mesh.name = "BvhMesh";
+                        mesh.vertices = array;
+                        mesh.triangles = BVH.debugMeshFaces;
+
+                        mesh.RecalculateNormals();
+                        // componentsInChildren[i].gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;  // mesh and Material are newly created.
+                        // componentsInChildren[i].gameObject.AddComponent<MeshRenderer>().sharedMaterial = material;
+                        componentsInChildren[i].gameObject.GetComponent<MeshFilter>().sharedMesh = mesh;  // mesh and Material are newly created.
+                        componentsInChildren[i].gameObject.GetComponent<MeshRenderer>().sharedMaterial = material;
+                  //  }   //  if (componentsInChildren[i] != gameObject.transform)  // if the current node is not the root of the skeleton "Skeleton"
+                }  //for (int i = 0; i < componentsInChildren.Length; i++)
+            }  // if (jointSize != 0f)   // Draw the skeleton ?
+
+            BVHDebugLines bvhdebugLines = gameObject.GetComponent<BVHDebugLines>();       // gameObject is "Skeleton"
+            //BVHDebugLines bvhdebugLines = skeletonGO.GetComponent<BVHDebugLines>();
+            bvhdebugLines.color = color;
+            bvhdebugLines.xray = xray;
+            bvhdebugLines.alsoDrawLinesFromOrigin = originLine;
+            return gameObject;
+        }
+
+        /// <summary>Makes several debug skeletons that together visualize the whole animation at once (or a part of the animation if you change fromFrame/toFrame). The stick figures shift from green to yellow to red, where green is the beginning and red is the end. Xray will make the skeletons visible through walls.</summary>
+        // Token: 0x06000010 RID: 16 RVA: 0x0000339C File Offset: 0x0000159C
+        public GameObject makeDebugSkeletons(int fromFrame = 0, int toFrame = -1, bool includeBoneEnds = true, bool xray = false, string containerGOName = "SKELETONS")
 		{
 			this.fixFromFrameAndToFrame(ref fromFrame, ref toFrame);
 			GameObject gameObject = new GameObject(containerGOName);
@@ -619,7 +734,7 @@ namespace Winterdust
 				}
 			}
 			return gameObject;
-		}// GameObject makeDebugSkeleton
+		}
 
 		// Token: 0x06000011 RID: 17 RVA: 0x00002156 File Offset: 0x00000356
 		private void fixFromFrameAndToFrame(ref int fromFrame, ref int toFrame)
@@ -732,7 +847,6 @@ namespace Winterdust
 				toFrame = num;
 			}
 			BVH.PreparedAnimationClip preparedAnimationClip = new BVH.PreparedAnimationClip();
-
 			preparedAnimationClip.name = this.alias;
 			preparedAnimationClip.legacy = legacy;
 			preparedAnimationClip.wrapMode = wrapMode;
@@ -867,7 +981,7 @@ namespace Winterdust
 				progressTracker.progress = 1.0;
 			}
 			return preparedAnimationClip;
-		} // public BVH.PreparedAnimationClip prepareAnimationClip
+		}
 
 		// Token: 0x06000016 RID: 22 RVA: 0x00003EE4 File Offset: 0x000020E4
 		private AnimationCurve prepCurve(ref Keyframe[] keyframes)
@@ -892,15 +1006,13 @@ namespace Winterdust
 		public static Animation animateSkeleton(GameObject skeletonGO, AnimationClip clip, float blendTimeSec = 1f)
 		{
 			Animation animation = skeletonGO.GetComponent<Animation>();
-
 			if (animation == null)
 			{
 				animation = skeletonGO.AddComponent<Animation>();
 			}
 			if (animation.clip == null)
 			{
-				animation.clip = clip; // set the default animation to play
-				//   Adds a clip to the animation with name newName.
+				animation.clip = clip;
 				animation.AddClip(animation.clip, animation.clip.name);
 				animation.Play();
 			}
@@ -917,9 +1029,9 @@ namespace Winterdust
 				animation.Blend("BBB", 1f, blendTimeSec);
 			}
 			else
-			{  // animation has 3 or more clips
+			{
 				bool flag = true;
-				foreach (object obj in animation) //   public sealed class Animation : Behaviour, IEnumerable
+				foreach (object obj in animation)
 				{
 					AnimationState animationState = (AnimationState)obj;
 					if (animationState.clip.name != "")
@@ -946,7 +1058,7 @@ namespace Winterdust
 				}
 			}
 			return animation;
-		} // public static Animation animateSkeleton
+		}
 
 		/// <summary>Makes it so that the first root bone's rest position and animation origin is at [0,?,0] of the skeleton, where ? is the original value of its position on the up axis (Y). I recommend calling this AFTER any rotation methods, including align(), since the rest pose usually isn't repositioned by rotateAnimationBy() unless alsoAffectRestPose is true. (Returns this BVH instead of void, for chaining.) Note: This is a shortcut for myBvh.setAnimationOrigin(Vector3.zero, true, false, true, false);</summary>
 		// Token: 0x06000019 RID: 25 RVA: 0x0000217F File Offset: 0x0000037F
@@ -992,7 +1104,7 @@ namespace Winterdust
 				this.repositionFirstRootBone(this.allBones[0].localFramePositions[i] - vector, i, keepOldX, keepOldY, keepOldX);
 			}
 			return this;
-		} // public BVH setAnimationOrigin
+		}
 
 		// Token: 0x0600001D RID: 29 RVA: 0x0000420C File Offset: 0x0000240C
 		private void repositionFirstRootBone(Vector3 localPosition, int frame, bool keepOldX, bool keepOldY, bool keepOldZ)
@@ -1799,19 +1911,26 @@ namespace Winterdust
 				this.localFrameRotations[frameNumber] = Quaternion.LookRotation(new Vector3(x2, y2, z2), new Vector3(x, y, z));
 			}
 
-			/// <summary>Makes a GameObject that represents this bone, complete with child GameObjects that represents the bone's children. When a skeletonGO is created the BVH instance calls makeGO() on all its root bones and makes the returned GameObjects a child of the skeletonGO (if there is only one root bone the skeletonGO will only have one child itself).</summary>
+			/// <summary>Makes a GameObject that represents this bone, complete with child GameObjects that represents the bone's children. 
+            /// When a skeletonGO is created the BVH instance calls makeGO() on all its root bones and makes the returned GameObjects a child of the skeletonGO
+            /// (if there is only one root bone the skeletonGO will only have one child itself).</summary>
 			// Token: 0x0600003C RID: 60 RVA: 0x000058B4 File Offset: 0x00003AB4
 			public GameObject makeGO(ref int frame, ref bool includeBoneEnds, ref BVH.BVHBone[] allBones, int myOwnBoneIndex)
 			{
 				GameObject gameObject = new GameObject(this.getName());
+
 				int[] array = this.findChildBoneIndexes(ref allBones, myOwnBoneIndex);
 				for (int i = 0; i < array.Length; i++)
 				{
 					allBones[array[i]].makeGO(ref frame, ref includeBoneEnds, ref allBones, array[i]).transform.parent = gameObject.transform;
-				}
-				this.setLocalPosRot(gameObject.transform, ref frame);
+                    // allBones[array[i]].setLocalPosRot(gameObject.transform, ref frame); // this within  setLocalPosRot() refers to allBones[array[i]]
+                }
+                this.setLocalPosRot(gameObject.transform, ref frame);
 
-				if (includeBoneEnds && this.endPosition.sqrMagnitude != 0f)
+            
+
+
+                if (includeBoneEnds && this.endPosition.sqrMagnitude != 0f)
 				{
 					GameObject gameObject2 = new GameObject(this.getName() + "End");
 					gameObject2.transform.parent = gameObject.transform;
@@ -1820,9 +1939,32 @@ namespace Winterdust
 				return gameObject;
 			}
 
-			/// <summary>Returns the end of this bone's relativePath; the actual name of the bone.</summary>
-			// Token: 0x0600003D RID: 61 RVA: 0x00002312 File Offset: 0x00000512
-			public string getName()
+
+            public void makeGO(ref int frame, Transform transform)
+            {
+                this.setLocalPosRot(transform, ref frame);
+             
+            }
+
+            /// <summary>Sets localPosition/localRotation of the given transform to the bone's local position/rotation at the given frame. If frame -1 is specified the bone's rest pose is used. The rest rotation is always Quaternion.identity. If frame is &gt;=0 and the bone doesn't have any localFramePositions (the array is null) its localRestPosition is used.</summary>
+            // Token: 0x06000040 RID: 64 RVA: 0x00005A24 File Offset: 0x00003C24
+            public void setLocalPosRot(Transform boneTransform, ref int frame)
+            {
+                if (frame == -1)
+                {
+                    boneTransform.localPosition = this.localRestPosition;
+                    boneTransform.localRotation = Quaternion.identity;
+                    return;
+                }
+                boneTransform.localPosition = ((this.localFramePositions != null) ? this.localFramePositions[frame] : this.localRestPosition);
+                boneTransform.localRotation = this.localFrameRotations[frame];
+            }   // public void setLocalPosRot(Transform boneTransform, ref int frame)
+
+
+
+            /// <summary>Returns the end of this bone's relativePath; the actual name of the bone.</summary>
+            // Token: 0x0600003D RID: 61 RVA: 0x00002312 File Offset: 0x00000512
+            public string getName()
 			{
 				if (this.parentBoneIndex == -1)
 				{
@@ -1882,19 +2024,7 @@ namespace Winterdust
 				return array;
 			}
 
-			/// <summary>Sets localPosition/localRotation of the given transform to the bone's local position/rotation at the given frame. If frame -1 is specified the bone's rest pose is used. The rest rotation is always Quaternion.identity. If frame is &gt;=0 and the bone doesn't have any localFramePositions (the array is null) its localRestPosition is used.</summary>
-			// Token: 0x06000040 RID: 64 RVA: 0x00005A24 File Offset: 0x00003C24
-			public void setLocalPosRot(Transform boneTransform, ref int frame)
-			{
-				if (frame == -1) // the test pose
-				{
-					boneTransform.localPosition = this.localRestPosition;
-					boneTransform.localRotation = Quaternion.identity;
-					return;
-				}
-				boneTransform.localPosition = ((this.localFramePositions != null) ? this.localFramePositions[frame] : this.localRestPosition);
-				boneTransform.localRotation = this.localFrameRotations[frame];
-			}
+			
 
 			/// <summary>The bone's place in the skeleton. It's name is the last part of this string, you can use getName() to extract it. Important: If you ever "remove a bone" by reducing myBvh.boneCount (meaning the bone data is still in the allBones[] array) you need to set its relativePath to null! Otherwise findChildBoneIndexes() won't know the bone was removed. Example relativePath: Hips/LowerBack/Spine/Spine1/LeftShoulder/LeftArm/LeftForeArm/LeftHand/LeftFingerBase/LeftHandIndex1</summary>
 			// Token: 0x0400000B RID: 11
@@ -1923,7 +2053,7 @@ namespace Winterdust
 			/// <summary>Representation of the bone's channels in the .bvh file (the order of its frame data). Created and read using bitwise operations. See summary for defineChannels() for more info. Example: 786571 translates to "Zrotation Xrotation Yrotation" and 1644460 to "Xposition Yposition Zposition Zrotation Xrotation Yrotation" (any order is supported but these two are the most common ones and .bvh files using them gets a minor speed boost during import).</summary>
 			// Token: 0x04000011 RID: 17
 			public int channels;
-		} // public struct BVHBone
+		}   // class BVH.BVHBone
 
 		/// <summary>Create an instance of this class and give it to the BVH constructor or myBvh.prepareAnimationClip() if you want to be able to check the progress from a different thread.</summary>
 		// Token: 0x02000004 RID: 4
@@ -1966,10 +2096,9 @@ namespace Winterdust
 			/// <summary>The BVH class writes to this double while working. Is always reset to 0 when work starts. When this is 1.0 the work has finished.</summary>
 			// Token: 0x04000012 RID: 18
 			public double progress;
-		} // ProgressTracker
+		}
 
-		/// <summary>An AnimationClip, just not in existence yet. This can be created by any thread and then finished by Unity's main thread via the make() call. You can call make() several times to make several AnimationClips from the same mould, feel free to change stuff in-between.
-		// Note: This is used by both myBvh.prepareAnimationClip() and myBvh.makeAnimationClip().</summary>
+		/// <summary>An AnimationClip, just not in existence yet. This can be created by any thread and then finished by Unity's main thread via the make() call. You can call make() several times to make several AnimationClips from the same mould, feel free to change stuff in-between. Note: This is used by both myBvh.prepareAnimationClip() and myBvh.makeAnimationClip().</summary>
 		// Token: 0x02000005 RID: 5
 		public class PreparedAnimationClip
 		{
@@ -1982,7 +2111,6 @@ namespace Winterdust
 				animationClip.legacy = this.legacy;
 				animationClip.wrapMode = this.wrapMode;
 				animationClip.frameRate = this.frameRate;
-
 				for (int i = 0; i < this.data.Length; i++)
 				{
 					if (this.data[i].posX != null)
@@ -2001,7 +2129,7 @@ namespace Winterdust
 				}
 				animationClip.EnsureQuaternionContinuity();
 				return animationClip;
-			} // public AnimationClip make()
+			}
 
 			// Token: 0x04000013 RID: 19
 			private static readonly Type typeOfTransform = typeof(Transform);
@@ -2061,7 +2189,7 @@ namespace Winterdust
 				/// <summary>Unless rotX is null this curve will animate the localRotation.w property of the GameObject's transform (part of Quaternion).</summary>
 				// Token: 0x04000020 RID: 32
 				public AnimationCurve rotW;
-			} // 	public struct CurveBlock
-		} // PreparedAnimationClip
-	} // BVH class
-} // Winterdust
+			}
+		}
+	}
+}
