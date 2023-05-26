@@ -598,7 +598,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
     {
        // Parse the avatar skeleton path and set the transfrom "container" for each joint in the path 
        // this.parseFile();   
-
+       //MJ: this refers to an object of class BVHAnimationRetargetter 
         this.bvhFrameGetter =  this.gameObject.GetComponent<BVHFrameGetter>(); // this.gameObject = bvhRetargetter; It has two components: BVHAnimationRetargetter and bvhFrameGetter
         this.skeletonGO = this.bvhFrameGetter.skeletonGO;
         //this.bvhAvatarRootTransform = this.bvhFrameGetter.avatarRootTransform;
@@ -686,8 +686,8 @@ public class BVHAnimationRetargetter : MonoBehaviour
             //this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAvatarRootTransform);
             //this.destHumanPoseHandler = new HumanPoseHandler(this.saraAnimator.avatar, this.saraAvatarRootTransform);
 
-            this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAnimator.gameObject.transform);
-            this.destHumanPoseHandler = new HumanPoseHandler(this.saraAnimator.avatar, this.saraAnimator.gameObject.transform);
+            this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAnimator.gameObject.transform); //MJ: this.bvhAnimator.gameObject=Skeleton gameObj
+            this.destHumanPoseHandler = new HumanPoseHandler(this.saraAnimator.avatar, this.saraAnimator.gameObject.transform); //MJ: this.saraAnimator.gameObject = Sara
 
             // => this.humanPoseHandler has a reference to this.bvhAnimator.avatar and its root transform (and thereby the entire hierarchy of transforms);
             // You can change the transforms of the human avatar hierarchy somewhere else, and this humanPoseHandler will
@@ -695,7 +695,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
 
 
-
+            //MJ:  // Muscle name and index lookup for Debugging
             this.LookUpHumanMuscleIndex();
            
            
@@ -912,8 +912,19 @@ public class BVHAnimationRetargetter : MonoBehaviour
             //this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAvatarRootTransform);
             //this.destHumanPoseHandler = new HumanPoseHandler(this.saraAnimator.avatar, this.saraAvatarRootTransform);
 
+            //MJ: Important:  //Computes a human pose from the avatar skeleton (bound to srcHumanPoseHandler), 
+            // stores the pose in the human pose handler, and returns the human pose.
+
             HumanPose humanPose = new HumanPose();
             this.srcHumanPoseHandler.GetHumanPose(ref humanPose);
+
+            //MJ: note that:
+
+            
+            // this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAnimator.gameObject.transform); //MJ: this.bvhAnimator.gameObject=Skeleton gameObj
+            // this.destHumanPoseHandler = new HumanPoseHandler(this.saraAnimator.avatar, this.saraAnimator.gameObject.transform); //MJ: this.saraAnimator.gameObject = Sara
+
+
             //Computes a human pose from the avatar skeleton (bound to humanPoseHandler), stores the pose in the human pose handler, and returns the human pose.
             //this.destHumanPoseHandler.GetHumanPose(ref humanPose);
        
@@ -1100,9 +1111,14 @@ public class BVHAnimationRetargetter : MonoBehaviour
             //}
             
 
-
+            //Set the humanPose from the bvh motion to the Sara (destination) HumanPose
             this.destHumanPoseHandler.SetHumanPose(ref humanPose);
 
+           //MJ: note that this.saraAnimator Script which is attached to the Sara gameObject will play the current humanPose of the Sara avatar:
+
+            
+            // this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAnimator.gameObject.transform); //MJ: this.bvhAnimator.gameObject=Skeleton gameObj
+            // this.destHumanPoseHandler = new HumanPoseHandler(this.saraAnimator.avatar, this.saraAnimator.gameObject.transform); //MJ: this.saraAnimator.gameObject = Sara
 
 
             // https://forum.unity.com/threads/humanpose-issue-continued.484128/
@@ -1427,14 +1443,14 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
 
 
-    void onDestroty()
+void onDestroty()
 {
 
  //this.avatarPose.Dispose();
 
  this.srcHumanPoseHandler.Dispose();
  this.destHumanPoseHandler.Dispose();
-    }
+ }
 
 } // public class BVHAnimationLoader : MonoBehaviour
 

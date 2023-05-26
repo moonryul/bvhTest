@@ -48,10 +48,18 @@ public class BVHFrameGetter : MonoBehaviour
             throw new InvalidOperationException("No  Bvh FileName is set.");
 
         }
-        this.bvh = new BVH(bvhFileName, parseMotionData: true); // parse the bvh file and load the  hierarchy paths and  load motion data to this.bvh.allBones
 
-        this.frameCount = bvh.frameCount;
-        this.secondsPerFrame = bvh.secondsPerFrame; // 0.05f;
+        //MJ: Note:
+        //public BVH(string pathToBvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
+
+        //MJ:  During Awake() of BVHFrameGetter Script, parse the bvh file and load the  hierarchy paths and  load motion data to this.bvh.allBones
+        
+        //VERY IMPORTANT:  when you get the motion file from the gesticulator, store it to this.bvh.allBones. Then the motion will be played.
+
+        this.bvh = new BVH(bvhFileName, parseMotionData: true);
+
+        this.frameCount = this.bvh.frameCount;
+        this.secondsPerFrame = this.bvh.secondsPerFrame; // 0.05f;
         // Sets to 20 fps
         Time.fixedDeltaTime = (float)this.secondsPerFrame;
 
@@ -66,6 +74,7 @@ public class BVHFrameGetter : MonoBehaviour
        // from the fbx varient of the Skeleton Prefab which was created by command "Convert to FBX Prefab variant" from GameOjbect tab in the topbar of Unity
 
         this.skeletonGO =  GameObject.FindGameObjectWithTag("Skeleton");
+
         if ( this.skeletonGO == null)
         {
            // If there is not gameObject named "Skeleton:, create a skeleton of transforms for the skeleton hierarchy.
@@ -78,6 +87,7 @@ public class BVHFrameGetter : MonoBehaviour
             this.avatarRootTransform = this.skeletonGO.transform.GetChild(0); // the Hips joint: The first child of SkeletonGO
 
             this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarCurrentTransforms);
+            // //MJ:  this.jointPaths is set within the above method.
 
             Debug.Log(" bvhFile has been read in Awake() of BVHFrameGetter");
 
@@ -105,16 +115,7 @@ public class BVHFrameGetter : MonoBehaviour
             // Collect the transforms in the skeleton hiearchy into a list of transforms,  this.avatarCurrentTransforms:
             // If you change  this.avatarCurrentTransforms, it affects the hierarchy of    this.skeletonGO , because both reference the same transforms
             this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarCurrentTransforms);
-
-
-
-
-
-
-
-            // Set the skeleton to the T-pose, the rest pose
-
-
+            //MJ:  this.jointPaths is set within the above method.
 
 
         }
@@ -192,7 +193,7 @@ public class BVHFrameGetter : MonoBehaviour
 
     //public void GetCurrentFrame(List<Transform> avatarCurrentTransforms)
     // public void GetCurrentFrame()
-    void FixedUpdate()
+    void FixedUpdate()  //MJ: set the current position of the skeleton by setting its joints to the angles of the current motion, this.bvh.allBones
     {
         //this.frameNo = 0; // go to the beginning of the frame
         //return;
@@ -213,7 +214,7 @@ public class BVHFrameGetter : MonoBehaviour
         avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
         avatarCurrentTransforms[0].localRotation = quaternion;
 
-        for (int b = 1; b < bvh.boneCount; b++) // boundCount: 57 ordered in depth first search of the skeleton hierarchy: bvh.boneCount = 57
+        for (int b = 1; b < bvh.boneCount; b++) // boneCount: 57 ordered in depth first search of the skeleton hierarchy: bvh.boneCount = 57
         // HumanBodyBones: Hips=0....; LastBone = 55
         {
             //Debug.Log(bvh.preparedAnimationClip.data[n].relativePath);            
