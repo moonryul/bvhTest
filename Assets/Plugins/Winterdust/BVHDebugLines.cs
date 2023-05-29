@@ -3,7 +3,10 @@ using UnityEngine;
 
 namespace Winterdust
 {
-	/// <summary>This component is added to all debug skeletons created by the BVH class. It's used to draw colored lines between all transforms and their children, except for the transform that holds this component (unless alsoDrawLinesFromOrigin is true). The "Hidden/Internal-Colored" shader is used and the lines are drawn using the GL class in OnRenderObject().</summary>
+	/// <summary>This component is added to all debug skeletons created by the BVH class.
+	// It's used to draw colored lines between all transforms and their children,
+	//  except for the transform that holds this component (unless alsoDrawLinesFromOrigin is true). 
+	// The "Hidden/Internal-Colored" shader is used and the lines are drawn using the GL class in OnRenderObject().</summary>
 	// Token: 0x02000007 RID: 7
 	public class BVHDebugLines : MonoBehaviour
 	{
@@ -26,8 +29,15 @@ namespace Winterdust
 			GL.PushMatrix();
 
 			// SceneObjects = this.gameObject.GetComponentsInChildren<Transform>().Where(go => go.gameObject != this.gameObject);
-			Transform[] componentsInChildren = base.transform.GetComponentsInChildren<Transform>();
-			for (int i = (componentsInChildren[0] == base.transform) ? (this.alsoDrawLinesFromOrigin ? 0 : 1) : 0; i < componentsInChildren.Length; i++)
+			//Transform[] componentsInChildren = base.transform.GetComponentsInChildren<Transform>();
+			//Transform[] componentsInChildren = transform.GetComponentsInChildren<Transform>();
+			Transform[] componentsInChildren = this.gameObject.transform.GetComponentsInChildren<Transform>();
+			// this.gameObject == "Skeleton" GameObject; this.gameObject.transform is set by BVHFrameSetter
+
+			//for (int i = (componentsInChildren[0] == base.transform) ? (this.alsoDrawLinesFromOrigin ? 0 : 1) : 0; i < componentsInChildren.Length; i++)
+			
+			for (int i = (componentsInChildren[0] == this.gameObject.transform) ? (this.alsoDrawLinesFromOrigin ? 0 : 1) : 0; 
+			              i < componentsInChildren.Length; i++)
 			{
 				for (int j = 0; j < componentsInChildren[i].childCount; j++)
 				{

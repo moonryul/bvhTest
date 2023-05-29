@@ -38,6 +38,12 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
     public List<Transform> bvhAvatarCurrentTransforms = new List<Transform>();
 
+   
+
+    public BVHFrameGetter bvhFrameGetter; 
+
+    public GameObject skeletonGO; // the reference to skeletonGO comes from bvhFrameGetter.cs
+
     HumanPose humanPose = new HumanPose();
     BvhSkeleton bvhSkeleton = new BvhSkeleton();
 
@@ -51,10 +57,6 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
     //HumanPoseHandler humanPoseHandler; 
     //HumanoidRecorder humanoidRecorder;
-
-    BVHFrameGetter bvhFrameGetter; 
-
-    GameObject skeletonGO; // the reference to skeletonGO comes frombvhFrameGetter.cs
     NativeArray<float> avatarPose;
 
     List<int>  muscleIndecies = new List<int>(); 
@@ -70,8 +72,8 @@ public class BVHAnimationRetargetter : MonoBehaviour
        
     [Header("Loader settings")]
     [Tooltip("The Animator component for the character; The bone names should be identical to those in the BVH file; All bones should be initialized with zero rotations.")]
-    public  Animator bvhAnimator; 
-    public   Animator saraAnimator; 
+    public  Animator bvhAnimator; // should be defined in the inspector
+    public   Animator saraAnimator; // should be defined in the inspector
    
     public string clipName;
     
@@ -95,6 +97,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
     //private Transform bvhRootTransform;
     private string prefix;
     private int frames;
+    private float deltaTime;
     private Dictionary<string, string> pathToBone;  // the default value of reference variable is null
     private Dictionary<string, string[]> boneToMuscles;  // the default value of reference variable is null
     
@@ -598,9 +601,11 @@ public class BVHAnimationRetargetter : MonoBehaviour
     {
        // Parse the avatar skeleton path and set the transfrom "container" for each joint in the path 
        // this.parseFile();   
-       //MJ: this refers to an object of class BVHAnimationRetargetter 
-        this.bvhFrameGetter =  this.gameObject.GetComponent<BVHFrameGetter>(); // this.gameObject = bvhRetargetter; It has two components: BVHAnimationRetargetter and bvhFrameGetter
-        this.skeletonGO = this.bvhFrameGetter.skeletonGO;
+       //MJ: "this" refers to an object of class BVHAnimationRetargetter 
+       // this.bvhFrameGetter =  this.gameObject.GetComponent<BVHFrameGetter>(); 
+        // this.gameObject = bvhRetargetter; It has two components: BVHAnimationRetargetter and bvhFrameGetter
+
+        //this.skeletonGO = this.bvhFrameGetter.skeletonGO;
         //this.bvhAvatarRootTransform = this.bvhFrameGetter.avatarRootTransform;
         //this.bvhAvatarCurrentTransforms = this.bvhFrameGetter.avatarCurrentTransforms;
         
@@ -610,8 +615,8 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
 
         //float deltaTime = 1f / this.frameRate;
-        float deltaTime = (float) this.bvhFrameGetter.secondsPerFrame; 
-        this.frames =  this.bvhFrameGetter.frameCount;
+        //this.deltaTime = (float) this.bvhFrameGetter.secondsPerFrame; 
+        //this.frames =  this.bvhFrameGetter.frameCount;
 
         //Debug.LogFormat(" this.bvhFrameGetter.frameNo = {0}", this.bvhFrameGetter.frameNo);
         //Debug.LogFormat($"this.bvhFrameGetter.frameNo = {this.bvhFrameGetter.frameNo}");
@@ -686,11 +691,15 @@ public class BVHAnimationRetargetter : MonoBehaviour
             //this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAvatarRootTransform);
             //this.destHumanPoseHandler = new HumanPoseHandler(this.saraAnimator.avatar, this.saraAvatarRootTransform);
 
-            this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAnimator.gameObject.transform); //MJ: this.bvhAnimator.gameObject=Skeleton gameObj
+            this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAnimator.gameObject.transform); 
+            //MJ: this.bvhAnimator.gameObject=SkeletonGO
+            //  this.skeletonGO.transform.GetChild(0) refers to this.avatarRootTransform, which is set every frame by BVHFrameGetters.cs
+            
             this.destHumanPoseHandler = new HumanPoseHandler(this.saraAnimator.avatar, this.saraAnimator.gameObject.transform); //MJ: this.saraAnimator.gameObject = Sara
+            // this.bvhAnimator is the Animator component attached to "Skeleton" gameObject, which a hierarchy of gameObjects.
 
             // => this.humanPoseHandler has a reference to this.bvhAnimator.avatar and its root transform (and thereby the entire hierarchy of transforms);
-            // You can change the transforms of the human avatar hierarchy somewhere else, and this humanPoseHandler will
+            // You can change the transforms of the human avatar hierarchy (In our code, by BVHFrameGetter script), and this humanPoseHandler will
             // refer to it, by  this.srchumanPoseHandler.GetHumanPose()?
 
 
@@ -894,7 +903,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
         // this.skeletonGO = this.bvhTest.skeletonGO;
 
         // //float deltaTime = 1f / this.frameRate;
-        float deltaTime = (float)this.bvhFrameGetter.secondsPerFrame;
+        //float deltaTime = (float)this.bvhFrameGetter.secondsPerFrame;
         // this.frames =  this.bvhTest.frameCount;
         //  public List<Transform> avatarTransforms = new List<Transform>(); // The transforms for Skeleton gameObject updated inbvhFrameGetter.cs
 
@@ -912,9 +921,9 @@ public class BVHAnimationRetargetter : MonoBehaviour
             //this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAvatarRootTransform);
             //this.destHumanPoseHandler = new HumanPoseHandler(this.saraAnimator.avatar, this.saraAvatarRootTransform);
 
-            //MJ: Important:  //Computes a human pose from the avatar skeleton (bound to srcHumanPoseHandler), 
-            // stores the pose in the human pose handler, and returns the human pose.
-
+            //MJ: Compute a human pose from the bvh skeleton (bound to srcHumanPoseHandler), 
+            // store the pose in the human pose handler, and return the human pose as the value ref humanPose.
+            // The bvh skeleton pose is updated every frame by by BVHFrameGetter script.
             HumanPose humanPose = new HumanPose();
             this.srcHumanPoseHandler.GetHumanPose(ref humanPose);
 

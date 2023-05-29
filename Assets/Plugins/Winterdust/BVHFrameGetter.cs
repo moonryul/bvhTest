@@ -7,16 +7,19 @@ using Winterdust; // for BVH class
 using System;
 
 using System.IO;
-public class BVHFrameGetter : MonoBehaviour
+public class BVHFrameGetter : MonoBehaviour  
+// This class is Attached to gameObject "Skeleton", which is this.bvhAnimator.gameObject in BVHAnimationRetargetter.cs
+
 {
     
     // https://winterdust.itch.io/bvhimporterexporter
 
     public List<string> jointPaths = new List<string>(); // emtpy one
-    public List<Transform> avatarCurrentTransforms = new List<Transform>(); // The transforms for Skeleton gameObject
+    public List<Transform> avatarCurrentTransforms = new List<Transform>(); 
+    // The transforms for Skeleton gameObject; This is the bvhCurrentTransform set from the current frame of the bvh motion file
 
     public Transform avatarRootTransform; // defined in inspector
-    public string bvhFileName = "";
+    public string bvhFileName = ""; // == Assets/Recording_001.bvh
     public BVH bvh;
 
     public int frameNo =0;
@@ -24,20 +27,9 @@ public class BVHFrameGetter : MonoBehaviour
     public int    frameCount;
 
      public GameObject skeletonGO;
-
     
-    // public int boneCount;
-
-    // public double secondsPerFrame;
-
+     
    
-    // public int frameCount;
-
-   //All bones and their data. The first (and often only) root bone is always at index 0. A child bone will always have a higher index than its parent (if you modify the array manually make sure to follow this rule). Important: bones.Length can't be trusted, use boneCount instead
-        
-    //    public BVH.BVHBone[] allBones;
-
-    //void Start()
     void Awake()
     {
 
@@ -56,7 +48,7 @@ public class BVHFrameGetter : MonoBehaviour
         
         //VERY IMPORTANT:  when you get the motion file from the gesticulator, store it to this.bvh.allBones. Then the motion will be played.
 
-        this.bvh = new BVH(bvhFileName, parseMotionData: true);
+        this.bvh = new BVH(bvhFileName, parseMotionData: true); // Load BVH motion data to this.bvh.allBones
 
         this.frameCount = this.bvh.frameCount;
         this.secondsPerFrame = this.bvh.secondsPerFrame; // 0.05f;
@@ -77,17 +69,24 @@ public class BVHFrameGetter : MonoBehaviour
 
         if ( this.skeletonGO == null)
         {
-           // If there is not gameObject named "Skeleton:, create a skeleton of transforms for the skeleton hierarchy.
-            this.skeletonGO = this.bvh.makeDebugSkeleton(animate:false, skeletonGOName: "Skeleton"); // => if animate = false, dot not create an animation clip but only the rest pose; 
-                                                                                                // Create BvhDebugLines component and MeshRenderer component,
-                                                                                                //  but do not create Animation component
-                                                                                                // public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
+           // (1)  create a skeleton of transforms for the skeleton hierarchy, 
+           // (2) add a BVHDebugLines component to it so it becomes visible like a stick figur [
+            // BVHDebugLines bvhdebugLines = gameObject.AddComponent<BVHDebugLines>() ],
+           // (Lines are simply drawn between the bone heads (and ends))d  
+           // (3) return the skeleton, which is a hierarchy of GameObjects.
+
+            this.skeletonGO = this.bvh.makeDebugSkeleton(animate:false, skeletonGOName: "Skeleton"); 
+            // => if animate = false, dot not create an animation clip but only the rest pose; 
+            // Create BvhDebugLines component and MeshRenderer component,
+            //  but do not create Animation component:
+            // public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
 
             Debug.Log(" bvh Skeleton is  created");
+
             this.avatarRootTransform = this.skeletonGO.transform.GetChild(0); // the Hips joint: The first child of SkeletonGO
 
             this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarCurrentTransforms);
-            // //MJ:  this.jointPaths is set within the above method.
+            // //MJ:  this.jointPaths and this.avatarCurrentTransforms are set within his.ParseAvatarRootTransform.
 
             Debug.Log(" bvhFile has been read in Awake() of BVHFrameGetter");
 
@@ -96,13 +95,9 @@ public class BVHFrameGetter : MonoBehaviour
         {
             Debug.Log(" bvh Skeleton is already created and has been given Tag 'Skeleton' ");
 
-
-            //boneTransform.localPosition = this.localRestPosition;
-            //boneTransform.localRotation = Quaternion.identity;
-
             // set the rest pose of this.bvh to this.skeletonGO:
 
-            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0); // the Hips joint: The first child of SkeletonGO
+            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0); //  The first child (Hips) of SkeletonGO
 
            
 
@@ -112,10 +107,12 @@ public class BVHFrameGetter : MonoBehaviour
 
             //this.bvh.makeDebugSkeleton(this.avatarRootTransform, this.avatarCurrentTransforms, animate: false); //this.skeletonGO => this.avatarRootTransform
 
-            // Collect the transforms in the skeleton hiearchy into a list of transforms,  this.avatarCurrentTransforms:
-            // If you change  this.avatarCurrentTransforms, it affects the hierarchy of    this.skeletonGO , because both reference the same transforms
+            //IMPORTANT:  Collect the transforms in the skeleton hiearchy into ***a list of transforms***,  this.avatarCurrentTransforms:
+            // If you change  this.avatarCurrentTransforms, it affects the hierarchy of    this.skeletonGO , because both reference the same transforms;
+
+            //  this.avatarRootTransform = this.skeletonGO.transform.GetChild(0)
             this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarCurrentTransforms);
-            //MJ:  this.jointPaths is set within the above method.
+            //MJ:  this.jointPaths and this.avatarCurrentTransforms are set within the above method.
 
 
         }
@@ -193,7 +190,9 @@ public class BVHFrameGetter : MonoBehaviour
 
     //public void GetCurrentFrame(List<Transform> avatarCurrentTransforms)
     // public void GetCurrentFrame()
-    void FixedUpdate()  //MJ: set the current position of the skeleton by setting its joints to the angles of the current motion, this.bvh.allBones
+    void FixedUpdate()  
+    //MJ:  this.skeletonGO.transform.GetChild(0) refers to this.avatarRootTransform, which is set every frame by BVHFrameGetters.cs
+    // set the current position of the skeleton by setting its joints to the angles of the current motion, this.bvh.allBones
     {
         //this.frameNo = 0; // go to the beginning of the frame
         //return;
@@ -210,9 +209,12 @@ public class BVHFrameGetter : MonoBehaviour
 
         // this.avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
         // this.avatarCurrentTransforms[0].localRotation = quaternion;
+
+        //MJ: We can get the root vector and quaternion from the motionPythonArray from gesticulator directly, without
+        //using this.bvh.allBones[0].localFramePositions[this.frameNo];
    
-        avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
-        avatarCurrentTransforms[0].localRotation = quaternion;
+        this.avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
+        this.avatarCurrentTransforms[0].localRotation = quaternion;
 
         for (int b = 1; b < bvh.boneCount; b++) // boneCount: 57 ordered in depth first search of the skeleton hierarchy: bvh.boneCount = 57
         // HumanBodyBones: Hips=0....; LastBone = 55
@@ -222,11 +224,15 @@ public class BVHFrameGetter : MonoBehaviour
 
             //Vector3 vector = bvh.allBones[b].localFramePositions[this.frameNo];
            // vector =  this.bvh.allBones[b].localRestPosition; // This line can be moved to BVHAnimationRetargetter to improve performance.
+            
+            //  We can get the  quaternion of b-th bone from the motionPythonArray from gesticulator directly, without
+             //using this.bvh.allBones[b].localFrameRotations[this.frameNo];
+             
             quaternion = this.bvh.allBones[b].localFrameRotations[this.frameNo];
 
-            //   update the pose of the avatar to the motion data of the current frame this.frameNo
+            //  Update the pose of the avatar to the motion data of the current frame this.frameNo
             //this.avatarCurrentTransforms[b].localPosition = vector; // 0 ~ 56: a total of 57
-            avatarCurrentTransforms[b].localRotation = quaternion;     // Set the local rotations of each frame  to the correspoding transform in the skeleton hiearchy;
+            this.avatarCurrentTransforms[b].localRotation = quaternion;     // Set the local rotations of each frame  to the correspoding transform in the skeleton hiearchy;
             // This means the rest pose of the skeleton is important to the final pose
 
            
