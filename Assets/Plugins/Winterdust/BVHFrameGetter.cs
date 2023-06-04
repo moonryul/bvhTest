@@ -7,33 +7,38 @@ using Winterdust; // for BVH class
 using System;
 
 using System.IO;
-public class BVHFrameGetter : MonoBehaviour  
-// This class is Attached to gameObject "Skeleton", which is this.bvhAnimator.gameObject in BVHAnimationRetargetter.cs
+public class BVHFrameGetter : MonoBehaviour
+// This class is Attached to gameObject "Skeleton", which is referred by this.bvhAnimator.gameObject in BVHAnimationRetargetter.cs
 
 {
-    
+
     // https://winterdust.itch.io/bvhimporterexporter
 
-    public List<string> jointPaths = new List<string>(); // emtpy one
-    public List<Transform> avatarCurrentTransforms = new List<Transform>(); 
-    // The transforms for Skeleton gameObject; This is the bvhCurrentTransform set from the current frame of the bvh motion file
+    public bool isFrameFromBVHFile = true;
+    // If the current frame for the human character is from the bvh file, the FixedUpdate() of BVHFrameGetter component is
+    // executed to set the current frame; Otherwise, the current frame will be set by the output of  AI gesticulator in AvatarController component.
 
     public Transform avatarRootTransform; // defined in inspector
+    public List<string> jointPaths = new List<string>(); // emtpy one
+    public List<Transform> avatarCurrentTransforms = new List<Transform>();
+    // The transforms for Skeleton gameObject; This is the bvhCurrentTransform set from the current frame of the bvh motion file
+
+ 
     public string bvhFileName = ""; // == Assets/Recording_001.bvh
     public BVH bvh;
 
-    public int frameNo =0;
+    public int frameNo = 0;
     public double secondsPerFrame;
-    public int    frameCount;
+    public int frameCount;
 
-     public GameObject skeletonGO;
-    
-     
-   
+    public GameObject skeletonGO = null;
+
+
+
     void Awake()
     {
 
-       // Load BVH motion data to this.bvh.allBones
+        // Load BVH motion data to this.bvh.allBones
         if (this.bvhFileName == "")
         {
             Debug.Log(" bvhFileName should be set in the inspector");
@@ -45,7 +50,7 @@ public class BVHFrameGetter : MonoBehaviour
         //public BVH(string pathToBvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
 
         //MJ:  During Awake() of BVHFrameGetter Script, parse the bvh file and load the  hierarchy paths and  load motion data to this.bvh.allBones
-        
+
         //VERY IMPORTANT:  when you get the motion file from the gesticulator, store it to this.bvh.allBones. Then the motion will be played.
 
         this.bvh = new BVH(bvhFileName, parseMotionData: true); // Load BVH motion data to this.bvh.allBones
@@ -56,26 +61,21 @@ public class BVHFrameGetter : MonoBehaviour
         Time.fixedDeltaTime = (float)this.secondsPerFrame;
 
 
-        //GameObject skeletonGO = myBvh.makeDebugSkeleton();
-        // This line creates an animated skeleton from the BVH instance, visualized as a stick figure.
-        //  makeSkeleton() does the same thing, except it isn't visualized/animated by default.
+        // Create a Skeleton hiearchy if it  is not yet created. 
 
-        //public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
+        this.skeletonGO = GameObject.FindGameObjectWithTag("Skeleton");
 
-       // Create a Skeleton hiearchy if it  is not yet created. If it exists, it implies that Skeleton was added to the scene
-       // from the fbx varient of the Skeleton Prefab which was created by command "Convert to FBX Prefab variant" from GameOjbect tab in the topbar of Unity
-
-        this.skeletonGO =  GameObject.FindGameObjectWithTag("Skeleton");
-
-        if ( this.skeletonGO == null)
+        if (this.skeletonGO == null)
         {
-           // (1)  create a skeleton of transforms for the skeleton hierarchy, 
-           // (2) add a BVHDebugLines component to it so it becomes visible like a stick figur [
+            // (1)  create a skeleton of transforms for the skeleton hierarchy, 
+            // (2) add a BVHDebugLines component to it so it becomes visible like a stick figur [
             // BVHDebugLines bvhdebugLines = gameObject.AddComponent<BVHDebugLines>() ],
-           // (Lines are simply drawn between the bone heads (and ends))d  
-           // (3) return the skeleton, which is a hierarchy of GameObjects.
+            // (Lines are simply drawn between the bone heads (and ends))d  
+            // (3) return the skeleton, which is a hierarchy of GameObjects.
 
-            this.skeletonGO = this.bvh.makeDebugSkeleton(animate:false, skeletonGOName: "Skeleton"); 
+            // Create all gameObjects hiearchy and the components needed to render the gameObjects for bvh.Allbones[].
+
+            this.skeletonGO = this.bvh.makeDebugSkeleton(animate: false, skeletonGOName: "Skeleton");
             // => if animate = false, dot not create an animation clip but only the rest pose; 
             // Create BvhDebugLines component and MeshRenderer component,
             //  but do not create Animation component:
@@ -95,22 +95,38 @@ public class BVHFrameGetter : MonoBehaviour
         {
             Debug.Log(" bvh Skeleton is already created and has been given Tag 'Skeleton' ");
 
-            // set the rest pose of this.bvh to this.skeletonGO:
+            //all gameObjects hiearchy and the components needed to render the gameObjects for bvh.Allbones[] are already available.
 
-            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0); //  The first child (Hips) of SkeletonGO
+            // this.skeletonGO contains the pose of the skeleton obtained from the saved scene.
+            // Set this pose to the allBones data structure of the BVH => no need to do it, because we do:
+            //   this.bvh = new BVH(bvhFileName, parseMotionData: true); // Load BVH motion data to this.bvh.allBones always.
 
-           
+            //this.bvh.setBoneTransformsToSkeleton(this.skeletonGO);
 
-            //this.skeletonGO = this.bvh.makeDebugSkeleton(this.skeletonGO, this.avatarCurrentTransforms, animate: false);
+            // Note:
+            // public void setBoneTransformsToSkeleton(GameObject skeletonGO,  int frame = -1)
+            // {
+            //     Transform[] componentsInChildren = skeletonGO.GetComponentsInChildren<Transform>(); 
 
-            this.skeletonGO = this.bvh.makeDebugSkeleton(this.skeletonGO, animate: false);
+            //     for (int i = 0; i < this.boneCount; i++)
+            //     {
 
-            //this.bvh.makeDebugSkeleton(this.avatarRootTransform, this.avatarCurrentTransforms, animate: false); //this.skeletonGO => this.avatarRootTransform
+
+            //         this.allBones[i].setLocalPosRot( componentsInChildren[ i+1].transform, ref frame);  
+            // 		 // i+1 index: componentsInChildren contains the transform of Skeleton GameObject itself; we exclude it from the avatar hiearchy
+
+
+            //     }
+
+
+            // }
+
+
 
             //IMPORTANT:  Collect the transforms in the skeleton hiearchy into ***a list of transforms***,  this.avatarCurrentTransforms:
             // If you change  this.avatarCurrentTransforms, it affects the hierarchy of    this.skeletonGO , because both reference the same transforms;
 
-            //  this.avatarRootTransform = this.skeletonGO.transform.GetChild(0)
+            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
             this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarCurrentTransforms);
             //MJ:  this.jointPaths and this.avatarCurrentTransforms are set within the above method.
 
@@ -172,89 +188,102 @@ public class BVHFrameGetter : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-// MonoBehaviour.FixedUpdate has the frequency of the physics system; it is called every fixed frame-rate frame. Compute Physics system calculations after FixedUpdate.
-//  0.02 seconds (50 calls per second) is the default time between calls. Use Time.fixedDeltaTime to access this value. 
-//  Alter it by setting it to your preferred value within a script, or, navigate to Edit > Settings > Time > Fixed Timestep and set it there.
-//   The FixedUpdate frequency is more or less than Update. If the application runs at 25 frames per second (fps), 
-//   Unity calls it approximately twice per frame, Alternatively, 100 fps causes approximately two rendering frames with one FixedUpdate.
-//  Control the required frame rate and Fixed Timestep rate from Time settings. Use Application.targetFrameRate to set the frame rate.
+    // Update vs FixedUpdate: Update is called once per frame
+    // MonoBehaviour.FixedUpdate has the frequency of the physics system; it is called every fixed frame-rate frame. Compute Physics system calculations after FixedUpdate.
+    //  0.02 seconds (50 calls per second) is the default time between calls. Use Time.fixedDeltaTime to access this value. 
+    //  Alter it by setting it to your preferred value within a script, or, navigate to Edit > Settings > Time > Fixed Timestep and set it there.
+    //   The FixedUpdate frequency is more or less than Update. If the application runs at 25 frames per second (fps), 
+    //   Unity calls it approximately twice per frame, Alternatively, 100 fps causes approximately two rendering frames with one FixedUpdate.
+    //  Control the required frame rate and Fixed Timestep rate from Time settings. Use Application.targetFrameRate to set the frame rate.
 
-// Application.targetFrameRate: Specifies the frame rate at which Unity tries to render your game.
-// Both Application.targetFrameRate and QualitySettings.vSyncCount let you control your game's frame rate for smoother performance. 
-//targetFrameRate controls the frame rate by specifying the number of frames your game tries to render per second, whereas vSyncCount specifies the number of screen refreshes to allow between frames.
+    // Application.targetFrameRate: Specifies the frame rate at which Unity tries to render your game.
+    // Both Application.targetFrameRate and QualitySettings.vSyncCount let you control your game's frame rate for smoother performance. 
+    //targetFrameRate controls the frame rate by specifying the number of frames your game tries to render per second, whereas vSyncCount specifies the number of screen refreshes to allow between frames.
 
 
-// On all other platforms, Unity ignores the value of targetFrameRate if you set vSyncCount. When you use vSyncCount, Unity calculates the target frame rate by dividing the platform's default target frame rate by the value of vSyncCount.
- //For example, if the platform's default render rate is 60 fps and vSyncCount is 2, Unity tries to render the game at 30 frames per second.
+    // On all other platforms, Unity ignores the value of targetFrameRate if you set vSyncCount. When you use vSyncCount, Unity calculates the target frame rate by dividing the platform's default target frame rate by the value of vSyncCount.
+    //For example, if the platform's default render rate is 60 fps and vSyncCount is 2, Unity tries to render the game at 30 frames per second.
 
     //public void GetCurrentFrame(List<Transform> avatarCurrentTransforms)
     // public void GetCurrentFrame()
-    void FixedUpdate()  
+
+
+    void FixedUpdate()
+
     //MJ:  this.skeletonGO.transform.GetChild(0) refers to this.avatarRootTransform, which is set every frame by BVHFrameGetters.cs
     // set the current position of the skeleton by setting its joints to the angles of the current motion, this.bvh.allBones
     {
-        //this.frameNo = 0; // go to the beginning of the frame
-        //return;
-
-        // Update the transforms of skeletonGO bvh.secondsPerFrame
 
 
-        // We need a formula that computes the two adjacent frameNumbers whose key times include a given time t, using bvh.secondsPerFrame, bvh.frameCount
+        // If the current frame for the human character is from the bvh file, the FixedUpdate() of BVHFrameGetter component is
+        // executed to set the current frame; Otherwise, the current frame will be set by the output of  AI gesticulator in AvatarController component.
 
-        Vector3 vector = this.bvh.allBones[0].localFramePositions[this.frameNo];
 
-        Quaternion quaternion = this.bvh.allBones[0].localFrameRotations[this.frameNo]; // frameTIme = 50 ms from gesticulator
-        // update the pose of the avatar to the motion data of the current frame this.frameNo
-
-        // this.avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
-        // this.avatarCurrentTransforms[0].localRotation = quaternion;
-
-        //MJ: We can get the root vector and quaternion from the motionPythonArray from gesticulator directly, without
-        //using this.bvh.allBones[0].localFramePositions[this.frameNo];
-   
-        this.avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
-        this.avatarCurrentTransforms[0].localRotation = quaternion;
-
-        for (int b = 1; b < bvh.boneCount; b++) // boneCount: 57 ordered in depth first search of the skeleton hierarchy: bvh.boneCount = 57
-        // HumanBodyBones: Hips=0....; LastBone = 55
+        if (this.isFrameFromBVHFile != true)  { return; }
+        else
         {
-            //Debug.Log(bvh.preparedAnimationClip.data[n].relativePath);            
+
+            //this.frameNo = 0; // go to the beginning of the frame
+            //return;
+
+            // Update the transforms of skeletonGO bvh.secondsPerFrame
 
 
-            //Vector3 vector = bvh.allBones[b].localFramePositions[this.frameNo];
-           // vector =  this.bvh.allBones[b].localRestPosition; // This line can be moved to BVHAnimationRetargetter to improve performance.
-            
-            //  We can get the  quaternion of b-th bone from the motionPythonArray from gesticulator directly, without
-             //using this.bvh.allBones[b].localFrameRotations[this.frameNo];
-             
-            quaternion = this.bvh.allBones[b].localFrameRotations[this.frameNo];
+            // We need a formula that computes the two adjacent frameNumbers whose key times include a given time t, using bvh.secondsPerFrame, bvh.frameCount
 
-            //  Update the pose of the avatar to the motion data of the current frame this.frameNo
-            //this.avatarCurrentTransforms[b].localPosition = vector; // 0 ~ 56: a total of 57
-            this.avatarCurrentTransforms[b].localRotation = quaternion;     // Set the local rotations of each frame  to the correspoding transform in the skeleton hiearchy;
-            // This means the rest pose of the skeleton is important to the final pose
+            Vector3 vector = this.bvh.allBones[0].localFramePositions[this.frameNo];
 
-           
+            Quaternion quaternion = this.bvh.allBones[0].localFrameRotations[this.frameNo]; // frameTIme = 50 ms from gesticulator
+                                                                                            // update the pose of the avatar to the motion data of the current frame this.frameNo
 
-        } //  for each bone
+            // this.avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
+            // this.avatarCurrentTransforms[0].localRotation = quaternion;
 
-        // Increment frameNo for the next fixed update call
-        this.frameNo++;
-        // check if the current frame number frameNo exceeds frameCount
-        if (this.frameNo == this.bvh.frameCount) // frameNo = 0 ~ 519;  frameCount = 520
-        {
-            this.frameNo = 0; // go to the beginning of the frame
+            //MJ: We can get the root vector and quaternion from the motionPythonArray from gesticulator directly, without
+            //using this.bvh.allBones[0].localFramePositions[this.frameNo];
+
+            this.avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
+            this.avatarCurrentTransforms[0].localRotation = quaternion;
+
+            for (int b = 1; b < bvh.boneCount; b++) // boneCount= 57 ordered in depth first search of the skeleton hierarchy: bvh.boneCount = 57
+                                                    // HumanBodyBones: Hips=0....; LastBone = 55
+            {
+                //Debug.Log(bvh.preparedAnimationClip.data[n].relativePath);            
+
+
+                //Vector3 vector = bvh.allBones[b].localFramePositions[this.frameNo];
+                // vector =  this.bvh.allBones[b].localRestPosition; // This line can be moved to BVHAnimationRetargetter to improve performance.
+
+                //  We can get the  quaternion of b-th bone from the motionPythonArray from gesticulator directly, without
+                //using this.bvh.allBones[b].localFrameRotations[this.frameNo];
+
+                quaternion = this.bvh.allBones[b].localFrameRotations[this.frameNo];
+
+                //  Update the pose of the avatar to the motion data of the current frame this.frameNo
+                //this.avatarCurrentTransforms[b].localPosition = vector; //b: 0 ~ 56: a total of 57
+                this.avatarCurrentTransforms[b].localRotation = quaternion;     // Set the local rotations of each frame  to the correspoding transform in the skeleton hiearchy;
+                                                                                // This means the rest pose of the skeleton is important to the final pose
+
+
+
+            } //  for each bone
+
+            // Increment frameNo for the next fixed update call
+            this.frameNo++;
+            // check if the current frame number frameNo exceeds frameCount
+            if (this.frameNo == this.bvh.frameCount) // frameNo = 0 ~ 519;  frameCount = 520
+            {
+                this.frameNo = 0; // go to the beginning of the frame
+
+            }
 
         }
 
 
-    } 
+    }
 
-     //void FixedUpdate()
-     //{
-     //   GetCurrentFrame();
-    // }
+    //void FixedUpdate()
+
 
 } // BVHTest class
 

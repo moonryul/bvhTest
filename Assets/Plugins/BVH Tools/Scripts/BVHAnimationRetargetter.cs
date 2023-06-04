@@ -31,6 +31,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
 {
     public enum  AnimType {Legacy, Generic, Humanoid};
     public AnimType animType = AnimType.Generic;
+    
     //public Avatar bvhAvatar;
 
     //public Transform bvhAvatarRootTransform; // to be set in inspector
@@ -398,6 +399,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
         if (this.bvhAnimator == null)
         {
             throw new InvalidOperationException("No Bvh Animator  set.");
+           //this.gameObject.AddComponent
         }
 
         else
@@ -602,6 +604,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
        // Parse the avatar skeleton path and set the transfrom "container" for each joint in the path 
        // this.parseFile();   
        //MJ: "this" refers to an object of class BVHAnimationRetargetter 
+       
        // this.bvhFrameGetter =  this.gameObject.GetComponent<BVHFrameGetter>(); 
         // this.gameObject = bvhRetargetter; It has two components: BVHAnimationRetargetter and bvhFrameGetter
 

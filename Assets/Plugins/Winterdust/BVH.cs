@@ -488,10 +488,12 @@ namespace Winterdust
 		public GameObject makeSkeleton(int frame = -1, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool animate = false)
 		{
 			GameObject gameObject = new GameObject(skeletonGOName);
+
 			for (int i = 0; i < this.boneCount; i++)
 			{
-				if (this.allBones[i].parentBoneIndex == -1)
-				{
+				if (this.allBones[i].parentBoneIndex == -1) // ParentBoneIndex =-1 means that this bone is a root bone. Usually there is only one root bone.
+				                                 		    // The root bone's parent is gameObject.
+				{  // >Makes a GameObject that represents this bone, complete with child GameObjects that represents the bone's children. 
 					this.allBones[i].makeGO(ref frame, ref includeBoneEnds, ref this.allBones, i).transform.parent = gameObject.transform;
 				}
 			}
@@ -505,6 +507,35 @@ namespace Winterdust
 		}
 
 
+
+
+        //Added by Moon Jung; skeleton Hierarchy, skeletonGO,  already exists: Set the bones' locations/rotations are set to the current transforms of the
+        // Skeleton's hiearchy. 
+        public void setBoneTransformsToSkeleton(GameObject skeletonGO,  int frame = -1)
+        {
+            Transform[] componentsInChildren = skeletonGO.GetComponentsInChildren<Transform>(); 
+			//in Unity C# scripts, when you call GetComponentsInChildren<Transform>(), the order of elements 
+			//in the resulting array componentsInChildren follows a depth-first order of the hierarchy in the skeletonGO GameObject.
+
+			// the resulting array componentsInChildren will contain the Transform component of the parent GameObject (skeletonGO)
+			//  as the first element, followed by the Transform components of its children and their descendants in a depth-first order.
+			          
+            for (int i = 0; i < this.boneCount; i++)
+            {
+
+              
+                this.allBones[i].setLocalPosRot( componentsInChildren[ i+1].transform, ref frame);  
+				 // i+1 index: componentsInChildren contains the transform of Skeleton GameObject itself as the first element; we exclude it from the avatar hiearchy,
+				 // because the root of the avatar, Hips, is a child to the Skeleton.
+
+
+            }
+            
+            
+        }
+
+        //Note for makeSkeleton defined above:
+		
         //public void setLocalPosRot(Transform boneTransform, ref int frame)
         //{
         //    if (frame == -1)
@@ -517,31 +548,9 @@ namespace Winterdust
         //    boneTransform.localRotation = this.localFrameRotations[frame];
         //}
 
-
-        //this.makeSkeleton(avatarRootTransform, avatarCurrentTransforms, frame, animate);
-        public GameObject makeSkeleton(GameObject skeletonGO,  int frame = -1,  bool animate = false)
-        {
-            Transform[] componentsInChildren = skeletonGO.GetComponentsInChildren<Transform>(); //avatarRootTransform  = Hips
-            //GameObject gameObject = new GameObject(skeletonGOName);
-            for (int i = 0; i < this.boneCount; i++)
-            {
-
-               // this.allBones[i].makeGO(  ref frame, avatarCurrentTransforms[i].transform);
-                this.allBones[i].setLocalPosRot(componentsInChildren[ i+1].transform, ref frame);   // componentsInChildren contains the transform of Skeleton itself; we exclude it from the avatar hiearchy
-
-
-            }
-            if (animate)
-            {
-                BVH.animateSkeleton(skeletonGO, this.makeAnimationClip(0, -1, false, "", WrapMode.Loop, true, false, false), 1f);
-                //=> 	public static Animation animateSkeleton(GameObject skeletonGO, AnimationClip clip, float blendTimeSec = 1f)
-                //=>    gameObject( skeletonGO ).AddComponent<Animation>();
-            }
-            return skeletonGO;
-        }
-
-
-        /// <summary>Rearranges an existing skeleton to the given frame (changes both positions and rotations). Use frame -1 to put the skeleton into its rest pose. Does not touch GameObjects representing bone ends. (Returns this BVH instead of void, for chaining.)</summary>
+        /// <summary>Rearranges an existing skeleton to the given frame (changes both positions and rotations). 
+		// Use frame -1 to put the skeleton into its rest pose. Does not touch GameObjects representing bone ends.	
+		//	 (Returns this BVH instead of void, for chaining.)</summary>
         // Token: 0x0600000E RID: 14 RVA: 0x000030DC File Offset: 0x000012DC
         public BVH moveSkeleton(GameObject skeletonGO, int frame)
 		{
@@ -627,78 +636,6 @@ namespace Winterdust
         }   //public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
 		
 
-       // public GameObject makeDebugSkeleton( GameObject skeletonGO,  List<Transform> avatarCurrentTransforms, bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false,  bool originLine = false)
-         public GameObject makeDebugSkeleton( GameObject skeletonGO,  bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false,  bool originLine = false)
-        {  //GameObject gameObject = this.makeSkeleton(frame, includeBoneEnds, skeletonGOName, animate);
-           // GameObject gameObject = this.makeSkeleton(skeletonGO, avatarCurrentTransforms, frame, animate);
-            GameObject gameObject = this.makeSkeleton(skeletonGO,  frame, animate);
-            Transform avatarRootTransform = skeletonGO.transform.GetChild(0);
-
-            //this.makeSkeleton(avatarRootTransform, avatarCurrentTransforms, frame, animate);
-
-            // => 	GameObject gameObject = new GameObject(skeletonGOName);
-            Color color;
-            ColorUtility.TryParseHtmlString("#" + colorHex.Replace("#", "").Replace("0x", ""), out color);
-            if (jointSize != 0f)   // Draw the skeleton ?
-            {
-                bool flag = false;
-                if (jointSize < 0f)
-                {
-                    jointSize *= -1f;
-                    flag = true;
-                }
-                Material material = new Material(Shader.Find("Legacy Shaders/Diffuse"));
-
-                material.color = color;
-                //Transform[] componentsInChildren = gameObject.GetComponentsInChildren<Transform>();
-                // Returns all components of Type type in the GameObject or any of its children using depth first search. Works recursively.
-               
-                Transform[] componentsInChildren = avatarRootTransform.gameObject.GetComponentsInChildren<Transform>(); //avatarRootTransform  = Hips
-                // avatarCurrentTransforms == componentsInChildren ??
-                for (int i = 0; i < componentsInChildren.Length; i++)
-                {
-                   // if (componentsInChildren[i] != gameObject.transform)  // if the current node is not the root of the skeleton "Skeleton"
-                  //  {
-                        Vector3[] array = new Vector3[]
-                        {
-                            new Vector3(-jointSize / 8f, jointSize / 2f, -jointSize / 2f),
-                            new Vector3(-jointSize, jointSize, -jointSize * 2f),
-                            new Vector3(jointSize, jointSize, -jointSize * 2f),
-                            new Vector3(jointSize / 8f, jointSize / 2f, -jointSize / 2f),
-                            new Vector3(0f, -jointSize, 0f),
-                            new Vector3(jointSize, jointSize, 0f),
-                            new Vector3(-jointSize, jointSize, 0f),
-                            new Vector3(0f, -jointSize, 0f)
-                        };
-                        if (flag && componentsInChildren[i].rotation != Quaternion.identity)
-                        {
-                            Quaternion rotation = Quaternion.Inverse(componentsInChildren[i].rotation) * Quaternion.identity;
-                            for (int j = 0; j < array.Length; j++)
-                            {
-                                array[j] = rotation * array[j];
-                            }
-                        }
-                        Mesh mesh = new Mesh();
-                        mesh.name = "BvhMesh";
-                        mesh.vertices = array;
-                        mesh.triangles = BVH.debugMeshFaces;
-
-                        mesh.RecalculateNormals();
-                        // componentsInChildren[i].gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;  // mesh and Material are newly created.
-                        // componentsInChildren[i].gameObject.AddComponent<MeshRenderer>().sharedMaterial = material;
-                        componentsInChildren[i].gameObject.GetComponent<MeshFilter>().sharedMesh = mesh;  // mesh and Material are newly created.
-                        componentsInChildren[i].gameObject.GetComponent<MeshRenderer>().sharedMaterial = material;
-                  //  }   //  if (componentsInChildren[i] != gameObject.transform)  // if the current node is not the root of the skeleton "Skeleton"
-                }  //for (int i = 0; i < componentsInChildren.Length; i++)
-            }  // if (jointSize != 0f)   // Draw the skeleton ?
-
-            BVHDebugLines bvhdebugLines = gameObject.GetComponent<BVHDebugLines>();       // gameObject is "Skeleton"
-            //BVHDebugLines bvhdebugLines = skeletonGO.GetComponent<BVHDebugLines>();
-            bvhdebugLines.color = color;
-            bvhdebugLines.xray = xray;
-            bvhdebugLines.alsoDrawLinesFromOrigin = originLine;
-            return gameObject;
-        }
 
         /// <summary>Makes several debug skeletons that together visualize the whole animation at once (or a part of the animation if you change fromFrame/toFrame). The stick figures shift from green to yellow to red, where green is the beginning and red is the end. Xray will make the skeletons visible through walls.</summary>
         // Token: 0x06000010 RID: 16 RVA: 0x0000339C File Offset: 0x0000159C
@@ -1585,7 +1522,7 @@ namespace Winterdust
 
 		/// <summary>All bones and their data. The first (and often only) root bone is always at index 0. A child bone will always have a higher index than its parent (if you modify the array manually make sure to follow this rule). Important: bones.Length can't be trusted, use boneCount instead.</summary>
 		// Token: 0x04000006 RID: 6
-		public BVH.BVHBone[] allBones;
+		public BVH.BVHBone[] allBones; // this.BVH.BVHBone[]
 
 		/// <summary>The actual number of bones. Can be lower or equal to bones.Length.</summary>
 		// Token: 0x04000007 RID: 7
@@ -1698,8 +1635,11 @@ namespace Winterdust
 				return array.Length - 2;
 			}
 
-			/// <summary>Defines the "localRestPosition"-field of this BVHBone. Input is the whole "OFFSET"-line in the .bvh file (the one above the "CHANNELS"-line).</summary>
+			/// <summary>Defines the "localRestPosition"-field of this BVHBone.
+			// Input is the whole "OFFSET"-line in the .bvh file (the one above the "CHANNELS"-line).</summary>
 			// Token: 0x06000038 RID: 56 RVA: 0x00004FDC File Offset: 0x000031DC
+
+			//MJ: called by this.allBones[num10].defineLocalRestPosition(ref text3, ref zUp);
 			public void defineLocalRestPosition(ref string line, ref bool zUp) // Set the offset vector in Unity coordinate system
 			{
 				string[] array = line.Split(new char[]
@@ -1717,8 +1657,11 @@ namespace Winterdust
 				this.localRestPosition.z = float.Parse(array[3]);
 			}
 
-			/// <summary>Defines the "endPosition"-field of this BVHBone. Input is the whole "OFFSET"-line in the .bvh file (the one inside the "End Site"-block).</summary>
+			///// <summary>Defines the "endPosition"-field of this BVHBone. 
+			// Input is the whole "OFFSET"-line in the .bvh file (the one inside the "End Site"-block).</summary>
 			// Token: 0x06000039 RID: 57 RVA: 0x0000506C File Offset: 0x0000326C
+
+			//MJ:  called by this.allBones[num10].defineEndPosition(ref text3, ref zUp);
 			public void defineEndPosition(ref string line, ref bool zUp)
 			{
 				string[] array = line.Split(new char[]
@@ -1920,14 +1863,16 @@ namespace Winterdust
 			// Token: 0x0600003C RID: 60 RVA: 0x000058B4 File Offset: 0x00003AB4
 			public GameObject makeGO(ref int frame, ref bool includeBoneEnds, ref BVH.BVHBone[] allBones, int myOwnBoneIndex)
 			{
-				GameObject gameObject = new GameObject(this.getName());
+				GameObject gameObject = new GameObject( this.getName() ); // this refers to allBones[array[i]]
 
 				int[] array = this.findChildBoneIndexes(ref allBones, myOwnBoneIndex);
-				for (int i = 0; i < array.Length; i++)
+
+				for (int i = 0; i < array.Length; i++) // The parent of i-th bone is gameObject
 				{
 					allBones[array[i]].makeGO(ref frame, ref includeBoneEnds, ref allBones, array[i]).transform.parent = gameObject.transform;
                     // allBones[array[i]].setLocalPosRot(gameObject.transform, ref frame); // this within  setLocalPosRot() refers to allBones[array[i]]
                 }
+
                 this.setLocalPosRot(gameObject.transform, ref frame);
 
             
@@ -1949,25 +1894,26 @@ namespace Winterdust
              
             }
 
-            /// <summary>Sets localPosition/localRotation of the given transform to the bone's local position/rotation at the given frame. If frame -1 is specified the bone's rest pose is used. The rest rotation is always Quaternion.identity. If frame is &gt;=0 and the bone doesn't have any localFramePositions (the array is null) its localRestPosition is used.</summary>
+            /// <summary>Sets localPosition/localRotation of the given bone transform (in Unity Scene hieararchy) to the bone's local position/rotation at the given frame. If frame -1 is specified the bone's rest pose is used. The rest rotation is always Quaternion.identity. If frame is &gt;=0 and the bone doesn't have any localFramePositions (the array is null) its localRestPosition is used.</summary>
             // Token: 0x06000040 RID: 64 RVA: 0x00005A24 File Offset: 0x00003C24
             public void setLocalPosRot(Transform boneTransform, ref int frame)
             {
                 if (frame == -1)
                 {
-                    boneTransform.localPosition = this.localRestPosition;
+                    boneTransform.localPosition = this.localRestPosition; // this refers to the current  BVHBone
                     boneTransform.localRotation = Quaternion.identity;
                     return;
                 }
                 boneTransform.localPosition = ((this.localFramePositions != null) ? this.localFramePositions[frame] : this.localRestPosition);
                 boneTransform.localRotation = this.localFrameRotations[frame];
+				//the bone's local position/rotation at the given frame "frame"
             }   // public void setLocalPosRot(Transform boneTransform, ref int frame)
 
 
 
             /// <summary>Returns the end of this bone's relativePath; the actual name of the bone.</summary>
             // Token: 0x0600003D RID: 61 RVA: 0x00002312 File Offset: 0x00000512
-            public string getName()
+            public string getName() // method of BVHBone struct
 			{
 				if (this.parentBoneIndex == -1)
 				{
@@ -2056,6 +2002,7 @@ namespace Winterdust
 			/// <summary>Representation of the bone's channels in the .bvh file (the order of its frame data). Created and read using bitwise operations. See summary for defineChannels() for more info. Example: 786571 translates to "Zrotation Xrotation Yrotation" and 1644460 to "Xposition Yposition Zposition Zrotation Xrotation Yrotation" (any order is supported but these two are the most common ones and .bvh files using them gets a minor speed boost during import).</summary>
 			// Token: 0x04000011 RID: 17
 			public int channels;
+
 		}   // class BVH.BVHBone
 
 		/// <summary>Create an instance of this class and give it to the BVH constructor or myBvh.prepareAnimationClip() if you want to be able to check the progress from a different thread.</summary>
@@ -2192,7 +2139,7 @@ namespace Winterdust
 				/// <summary>Unless rotX is null this curve will animate the localRotation.w property of the GameObject's transform (part of Quaternion).</summary>
 				// Token: 0x04000020 RID: 32
 				public AnimationCurve rotW;
-			}
-		}
-	}
+			}//public struct CurveBlock
+		}//public class PreparedAnimationClip
+	} // class BVH
 }
