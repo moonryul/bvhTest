@@ -353,14 +353,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animType: 2
-  bvhAvatarCurrentTransforms: []
-  bvhFrameGetter: {fileID: 0}
-  skeletonGO: {fileID: 0}
   bvhAnimator: {fileID: 1693795314}
   saraAnimator: {fileID: 312638137}
-  clipName: 
-  clip: {fileID: 0}
-  bvhAnimation: {fileID: 0}
 --- !u!114 &1229214355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -373,10 +367,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5483c1fd28178924caa0327ced90ffa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsFrameFromBVHFile: 1
+  isFrameFromBVHFile: 0
+  avatarRootTransform: {fileID: 0}
   jointPaths: []
   avatarCurrentTransforms: []
-  avatarRootTransform: {fileID: 0}
   bvhFileName: Assets/Recording_001.bvh
   frameNo: 0
   secondsPerFrame: 0
@@ -395,8 +389,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   frameNo: 0
+  isFrameFromBVHFile: 0
   avatarRootTransform: {fileID: 0}
   avatarCurrentTransforms: []
+  jointIndex: 0100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000001c0000001d0000001e0000001f000000
+  numOfUsedJoints: 15
 --- !u!1001 &1510382709
 PrefabInstance:
   m_ObjectHideFlags: 0

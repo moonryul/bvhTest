@@ -32,7 +32,7 @@ namespace Winterdust
 			//Transform[] componentsInChildren = base.transform.GetComponentsInChildren<Transform>();
 			//Transform[] componentsInChildren = transform.GetComponentsInChildren<Transform>();
 			Transform[] componentsInChildren = this.gameObject.transform.GetComponentsInChildren<Transform>();
-			// this.gameObject == "Skeleton" GameObject; this.gameObject.transform is set by BVHFrameSetter
+			// this.gameObject == "Skeleton" GameObject; this.gameObject.transform and its children transforms are set by BVHFrameSetter
 
 			//for (int i = (componentsInChildren[0] == base.transform) ? (this.alsoDrawLinesFromOrigin ? 0 : 1) : 0; i < componentsInChildren.Length; i++)
 			

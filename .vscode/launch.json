@@ -8,7 +8,8 @@
             "name": "Unity Editor",
             "type": "unity",
             "path": "/D:/Dropbox/metaverse/bvhTest/Library/EditorInstance.json",
-            "request": "launch"
+            "request": "launch",
+           
         },
         {
             "name": "Windows Player",

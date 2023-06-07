@@ -14,13 +14,12 @@ public class BVHFrameGetter : MonoBehaviour
 
     // https://winterdust.itch.io/bvhimporterexporter
 
-    public bool isFrameFromBVHFile = true;
-    // If the current frame for the human character is from the bvh file, the FixedUpdate() of BVHFrameGetter component is
-    // executed to set the current frame; Otherwise, the current frame will be set by the output of  AI gesticulator in AvatarController component.
-
-    public Transform avatarRootTransform; // defined in inspector
-    public List<string> jointPaths = new List<string>(); // emtpy one
-    public List<Transform> avatarCurrentTransforms = new List<Transform>();
+    public Transform avatarRootTransform; // initialized to null
+    public List<string> jointPaths = new List<string>(); // initialized to an empty list of strings
+    public List<Transform> avatarTransforms = new List<Transform>();
+    // It creates an empty list of Transforms that you can directly use without the need to assign it later.
+    // This way, even if GetComponent<BVHFrameGetter>().avatarCurrentTransforms returns null, this.avatarCurrentTransforms will be an empty list (Count will be 0) rather than null.
+    // You can start adding or removing Transform elements from the list without encountering null reference exceptions.
     // The transforms for Skeleton gameObject; This is the bvhCurrentTransform set from the current frame of the bvh motion file
 
  
@@ -84,16 +83,20 @@ public class BVHFrameGetter : MonoBehaviour
             Debug.Log(" bvh Skeleton is  created");
 
             this.avatarRootTransform = this.skeletonGO.transform.GetChild(0); // the Hips joint: The first child of SkeletonGO
-
-            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarCurrentTransforms);
-            // //MJ:  this.jointPaths and this.avatarCurrentTransforms are set within his.ParseAvatarRootTransform.
+            // Set this.avatarTransforms refer to the children transforms of this.avatarRootTransform (Hip); Hip is the child of
+            // the Skeleton, which is this.bvhAnimator.gameObject.transform, used as the root of the Unity Humanoid avatar
+            // in  this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAnimator.gameObject.transform),
+            // in BVHAnimationRetargetter component. 
+       
+            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
+            
 
             Debug.Log(" bvhFile has been read in Awake() of BVHFrameGetter");
 
         }
         else
         {
-            Debug.Log(" bvh Skeleton is already created and has been given Tag 'Skeleton' ");
+            Debug.Log("In BVHFrameGetter: bvh Skeleton is already created and has been given Tag 'Skeleton' ");
 
             //all gameObjects hiearchy and the components needed to render the gameObjects for bvh.Allbones[] are already available.
 
@@ -127,16 +130,13 @@ public class BVHFrameGetter : MonoBehaviour
             // If you change  this.avatarCurrentTransforms, it affects the hierarchy of    this.skeletonGO , because both reference the same transforms;
 
             this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
-            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarCurrentTransforms);
+            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
             //MJ:  this.jointPaths and this.avatarCurrentTransforms are set within the above method.
 
 
         }
 
-
-        // AnimationClip clip = myBvh.makeAnimationClip();
-        //==>  This line just creates an AnimationClip. By default it has legacy set to true.
-        //   But you can turn that off (either later or directly in the method call).
+      
 
         //   public GameObject makeSkeleton(int frame = -1, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool animate = false)
         // calls:  AnimationClip clip = this.makeAnimationClip(0, -1, false, "", WrapMode.Loop, true, false, false);
@@ -219,10 +219,7 @@ public class BVHFrameGetter : MonoBehaviour
         // executed to set the current frame; Otherwise, the current frame will be set by the output of  AI gesticulator in AvatarController component.
 
 
-        if (this.isFrameFromBVHFile != true)  { return; }
-        else
-        {
-
+       
             //this.frameNo = 0; // go to the beginning of the frame
             //return;
 
@@ -241,9 +238,11 @@ public class BVHFrameGetter : MonoBehaviour
 
             //MJ: We can get the root vector and quaternion from the motionPythonArray from gesticulator directly, without
             //using this.bvh.allBones[0].localFramePositions[this.frameNo];
+            
+            // Transform is a reference type, but vector and quaternion are value types.
 
-            this.avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
-            this.avatarCurrentTransforms[0].localRotation = quaternion;
+            this.avatarTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
+            this.avatarTransforms[0].localRotation = quaternion;
 
             for (int b = 1; b < bvh.boneCount; b++) // boneCount= 57 ordered in depth first search of the skeleton hierarchy: bvh.boneCount = 57
                                                     // HumanBodyBones: Hips=0....; LastBone = 55
@@ -261,7 +260,7 @@ public class BVHFrameGetter : MonoBehaviour
 
                 //  Update the pose of the avatar to the motion data of the current frame this.frameNo
                 //this.avatarCurrentTransforms[b].localPosition = vector; //b: 0 ~ 56: a total of 57
-                this.avatarCurrentTransforms[b].localRotation = quaternion;     // Set the local rotations of each frame  to the correspoding transform in the skeleton hiearchy;
+                this.avatarTransforms[b].localRotation = quaternion;     // Set the local rotations of each frame  to the correspoding transform in the skeleton hiearchy;
                                                                                 // This means the rest pose of the skeleton is important to the final pose
 
 
@@ -277,13 +276,9 @@ public class BVHFrameGetter : MonoBehaviour
 
             }
 
-        }
-
-
     }
-
     //void FixedUpdate()
 
 
-} // BVHTest class
+} // BVHFrameGetter : MonoBehaviour
 
