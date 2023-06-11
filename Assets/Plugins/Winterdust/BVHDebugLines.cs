@@ -11,12 +11,16 @@ namespace Winterdust
 	public class BVHDebugLines : MonoBehaviour
 	{
 		// Token: 0x06000046 RID: 70 RVA: 0x00002357 File Offset: 0x00000557
-		private void Awake()
+		private void Start()
 		{
 			if (BVHDebugLines.mat == null)
 			{
 				BVHDebugLines.mat = new Material(Shader.Find("Hidden/Internal-Colored"));
 			}
+
+				//MJ: scale down the scale of the bvh motion from cm to cm by scale factor = 0.01
+			 this.gameObject.transform.localScale *= 0.01f;
+			 
 		}
 
 		// Token: 0x06000047 RID: 71 RVA: 0x00005D58 File Offset: 0x00003F58
@@ -31,6 +35,8 @@ namespace Winterdust
 			// SceneObjects = this.gameObject.GetComponentsInChildren<Transform>().Where(go => go.gameObject != this.gameObject);
 			//Transform[] componentsInChildren = base.transform.GetComponentsInChildren<Transform>();
 			//Transform[] componentsInChildren = transform.GetComponentsInChildren<Transform>();
+
+		
 			Transform[] componentsInChildren = this.gameObject.transform.GetComponentsInChildren<Transform>();
 			// this.gameObject == "Skeleton" GameObject; this.gameObject.transform and its children transforms are set by BVHFrameSetter
 

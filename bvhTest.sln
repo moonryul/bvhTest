@@ -3,7 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-firstpass", "Assembly-CSharp-firstpass.csproj", "{945f0872-95c4-ac4c-b2eb-fc39a110b7a4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadyPlayerMe", "ReadyPlayerMe.csproj", "{655cc00a-d31d-9a9e-d7c3-716a520a5db5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siccity.GLTFUtility", "Siccity.GLTFUtility.csproj", "{6e27e5fb-da92-c598-005c-a43a1891ceda}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebView", "WebView.csproj", "{4cf5366f-4ebd-51f5-fcf5-d5229d2bcb58}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{56dd9a2f-3405-586f-0b78-0b48b6829fe4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadyPlayerMe.Editor", "ReadyPlayerMe.Editor.csproj", "{b6821b24-ae55-3c1c-1bcc-c348e27af7c5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siccity.GLTFUtility.Editor", "Siccity.GLTFUtility.Editor.csproj", "{311ad22e-d2cb-7736-56c2-647345a8e445}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadyPlayerMe.Extras.Editor", "ReadyPlayerMe.Extras.Editor.csproj", "{bfaaa422-71b7-b82c-beac-184a27e5ff4f}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor-firstpass", "Assembly-CSharp-Editor-firstpass.csproj", "{620c33e5-83b8-cfcb-309b-b1489fc548dc}"
 EndProject
@@ -14,8 +26,20 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{945f0872-95c4-ac4c-b2eb-fc39a110b7a4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{945f0872-95c4-ac4c-b2eb-fc39a110b7a4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{655cc00a-d31d-9a9e-d7c3-716a520a5db5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{655cc00a-d31d-9a9e-d7c3-716a520a5db5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6e27e5fb-da92-c598-005c-a43a1891ceda}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6e27e5fb-da92-c598-005c-a43a1891ceda}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4cf5366f-4ebd-51f5-fcf5-d5229d2bcb58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4cf5366f-4ebd-51f5-fcf5-d5229d2bcb58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56dd9a2f-3405-586f-0b78-0b48b6829fe4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{56dd9a2f-3405-586f-0b78-0b48b6829fe4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{b6821b24-ae55-3c1c-1bcc-c348e27af7c5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{b6821b24-ae55-3c1c-1bcc-c348e27af7c5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{311ad22e-d2cb-7736-56c2-647345a8e445}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{311ad22e-d2cb-7736-56c2-647345a8e445}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{bfaaa422-71b7-b82c-beac-184a27e5ff4f}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{bfaaa422-71b7-b82c-beac-184a27e5ff4f}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{620c33e5-83b8-cfcb-309b-b1489fc548dc}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{620c33e5-83b8-cfcb-309b-b1489fc548dc}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection

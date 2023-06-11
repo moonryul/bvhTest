@@ -4,6 +4,9 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEditor; // to use AssetDatabase
+
+
 using Unity.Collections;
 
 
@@ -48,6 +51,8 @@ public class BVHAnimationRetargetter : MonoBehaviour
     //NativeArray<float> avatarPose;
 
    // List<int> muscleIndecies = new List<int>();
+
+    public GameObject skeletonGO = null; //null by default; skeletonGO is created in BVHFrameGetter; this is sett within Start() method of BVHAnimationRetargetter.
 
     public Animator bvhAnimator; // should be defined in the inspector
     public Animator saraAnimator; // should be defined in the inspector
@@ -102,8 +107,51 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
         if (this.bvhAnimator == null)
         {
-            throw new InvalidOperationException("No Bvh Animator  set.");
-            //this.gameObject.AddComponent
+          
+            //GameObject avatarRootNode = this.skeletonGO.transform .GetChild(0).gameObject; //MJ: avatarRootNode  is "Hips"
+            GameObject avatarRootNode = this.skeletonGO; //MJ: this gameObject is "Skeleton"
+
+            //throw new InvalidOperationException("No Bvh Animator  set.");
+            HumanDescription humanDescription = new HumanDescription(); // struct type
+            this.bvhAnimator = this.gameObject.AddComponent<Animator>();
+
+            // This class allows you to create custom avatars for your animated characters entirely
+            // via script, in a similar way to what goes on behind the Scenes
+            // in the Unity Editor when you create an avatar from the model import inspector.
+            this.bvhAnimator.avatar = AvatarBuilder.BuildHumanAvatar( avatarRootNode, humanDescription);
+            //MJ: confer https://github.com/bkevelham/unity-avatar-generation
+
+        /// Create a HumanDescription out of an avatar GameObject. 
+		/// The HumanDescription is what is needed to create an Avatar object
+		/// using the AvatarBuilder API. This function takes care of 
+		/// creating the HumanDescription by going through the avatar's
+		/// hierarchy, defining its T-Pose in the skeleton, and defining
+		/// the transform/bone mapping in the HumanBone array. 
+		/// </summary>
+		/// <param name="avatarRoot">Root of your avatar object</param>
+		/// <returns>A HumanDescription which can be fed to the AvatarBuilder API</returns>
+
+
+            // MJ: error: required human bone "Hips" not found
+            //=> UnityEngine.AvatarBuilder:BuildHumanAvatar (UnityEngine.GameObject,UnityEngine.HumanDescription)
+            // Verify the bone hierarchy: Make sure that your GameObject has a proper bone hierarchy and that it includes the "Hips" bone. 
+            //The "Hips" bone is a required bone for building a human avatar, so it must be present. 
+
+// animator is an instance of the Animator component that you want to assign the Avatar to.
+// this.skeletonGO is a reference to the GameObject, the source of the HumanDescription.
+// humanDescription is an instance of the HumanDescription class that holds the description of the Humanoid Avatar.
+// The AvatarBuilder.BuildHumanAvatar method takes the BVH GameObject and the HumanDescription 
+// as parameters and returns an Avatar instance. 
+// The returned Avatar is then assigned to the avatar property of the Animator component.
+
+// Please note that to use the AvatarBuilder class and its related methods, 
+// you need to include the UnityEditor namespace in an Editor script, 
+// as this functionality is only available in the Unity Editor environment.
+
+            //AssetDatabase.CreateAsset(animator.avatar, "Assets/Path/To/Save/Avatar.asset");
+            Debug.Log($"Is avatar valid={this.bvhAnimator.avatar.isValid}");
+
+            return  this.bvhAnimator;
         }
 
         else
@@ -161,6 +209,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
         // this.gameObject =  bvhRetargetter; It has two components: BVHAnimationRetargetter and bvhFrameGetter
 
+        this.skeletonGO = this.gameObject.GetComponent<BVHFrameGetter>().skeletonGO;
 
         if (this.animType == AnimType.Humanoid)
         {
@@ -168,7 +217,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
             // Animator components of Skeleton and Sara should be added in the inspector by the user
 
-            this.bvhAnimator = this.getbvhAnimator();
+            this.bvhAnimator = this.getbvhAnimator(); //MJ: this method uses  this.skeletonGO
             // Get Animator component of the virtual human to which this BVHAnimationLoader component is added
             // =>   this.bvhAnimator = this.gameObject.GetComponent<Animator>();
 
@@ -238,7 +287,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
             // store the pose in the human pose handler, and return the human pose as the value ref humanPose.
             // The bvh skeleton pose is updated every frame by by BVHFrameGetter script.
             HumanPose humanPose = new HumanPose();
-            this.srcHumanPoseHandler.GetHumanPose(ref humanPose); 
+            this.srcHumanPoseHandler.GetHumanPose(ref humanPose); //NullReferenceException: Object reference not set to an instance of an object
             
             // => Computes a human pose* from the **bvh avatar skeleton**, stores the pose in the human pose handler, and returns it to humanPose.
 

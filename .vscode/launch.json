@@ -9,6 +9,8 @@
             "type": "unity",
             "path": "/D:/Dropbox/metaverse/bvhTest/Library/EditorInstance.json",
             "request": "launch",
+            "justMyCode": false,
+         
            
         },
         {

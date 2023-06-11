@@ -1,0 +1,125 @@
+// using UnityEngine;
+// using System.Collections;
+// using System.Collections.Generic;
+// public class ExampleClass : MonoBehaviour
+// {
+//     void Start()
+//     {
+//        // string[] boneName = HumanTrait.BoneName;
+//       //  for (int i = 0; i < HumanTrait.BoneCount; ++i)
+//       //  {
+//        //     Debug.Log(boneName[i]);
+//       //  }
+    
+//         Dictionary<string, string> boneName = new Dictionary<string, string>();
+//         boneName["Chest"] = "Bip001 Spine2";
+//         boneName["Head"] = "Bip001 Head";
+//         boneName["Hips"] = "Bip001 Pelvis";
+//         boneName["LeftFoot"] = "Bip001 L Foot";
+//         boneName["LeftHand"] = "Bip001 L Hand";
+//         boneName["LeftLowerArm"] = "Bip001 L Forearm";
+//         boneName["LeftLowerLeg"] = "Bip001 L Calf";
+//         boneName["LeftShoulder"] = "Bip001 L Clavicle";
+//         boneName["LeftUpperArm"] = "Bip001 L UpperArm";
+//         boneName["LeftUpperLeg"] = "Bip001 L Thigh";
+//         boneName["RightFoot"] = "Bip001 R Foot";
+//         boneName["RightHand"] = "Bip001 R Hand";
+//         boneName["RightLowerArm"] = "Bip001 R Forearm";
+//         boneName["RightLowerLeg"] = "Bip001 R Calf";
+//         boneName["RightShoulder"] = "Bip001 R Clavicle";
+//         boneName["RightUpperArm"] = "Bip001 R UpperArm";
+//         boneName["RightUpperLeg"] = "Bip001 R Thigh";
+//         boneName["Spine"] = "Bip001 Spine1";
+
+//         string[] humanName = HumanTrait.BoneName;
+//         HumanBone[] humanBones = new HumanBone[boneName.Count];
+//         int j = 0;
+//         int i = 0;
+//         while (i < humanName.Length)
+//         {
+//             if (boneName.ContainsKey(humanName[i]))
+//             {
+//                 HumanBone humanBone = new HumanBone();
+//                 humanBone.humanName = humanName[i];
+//                 humanBone.boneName = boneName[humanName[i]];
+//                 humanBone.limit.useDefaultValues = true;
+//                 humanBones[j++] = humanBone;
+//             }
+//             i++;
+//         }
+
+//         Animator.avatar
+
+//         Properties
+// humanDescription	Returns the HumanDescription used to create this Avatar.
+// isHuman	Return true if this avatar is a valid human avatar.
+// isValid	Return true if this avatar is a valid mecanim avatar. It can be a generic avatar or a human avatar.
+
+// GameObject activeGameObject = Selection.activeGameObject;
+
+//         if (activeGameObject != null &&
+//             activeGameObject.GetComponent<Animator>() != null)
+//         {
+//             Avatar avatar = AvatarBuilder.BuildGenericAvatar(activeGameObject, "");
+//             avatar.name = "InsertYourName";
+//             Debug.Log(avatar.isHuman ? "is human" : "is generic");
+
+//             Animator animator = activeGameObject.GetComponent<Animator>() as Animator;
+//             animator.avatar = avatar;
+//         }
+
+// Declaration
+// public static Avatar BuildHumanAvatar(GameObject go, HumanDescription avatar.humanDescription);
+
+// HumanDescription
+// struct in UnityEngine/Implemented in:UnityEngine.AnimationModuleLeave feedback
+// Description
+// Class that holds humanoid avatar parameters to pass to the AvatarBuilder.BuildHumanAvatar function.
+
+// Properties
+// armStretch	Amount by which the arm's length is allowed to stretch when using IK.
+// feetSpacing	Modification to the minimum distance between the feet of a humanoid model.
+// hasTranslationDoF	True for any human that has a translation Degree of Freedom (DoF). It is set to false by default.
+// human	Mapping between Mecanim bone names and bone names in the rig.
+// legStretch	Amount by which the leg's length is allowed to stretch when using IK.
+// lowerArmTwist	Defines how the lower arm's roll/twisting is distributed between the elbow and wrist joints.
+// lowerLegTwist	Defines how the lower leg's roll/twisting is distributed between the knee and ankle.
+// skeleton	List of bone Transforms to include in the model.
+// upperArmTwist	Defines how the upper arm's roll/twisting is distributed between the shoulder and elbow joints.
+// upperLegTwist	Defines how the upper leg's roll/twisting is distributed between the thigh and knee joints.
+
+
+// Reading animation clips:
+
+// https://forum.unity.com/threads/how-to-get-a-curve-inside-an-animationclip.29080/
+
+//https://stackoverflow.com/questions/57846333/how-can-i-store-or-read-a-animation-clip-data-in-runtime
+//===> THIS IT
+
+// https://gamedev.stackexchange.com/questions/164406/how-can-i-play-an-animation-only-using-c-without-animation-controller-or-crea
+
+//https://answers.unity.com/questions/1263313/can-i-create-a-humanoid-animation-through-scriptin.html ==> WHAT I WANT
+
+//https://github.com/3DiVi/nuitrack-sdk
+//https://github.com/3DiVi/nuitrack-sdk/blob/master/doc/Unity_Animation_Recording.md  ==> THis is it
+
+//https://forum.unity.com/threads/face-capture-animations-on-humanoid-characters.1174076/
+
+// I'll try to explain why the character goes into the kneeling muscle test pose:
+// The Avatar asset tells the underlaying animation system what properties are going to be animated. 
+// Internally, the animation system writes a default value to those properties (usually zero). 
+// When a Humanoid Avatar is set to your character's Animator component, you are telling the animation system
+//  that your intention is to animate the muscle, IK and root properties (plus other properties not related to locomotion). 
+//  When you set a Generic Avatar you are telling the animation system which properties to animate one by one.
+// When trying to play a clip to an Animator that uses a Humanoid Avatar,
+// the animation system will allocate and initialize to zero all the muscles, expecting the clip to contain curves for them.
+// If your clip doesn't contain muscle curves, the character will stay in that default pose.
+// The solution is to tell the animation system that your clip doesn't contain muscle curves by using an AvatarMask.
+// In order to play the animations in Timeline, add an override track and set the AvatarMask.
+// EDIT:
+// In Timeline, set a humanoid clip at the root AnimationTrack and set your recorded clip in an Override track.
+
+
+    //} // Start()
+
+//}

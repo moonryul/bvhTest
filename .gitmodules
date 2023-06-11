@@ -1,0 +1,3 @@
+[submodule "gesticulatorUnity"]
+	path = gesticulatorUnity
+	url = https://github.com/moonryul/gesticulatorUnity.git

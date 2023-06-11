@@ -151,7 +151,7 @@ namespace Winterdust
 			}
 
 
-			this.allBones = new BVH.BVHBone[25]; // gesticulator has 24 bones.
+			this.allBones = new BVH.BVHBone[25]; // gesticulator has 15 bones.
 
 			double num7 = 1.0;
 
@@ -357,7 +357,7 @@ namespace Winterdust
 						int num18 = 0;
 						for (int num19 = 0; num19 < this.boneCount; num19++)
 						{
-							this.allBones[num19].feedFrame(ref num18, ref array, ref num12, ref zUp);
+							this.allBones[num19].feedFrame(ref num18, ref array, ref num12, ref zUp); // zUp = false: yUp in BVH
 						}
 						num12++;
 						if (progressTracker != null)
@@ -371,7 +371,8 @@ namespace Winterdust
 					}
 					num11 += num7;
 				}
-			}
+			}//for (int j = 0; j < bvhFile.Length; j++) //string[] bvhFile = input string
+
 			if (this.pathToBvhFileee == null)
 			{
 				this.alias = string.Concat(new object[]
@@ -396,7 +397,7 @@ namespace Winterdust
 			{
 				progressTracker.progress = 1.0;
 			}
-		}
+		} // innerconstructor of BVH()
 
 		/// <summary>(This is typically called right after the constructor returns and then never called again.) Changes the definition of what should be considered the animation's forward direction. This method does nothing on its own except change the internal animationRotation Quaternion to the value represented by the given forward, which affects future calls to setAnimationRotation(), rotateAnimationBy(), align() and normalize(). (Returns this BVH instead of void, for chaining.) Note: This is a shortcut for myBvh.feedKnownRotation(Quaternion.LookRotation(knownForwardDirectionOfAnimation.normalized, Vector3.up));</summary>
 		// Token: 0x06000006 RID: 6 RVA: 0x000020FD File Offset: 0x000002FD
@@ -1709,9 +1710,10 @@ namespace Winterdust
 			public void feedFrame(ref int frameDataIndex, ref float[] frameData, ref int frameNumber, ref bool zUp)
 			{
 				Quaternion quaternion = Quaternion.identity;
-				if (zUp)
-				{
-					if (this.channels == 786571)
+				if (zUp) // zUp = false in bvh; ture in 3dmax and  Blender, ROS uses z-up, 
+				{  // 786571 translates to "Zrotation Xrotation Yrotation"
+				   //  1644460 to "Xposition Yposition Zposition Zrotation Xrotation Yrotation"
+					if (this.channels == 786571) // "Zrotation Xrotation Yrotation" (Other joints)
 					{
 						if (this.localFramePositions != null)
 						{
@@ -1719,22 +1721,31 @@ namespace Winterdust
 							this.localFramePositions[frameNumber].y = this.localRestPosition.y;
 							this.localFramePositions[frameNumber].z = this.localRestPosition.z;
 						}
-						quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex], Vector3.up);
-						quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex + 1], Vector3.right);
-						quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex + 2], Vector3.back);
+						// https://stackoverflow.com/questions/1274936/flipping-a-quaternion-from-right-to-left-handed-coordinates
+						// MJ: frameData[frameDataIndex + 3] is the rotation about the Z axis, which corresponds to the up axis (Y) in Unity
+						quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex], Vector3.up); // about  (0,1,0)
+						// MJ: frameData[frameDataIndex + 4] is the rotation about the X axis, which corresponds to the right axis (X) in Unity
+						quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex + 1], Vector3.right); // (1,0,0)
+						// MJ: frameData[frameDataIndex + 5] is the rotation about the Y axis, which corresponds to the back axis (-Z) in Unity
+						quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex + 2], Vector3.back); // (0,0,-1) 
 						frameDataIndex += 3;
 					}
-					else if (this.channels == 1644460)
+					else if (this.channels == 1644460) //  "Xposition Yposition Zposition Zrotation Xrotation Yrotation" (Hips)
 					{
 						if (this.localFramePositions != null)
-						{
+						{  //MJ: change from the right handed system to the left: vector  (x,y,z) in RHS => (-x,y,-z) in LHA
 							this.localFramePositions[frameNumber].x = frameData[frameDataIndex] * -1f;
 							this.localFramePositions[frameNumber].z = frameData[frameDataIndex + 1] * -1f;
 							this.localFramePositions[frameNumber].y = frameData[frameDataIndex + 2];
 						}
-						quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex + 3], Vector3.up);
+						// MJ: frameData[frameDataIndex + 3] is the rotation about the Z axis, which corresponds to the up axis (Y) in Unity
+						quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex + 3], Vector3.up); 
+						// MJ: frameData[frameDataIndex + 4] is the rotation about the X axis, which corresponds to the right axis (X) in Unity
 						quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex + 4], Vector3.right);
+						// MJ: frameData[frameDataIndex + 5] is the rotation about the Y axis, which corresponds to the back axis (-Z) in Unity
 						quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex + 5], Vector3.back);
+						//Vector3.forward is the same as making a new vector with x,y,z values of 0,0,1 in Unity
+						// Vector3.back is the shorthand for writing Vector3(0, 0, -1).
 						frameDataIndex += 6;
 					}
 					else
@@ -1778,9 +1789,10 @@ namespace Winterdust
 							}
 							frameDataIndex++;
 						}
-					}
-				}
-				else if (this.channels == 786571)
+					} // Other than "Xposition Yposition Zposition Zrotation Xrotation Yrotation" or  "Zrotation Xrotation Yrotation" (Other joints)
+				} // zUp= true
+				// yUp is true: This is the case of bvh motion format and  Unreal uses y-up.
+				else if (this.channels == 786571) // // "Zrotation Xrotation Yrotation" (Other joints)
 				{
 					if (this.localFramePositions != null)
 					{
@@ -1788,12 +1800,13 @@ namespace Winterdust
 						this.localFramePositions[frameNumber].y = this.localRestPosition.y;
 						this.localFramePositions[frameNumber].z = this.localRestPosition.z;
 					}
-					quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex], Vector3.forward);
-					quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex + 1], Vector3.right);
-					quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex + 2], Vector3.up);
+					quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex], Vector3.forward); // rot about Z axis (the Unity Z axis)
+					quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex + 1], Vector3.right); // rot about X axis
+					quaternion *= Quaternion.AngleAxis(frameData[frameDataIndex + 2], Vector3.up); // rot about Y axis
 					frameDataIndex += 3;
+					// this.localFrameRotations[frameNumber] is set at the end, see below
 				}
-				else if (this.channels == 1644460)
+				else if (this.channels == 1644460)  //  "Xposition Yposition Zposition Zrotation Xrotation Yrotation" (Hips)
 				{
 					if (this.localFramePositions != null)
 					{
@@ -1847,15 +1860,62 @@ namespace Winterdust
 						}
 						frameDataIndex++;
 					}
-				}
+				} // for each case of channel
+
+				//MJ: Computate a new quaternion from quaternion computed above: But why? what is the purpose of this conversion?
+
+				//Quaternion: from https://stackoverflow.com/questions/28673777/convert-quaternion-from-right-handed-to-left-handed-coordinate-system:
+
+				// A rotation of angle x around axis (u,v,w) can be represented by quaternion with real part cos(x/2) 
+				// and unreal part sin(x/2)*(u,v,w). If axis coordinates are (u,v,w) in original trihedron, 
+				// they will be (u,w,v) in your trihedron. Thus if original quaternion was (a,b,c,d) - a+ib+jc+kd -
+				//  the quaternion must be transformed to (a,b,d,c) in your trihedron.
+				//  But because your trihedron is left handed, the angle also has to be reversed, 
+				//  so the same rotation can finally be expressed by the quaternion (a,-b,-d,-c) in your trihedron.
+
+
+                //From https://lxjk.github.io/2016/10/29/A-Different-Way-to-Understand-Quaternion-and-Rotation.html
+				// We can use quaternion to describe this angle-axis rotation (θ, v): q=(sinθ/2*v.x, sinθ/2*v.y,sinθ/2*v.z,cosθ/2)
+				// For any unit quaternion q=(x,y,z,w), , it describes a rotation of angle θ=2cos−1w, along axis v =1/sqr(1 - w^2)*(x,y,z)
+
+                // MJ:****** Perfect*****: https://stackoverflow.com/questions/1263072/changing-a-matrix-from-right-handed-to-left-handed-coordinate-system/39519079#39519079
+                // We should be clear that orthogonal matrix contains both rotation matrix and point reflection
+				//(only point reflection will change the coordinate system between left-handed and right-handed). 
+				//Thus they can be expressed as a 4x4 matrix and obey to transform matrix multiplying order.
+
+				//MJ: I know this question is old, but the method below is tested and works. I used pyquaternion to manipulate the quaternions.
+
+				//https://stackoverflow.com/questions/1274936/flipping-a-quaternion-from-right-to-left-handed-coordinates:
+				// To go from right to left. Find the axis and angle of the right hand quaternion.
+				// Then convert the axis to left hand coordinates. Negate the right hand angle to get the left hand angle. 
+				// Construct quaternion with left handed axis and left hand angle.
+
+				//https://www.gamedev.net/forums/topic.asp?topic_id=459925:
+				// Strictly speaking, there's no difference (at least not AFAIK) between a 'left-handed' and a 'right-handed' quaternion.
+				//Really, there's not even such a thing as a 'left-handed' or 'right-handed' quaternion. 
+				//(The same holds for converting a quaternion to a matrix
+				// - setting aside issues of notational convention, there's only one way to do it.)
+
+				//                // 
+
+                //MJ: Calculate the x-axis rotation:
 				float x = (2f * quaternion.x * quaternion.y - 2f * quaternion.w * quaternion.z) * -1f;
 				float x2 = (2f * quaternion.x * quaternion.z + 2f * quaternion.w * quaternion.y) * -1f;
+                //MJ: Calculate the y-axis rotation:
+
 				float y = 1f - 2f * quaternion.x * quaternion.x - 2f * quaternion.z * quaternion.z;
 				float y2 = 2f * quaternion.y * quaternion.z - 2f * quaternion.w * quaternion.x;
+                //MJ: Calculate the z-axis rotation:
 				float z = 2f * quaternion.y * quaternion.z + 2f * quaternion.w * quaternion.x;
 				float z2 = 1f - 2f * quaternion.x * quaternion.x - 2f * quaternion.y * quaternion.y;
+
 				this.localFrameRotations[frameNumber] = Quaternion.LookRotation(new Vector3(x2, y2, z2), new Vector3(x, y, z));
-			}
+				//MJ:   public static Quaternion LookRotation(Vector3 forward, [DefaultValue("Vector3.up")] Vector3 upwards); 
+				// The function takes two Vector3 as input which are a forward direction in world space (and an optional up vector - default Vector3.up), 
+				//and returns a Quaternion representing the orientation of such a reference frame; This can be also considered as the rotation from the
+				// base reference frame.
+
+			} //feedFrame(ref int frameDataIndex, ref float[] frameData, ref int frameNumber, ref bool zUp)
 
 			/// <summary>Makes a GameObject that represents this bone, complete with child GameObjects that represents the bone's children. 
             /// When a skeletonGO is created the BVH instance calls makeGO() on all its root bones and makes the returned GameObjects a child of the skeletonGO
@@ -1999,7 +2059,9 @@ namespace Winterdust
 			// Token: 0x04000010 RID: 16
 			public Quaternion[] localFrameRotations;
 
-			/// <summary>Representation of the bone's channels in the .bvh file (the order of its frame data). Created and read using bitwise operations. See summary for defineChannels() for more info. Example: 786571 translates to "Zrotation Xrotation Yrotation" and 1644460 to "Xposition Yposition Zposition Zrotation Xrotation Yrotation" (any order is supported but these two are the most common ones and .bvh files using them gets a minor speed boost during import).</summary>
+			///// <summary>Representation of the bone's channels in the .bvh file (the order of its frame data). 
+			//Created and read using bitwise operations. See summary for defineChannels() for more info. 
+			//Example: 786571 translates to "Zrotation Xrotation Yrotation" and 1644460 to "Xposition Yposition Zposition Zrotation Xrotation Yrotation" (any order is supported but these two are the most common ones and .bvh files using them gets a minor speed boost during import).</summary>
 			// Token: 0x04000011 RID: 17
 			public int channels;
 
