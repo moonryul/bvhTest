@@ -78,8 +78,7 @@ namespace Winterdust
         public BVH(string[] bvhFile,  double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
         {
 			this.pathToBvhFileee = null;
-			// We may use motionPythonArray in place of bvhFile to play the Unity Avatar by the results of gesticulator.
-
+			
 			this.innerConstructor(bvhFile,  importPercentage, zUp, calcFDirFromFrame, calcFDirToFrame, ignoreRootBonePositions, ignoreChildBonePositions, fixFrameRate, parseMotionData, progressTracker);
 		}
 
@@ -151,7 +150,7 @@ namespace Winterdust
 			}
 
 
-			this.allBones = new BVH.BVHBone[25]; // gesticulator has 15 bones.
+			this.allBones = new BVH.BVHBone[25]; // gesticulator has 15 bones which are less than the maximum 25
 
 			double num7 = 1.0;
 

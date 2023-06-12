@@ -157,35 +157,40 @@ public class AvatarController : MonoBehaviour
                  // When it is unchecked, its Start() and Update() methods are executed. 
     {
 
-        // Load BVH motion data to this.bvh.allBones
-        if (this.bvhFileName == "")
-        {
-            Debug.Log("In AvatarController: bvhFileName should be set in the inspector");
-            throw new InvalidOperationException("No  Bvh FileName is set.");
+        // // Load BVH motion data to this.bvh.allBones
+        // if (this.bvhFileName == "")
+        // {
+        //     Debug.Log("In AvatarController: bvhFileName should be set in the inspector");
+        //     throw new InvalidOperationException("No  Bvh FileName is set.");
 
-        }
+        // }
 
-        //MJ: Note:
-        //public BVH(string pathToBvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
+        // //MJ: Note:
+        // //public BVH(string pathToBvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
 
-        //MJ:  During Awake() of BVHFrameGetter Script, parse the bvh file and load the  hierarchy paths and  load motion data to this.bvh.allBones
+        // //MJ:  During Awake() of BVHFrameGetter Script, parse the bvh file and load the  hierarchy paths and  load motion data to this.bvh.allBones
 
-        //VERY IMPORTANT:  when you get the motion file from the gesticulator, store it to this.bvh.allBones. Then the motion will be played.
+        // //VERY IMPORTANT:  when you get the motion file from the gesticulator, store it to this.bvh.allBones. Then the motion will be played.
 
-        this.bvh = new Winterdust.BVH(bvhFileName, parseMotionData: true); // Load BVH motion data to this.bvh.allBones
+        // this.bvh = new Winterdust.BVH(bvhFileName, parseMotionData: true); // Load BVH motion data to this.bvh.allBones
 
-        this.frameCount = this.bvh.frameCount;
-        this.secondsPerFrame = this.bvh.secondsPerFrame; // 0.05f;
-        // Sets to 20 fps
-        Time.fixedDeltaTime = (float)this.secondsPerFrame;
+        // this.frameCount = this.bvh.frameCount;
+        // this.secondsPerFrame = this.bvh.secondsPerFrame; // 0.05f;
+        // // Sets to 20 fps
+        // Time.fixedDeltaTime = (float)this.secondsPerFrame;
 
 
-        // Create a Skeleton hiearchy if it  is not yet created. 
+        // // Create a Skeleton hiearchy if it  is not yet created. 
 
         this.skeletonGO = GameObject.FindGameObjectWithTag("Skeleton");
 
         if (this.skeletonGO == null)
         {
+
+            
+             Debug.Log(" BVH Skeleton Should have been created by BVHSkeletonCreator component and saved as a Prefab asset");
+             return;
+
             // (1)  create a skeleton of transforms for the skeleton hierarchy, 
             // (2) add a BVHDebugLines component to it so it becomes visible like a stick figur [
             // BVHDebugLines bvhdebugLines = gameObject.AddComponent<BVHDebugLines>() ],
@@ -194,29 +199,29 @@ public class AvatarController : MonoBehaviour
 
             // Create all gameObjects hiearchy and the components needed to render the gameObjects for bvh.Allbones[].
 
-            this.skeletonGO = this.bvh.makeDebugSkeleton(animate: false, skeletonGOName: "Skeleton");
-            // => if animate = false, dot not create an animation clip but only the rest pose; 
-            // Create BvhDebugLines component and MeshRenderer component,
-            //  but do not create Animation component:
-            // public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
+            // this.skeletonGO = this.bvh.makeDebugSkeleton(animate: false, skeletonGOName: "Skeleton");
+            // // => if animate = false, dot not create an animation clip but only the rest pose; 
+            // // Create BvhDebugLines component and MeshRenderer component,
+            // //  but do not create Animation component:
+            // // public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
 
-            Debug.Log(" bvh Skeleton is  created");
+            // Debug.Log(" bvh Skeleton is  created");
 
-            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0); // the Hips joint: The first child of SkeletonGO
+            // this.avatarRootTransform = this.skeletonGO.transform.GetChild(0); // the Hips joint: The first child of SkeletonGO
 
-             // Set this.avatarTransforms refer to the children transforms of this.avatarRootTransform (Hip); Hip is the child of
-            // the Skeleton, which is this.bvhAnimator.gameObject.transform, which is used as the root of the Unity Humanoid avatar
-            // in  this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAnimator.gameObject.transform),
-            // in BVHAnimationRetargetter component. 
+            //  // Set this.avatarTransforms refer to the children transforms of this.avatarRootTransform (Hip); Hip is the child of
+            // // the Skeleton, which is this.bvhAnimator.gameObject.transform, which is used as the root of the Unity Humanoid avatar
+            // // in  this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAnimator.gameObject.transform),
+            // // in BVHAnimationRetargetter component. 
 
-            // Although the avatar controlled by Animator component has the root in Skeleton node, its transform is not changed at all, so 
-            // we set the root of the avatar to its child, Hip; We will change this pose of the  avatar by means of motion data either from bvh file or
-            // from motion generator.
+            // // Although the avatar controlled by Animator component has the root in Skeleton node, its transform is not changed at all, so 
+            // // we set the root of the avatar to its child, Hip; We will change this pose of the  avatar by means of motion data either from bvh file or
+            // // from motion generator.
        
-            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
+            // this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
            
 
-            Debug.Log("In AvatarController: bvhFile has been read in Awake()");
+            // Debug.Log("In AvatarController: bvhFile has been read in Awake()");
 
         }
         else
@@ -254,8 +259,12 @@ public class AvatarController : MonoBehaviour
             //IMPORTANT:  Collect the transforms in the skeleton hiearchy into ***a list of transforms***,  this.avatarCurrentTransforms:
             // If you change  this.avatarCurrentTransforms, it affects the hierarchy of    this.skeletonGO , because both reference the same transforms;
 
-            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
-            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
+
+            this.avatarRootTransform = this.gameObject.GetComponent<BVHSkeletonCreator>().avatarRootTransform;
+            this.avatarTransforms = this.gameObject.GetComponent<BVHSkeletonCreator>().avatarTransforms;
+
+            // this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
+            // this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
             //MJ:  this.jointPaths and this.avatarTransforms are set within the above method.
 
 

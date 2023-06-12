@@ -8,11 +8,11 @@ FBXHeaderExtension:  {
 		Version: 1000
 		Year: 2023
 		Month: 6
-		Day: 10
-		Hour: 15
-		Minute: 0
+		Day: 12
+		Hour: 12
+		Minute: 21
 		Second: 15
-		Millisecond: 183
+		Millisecond: 450
 	}
 	Creator: "FBX SDK/FBX Plugins version 2020.2"
 	SceneInfo: "SceneInfo::GlobalInfo", "UserData" {
@@ -28,8 +28,8 @@ FBXHeaderExtension:  {
 			Comment: ""
 		}
 		Properties70:  {
-			P: "DocumentUrl", "KString", "Url", "", "D:\Dropbox\metaverse\bvhTest\Assets\4des7cnf_Skeleton 1.fbx"
-			P: "SrcDocumentUrl", "KString", "Url", "", "D:\Dropbox\metaverse\bvhTest\Assets\4des7cnf_Skeleton 1.fbx"
+			P: "DocumentUrl", "KString", "Url", "", "D:\Dropbox\metaverse\bvhTest\Assets\9iesj7zf_Skeleton.fbx"
+			P: "SrcDocumentUrl", "KString", "Url", "", "D:\Dropbox\metaverse\bvhTest\Assets\9iesj7zf_Skeleton.fbx"
 			P: "Original", "Compound", "", ""
 			P: "Original|ApplicationVendor", "KString", "", "", ""
 			P: "Original|ApplicationName", "KString", "", "", "Unity FBX Exporter"
@@ -75,7 +75,7 @@ GlobalSettings:  {
 
 Documents:  {
 	Count: 1
-	Document: 2233458541616, "Scene", "Scene" {
+	Document: 1618955865184, "Scene", "Scene" {
 		Properties70:  {
 			P: "SourceObject", "object", "", ""
 			P: "ActiveAnimStackName", "KString", "", "", ""
@@ -183,7 +183,7 @@ Definitions:  {
 ;------------------------------------------------------------------
 
 Objects:  {
-	Model: 2232865890672, "Model::Skeleton", "Null" {
+	Model: 1624030405664, "Model::Skeleton", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -194,7 +194,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232865932672, "Model::Hips", "Null" {
+	Model: 1624030397664, "Model::Hips", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -205,7 +205,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223249751680, "Model::Spine", "Null" {
+	Model: 1624030393664, "Model::Spine", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -217,7 +217,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223249727680, "Model::Spine1", "Null" {
+	Model: 1624030399664, "Model::Spine1", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -229,7 +229,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223249765680, "Model::Spine2", "Null" {
+	Model: 1624030385664, "Model::Spine2", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -241,7 +241,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223249735680, "Model::Spine3", "Null" {
+	Model: 1624030377664, "Model::Spine3", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -253,7 +253,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223249767680, "Model::Neck", "Null" {
+	Model: 1624030381664, "Model::Neck", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -265,7 +265,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223249787680, "Model::Neck1", "Null" {
+	Model: 1624030401664, "Model::Neck1", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -277,7 +277,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223249789680, "Model::Head", "Null" {
+	Model: 1624030375664, "Model::Head", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -288,7 +288,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223249775680, "Model::RightShoulder", "Null" {
+	Model: 1624030409664, "Model::RightShoulder", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -300,7 +300,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223249781680, "Model::RightArm", "Null" {
+	Model: 1624030407664, "Model::RightArm", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -312,7 +312,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2230988682016, "Model::RightForeArm", "Null" {
+	Model: 1624030379664, "Model::RightForeArm", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -324,7 +324,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2230988684016, "Model::RightHand", "Null" {
+	Model: 1624030411664, "Model::RightHand", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -336,7 +336,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2230988686016, "Model::RightHandThumb1", "Null" {
+	Model: 1624030413664, "Model::RightHandThumb1", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -348,7 +348,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2230988656016, "Model::RightHandThumb2", "Null" {
+	Model: 1624030383664, "Model::RightHandThumb2", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -360,7 +360,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2230988660016, "Model::RightHandThumb3", "Null" {
+	Model: 1624030437664, "Model::RightHandThumb3", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -371,7 +371,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2230988662016, "Model::RightHandIndex1", "Null" {
+	Model: 1624030431664, "Model::RightHandIndex1", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -383,7 +383,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2230988664016, "Model::RightHandIndex2", "Null" {
+	Model: 1624030415664, "Model::RightHandIndex2", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -395,7 +395,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2230988670016, "Model::RightHandIndex3", "Null" {
+	Model: 1624030417664, "Model::RightHandIndex3", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -406,7 +406,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2230988668016, "Model::RightHandMiddle1", "Null" {
+	Model: 1624030421664, "Model::RightHandMiddle1", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -418,7 +418,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232865524896, "Model::RightHandMiddle2", "Null" {
+	Model: 1624030419664, "Model::RightHandMiddle2", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -430,7 +430,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232865520896, "Model::RightHandMiddle3", "Null" {
+	Model: 1624030433664, "Model::RightHandMiddle3", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -441,7 +441,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232865538896, "Model::RightHandRing1", "Null" {
+	Model: 1624030423664, "Model::RightHandRing1", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -453,7 +453,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232865528896, "Model::RightHandRing2", "Null" {
+	Model: 1624030425664, "Model::RightHandRing2", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -465,7 +465,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232865634896, "Model::RightHandRing3", "Null" {
+	Model: 1624030427664, "Model::RightHandRing3", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -476,7 +476,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232865622896, "Model::RightHandPinky1", "Null" {
+	Model: 1624030429664, "Model::RightHandPinky1", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -488,7 +488,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232865646896, "Model::RightHandPinky2", "Null" {
+	Model: 1624030449664, "Model::RightHandPinky2", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -500,7 +500,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232865650896, "Model::RightHandPinky3", "Null" {
+	Model: 1624030445664, "Model::RightHandPinky3", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -511,7 +511,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232851538992, "Model::LeftShoulder", "Null" {
+	Model: 1624030451664, "Model::LeftShoulder", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -523,7 +523,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232851440992, "Model::LeftArm", "Null" {
+	Model: 1624030241664, "Model::LeftArm", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -535,7 +535,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232851416992, "Model::LeftForeArm", "Null" {
+	Model: 1624030219664, "Model::LeftForeArm", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -547,7 +547,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232851456992, "Model::LeftHand", "Null" {
+	Model: 1624030217664, "Model::LeftHand", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -559,7 +559,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232851516992, "Model::LeftHandThumb1", "Null" {
+	Model: 1624030251664, "Model::LeftHandThumb1", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -571,7 +571,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232851518992, "Model::LeftHandThumb2", "Null" {
+	Model: 1624030235664, "Model::LeftHandThumb2", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -583,7 +583,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232851522992, "Model::LeftHandThumb3", "Null" {
+	Model: 1624030221664, "Model::LeftHandThumb3", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -594,7 +594,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2234256750656, "Model::LeftHandIndex1", "Null" {
+	Model: 1624030225664, "Model::LeftHandIndex1", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -606,7 +606,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2234256752656, "Model::LeftHandIndex2", "Null" {
+	Model: 1624030265664, "Model::LeftHandIndex2", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -618,7 +618,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2234256754656, "Model::LeftHandIndex3", "Null" {
+	Model: 1624030237664, "Model::LeftHandIndex3", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -629,7 +629,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2234256590656, "Model::LeftHandMiddle1", "Null" {
+	Model: 1624030285664, "Model::LeftHandMiddle1", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -641,7 +641,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2234256622656, "Model::LeftHandMiddle2", "Null" {
+	Model: 1624030271664, "Model::LeftHandMiddle2", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -653,7 +653,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2234256592656, "Model::LeftHandMiddle3", "Null" {
+	Model: 1624030279664, "Model::LeftHandMiddle3", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -664,7 +664,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2234256626656, "Model::LeftHandRing1", "Null" {
+	Model: 1624030281664, "Model::LeftHandRing1", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -676,7 +676,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232861421184, "Model::LeftHandRing2", "Null" {
+	Model: 1624030299664, "Model::LeftHandRing2", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -688,7 +688,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232861423184, "Model::LeftHandRing3", "Null" {
+	Model: 1624030283664, "Model::LeftHandRing3", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -699,7 +699,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232861401184, "Model::LeftHandPinky1", "Null" {
+	Model: 1624030297664, "Model::LeftHandPinky1", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -711,7 +711,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232861459184, "Model::LeftHandPinky2", "Null" {
+	Model: 1624030273664, "Model::LeftHandPinky2", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -723,7 +723,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232861457184, "Model::LeftHandPinky3", "Null" {
+	Model: 1624030295664, "Model::LeftHandPinky3", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -734,7 +734,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223365128656, "Model::pCube4", "Null" {
+	Model: 1624030305664, "Model::pCube4", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -745,7 +745,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223365140656, "Model::RightUpLeg", "Null" {
+	Model: 1624030287664, "Model::RightUpLeg", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -757,7 +757,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223365130656, "Model::RightLeg", "Null" {
+	Model: 1624030291664, "Model::RightLeg", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -769,7 +769,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2223365134656, "Model::RightFoot", "Null" {
+	Model: 1624030289664, "Model::RightFoot", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -781,7 +781,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232852219584, "Model::RightForeFoot", "Null" {
+	Model: 1624030275664, "Model::RightForeFoot", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -793,7 +793,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232852221584, "Model::RightToeBase", "Null" {
+	Model: 1624030307664, "Model::RightToeBase", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -804,7 +804,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232852229584, "Model::LeftUpLeg", "Null" {
+	Model: 1624030277664, "Model::LeftUpLeg", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -816,7 +816,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2232852201584, "Model::LeftLeg", "Null" {
+	Model: 1624030311664, "Model::LeftLeg", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -828,7 +828,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2233556814864, "Model::LeftFoot", "Null" {
+	Model: 1624030301664, "Model::LeftFoot", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -840,7 +840,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2233556790864, "Model::LeftForeFoot", "Null" {
+	Model: 1624030293664, "Model::LeftForeFoot", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -852,7 +852,7 @@ Objects:  {
 		Shading: Y
 		Culling: "CullingOff"
 	}
-	Model: 2233556798864, "Model::LeftToeBase", "Null" {
+	Model: 1624030309664, "Model::LeftToeBase", "Null" {
 		Version: 232
 		Properties70:  {
 			P: "RotationOrder", "enum", "", "",4
@@ -871,178 +871,178 @@ Objects:  {
 Connections:  {
 	
 	;Model::Skeleton, Model::RootNode
-	C: "OO",2232865890672,0
+	C: "OO",1624030405664,0
 	
 	;Model::Hips, Model::Skeleton
-	C: "OO",2232865932672,2232865890672
+	C: "OO",1624030397664,1624030405664
 	
 	;Model::Spine, Model::Hips
-	C: "OO",2223249751680,2232865932672
+	C: "OO",1624030393664,1624030397664
 	
 	;Model::RightUpLeg, Model::Hips
-	C: "OO",2223365140656,2232865932672
+	C: "OO",1624030287664,1624030397664
 	
 	;Model::LeftUpLeg, Model::Hips
-	C: "OO",2232852229584,2232865932672
+	C: "OO",1624030277664,1624030397664
 	
 	;Model::Spine1, Model::Spine
-	C: "OO",2223249727680,2223249751680
+	C: "OO",1624030399664,1624030393664
 	
 	;Model::Spine2, Model::Spine1
-	C: "OO",2223249765680,2223249727680
+	C: "OO",1624030385664,1624030399664
 	
 	;Model::Spine3, Model::Spine2
-	C: "OO",2223249735680,2223249765680
+	C: "OO",1624030377664,1624030385664
 	
 	;Model::Neck, Model::Spine3
-	C: "OO",2223249767680,2223249735680
+	C: "OO",1624030381664,1624030377664
 	
 	;Model::RightShoulder, Model::Spine3
-	C: "OO",2223249775680,2223249735680
+	C: "OO",1624030409664,1624030377664
 	
 	;Model::LeftShoulder, Model::Spine3
-	C: "OO",2232851538992,2223249735680
+	C: "OO",1624030451664,1624030377664
 	
 	;Model::pCube4, Model::Spine3
-	C: "OO",2223365128656,2223249735680
+	C: "OO",1624030305664,1624030377664
 	
 	;Model::Neck1, Model::Neck
-	C: "OO",2223249787680,2223249767680
+	C: "OO",1624030401664,1624030381664
 	
 	;Model::Head, Model::Neck1
-	C: "OO",2223249789680,2223249787680
+	C: "OO",1624030375664,1624030401664
 	
 	;Model::RightArm, Model::RightShoulder
-	C: "OO",2223249781680,2223249775680
+	C: "OO",1624030407664,1624030409664
 	
 	;Model::RightForeArm, Model::RightArm
-	C: "OO",2230988682016,2223249781680
+	C: "OO",1624030379664,1624030407664
 	
 	;Model::RightHand, Model::RightForeArm
-	C: "OO",2230988684016,2230988682016
+	C: "OO",1624030411664,1624030379664
 	
 	;Model::RightHandThumb1, Model::RightHand
-	C: "OO",2230988686016,2230988684016
+	C: "OO",1624030413664,1624030411664
 	
 	;Model::RightHandIndex1, Model::RightHand
-	C: "OO",2230988662016,2230988684016
+	C: "OO",1624030431664,1624030411664
 	
 	;Model::RightHandMiddle1, Model::RightHand
-	C: "OO",2230988668016,2230988684016
+	C: "OO",1624030421664,1624030411664
 	
 	;Model::RightHandRing1, Model::RightHand
-	C: "OO",2232865538896,2230988684016
+	C: "OO",1624030423664,1624030411664
 	
 	;Model::RightHandPinky1, Model::RightHand
-	C: "OO",2232865622896,2230988684016
+	C: "OO",1624030429664,1624030411664
 	
 	;Model::RightHandThumb2, Model::RightHandThumb1
-	C: "OO",2230988656016,2230988686016
+	C: "OO",1624030383664,1624030413664
 	
 	;Model::RightHandThumb3, Model::RightHandThumb2
-	C: "OO",2230988660016,2230988656016
+	C: "OO",1624030437664,1624030383664
 	
 	;Model::RightHandIndex2, Model::RightHandIndex1
-	C: "OO",2230988664016,2230988662016
+	C: "OO",1624030415664,1624030431664
 	
 	;Model::RightHandIndex3, Model::RightHandIndex2
-	C: "OO",2230988670016,2230988664016
+	C: "OO",1624030417664,1624030415664
 	
 	;Model::RightHandMiddle2, Model::RightHandMiddle1
-	C: "OO",2232865524896,2230988668016
+	C: "OO",1624030419664,1624030421664
 	
 	;Model::RightHandMiddle3, Model::RightHandMiddle2
-	C: "OO",2232865520896,2232865524896
+	C: "OO",1624030433664,1624030419664
 	
 	;Model::RightHandRing2, Model::RightHandRing1
-	C: "OO",2232865528896,2232865538896
+	C: "OO",1624030425664,1624030423664
 	
 	;Model::RightHandRing3, Model::RightHandRing2
-	C: "OO",2232865634896,2232865528896
+	C: "OO",1624030427664,1624030425664
 	
 	;Model::RightHandPinky2, Model::RightHandPinky1
-	C: "OO",2232865646896,2232865622896
+	C: "OO",1624030449664,1624030429664
 	
 	;Model::RightHandPinky3, Model::RightHandPinky2
-	C: "OO",2232865650896,2232865646896
+	C: "OO",1624030445664,1624030449664
 	
 	;Model::LeftArm, Model::LeftShoulder
-	C: "OO",2232851440992,2232851538992
+	C: "OO",1624030241664,1624030451664
 	
 	;Model::LeftForeArm, Model::LeftArm
-	C: "OO",2232851416992,2232851440992
+	C: "OO",1624030219664,1624030241664
 	
 	;Model::LeftHand, Model::LeftForeArm
-	C: "OO",2232851456992,2232851416992
+	C: "OO",1624030217664,1624030219664
 	
 	;Model::LeftHandThumb1, Model::LeftHand
-	C: "OO",2232851516992,2232851456992
+	C: "OO",1624030251664,1624030217664
 	
 	;Model::LeftHandIndex1, Model::LeftHand
-	C: "OO",2234256750656,2232851456992
+	C: "OO",1624030225664,1624030217664
 	
 	;Model::LeftHandMiddle1, Model::LeftHand
-	C: "OO",2234256590656,2232851456992
+	C: "OO",1624030285664,1624030217664
 	
 	;Model::LeftHandRing1, Model::LeftHand
-	C: "OO",2234256626656,2232851456992
+	C: "OO",1624030281664,1624030217664
 	
 	;Model::LeftHandPinky1, Model::LeftHand
-	C: "OO",2232861401184,2232851456992
+	C: "OO",1624030297664,1624030217664
 	
 	;Model::LeftHandThumb2, Model::LeftHandThumb1
-	C: "OO",2232851518992,2232851516992
+	C: "OO",1624030235664,1624030251664
 	
 	;Model::LeftHandThumb3, Model::LeftHandThumb2
-	C: "OO",2232851522992,2232851518992
+	C: "OO",1624030221664,1624030235664
 	
 	;Model::LeftHandIndex2, Model::LeftHandIndex1
-	C: "OO",2234256752656,2234256750656
+	C: "OO",1624030265664,1624030225664
 	
 	;Model::LeftHandIndex3, Model::LeftHandIndex2
-	C: "OO",2234256754656,2234256752656
+	C: "OO",1624030237664,1624030265664
 	
 	;Model::LeftHandMiddle2, Model::LeftHandMiddle1
-	C: "OO",2234256622656,2234256590656
+	C: "OO",1624030271664,1624030285664
 	
 	;Model::LeftHandMiddle3, Model::LeftHandMiddle2
-	C: "OO",2234256592656,2234256622656
+	C: "OO",1624030279664,1624030271664
 	
 	;Model::LeftHandRing2, Model::LeftHandRing1
-	C: "OO",2232861421184,2234256626656
+	C: "OO",1624030299664,1624030281664
 	
 	;Model::LeftHandRing3, Model::LeftHandRing2
-	C: "OO",2232861423184,2232861421184
+	C: "OO",1624030283664,1624030299664
 	
 	;Model::LeftHandPinky2, Model::LeftHandPinky1
-	C: "OO",2232861459184,2232861401184
+	C: "OO",1624030273664,1624030297664
 	
 	;Model::LeftHandPinky3, Model::LeftHandPinky2
-	C: "OO",2232861457184,2232861459184
+	C: "OO",1624030295664,1624030273664
 	
 	;Model::RightLeg, Model::RightUpLeg
-	C: "OO",2223365130656,2223365140656
+	C: "OO",1624030291664,1624030287664
 	
 	;Model::RightFoot, Model::RightLeg
-	C: "OO",2223365134656,2223365130656
+	C: "OO",1624030289664,1624030291664
 	
 	;Model::RightForeFoot, Model::RightFoot
-	C: "OO",2232852219584,2223365134656
+	C: "OO",1624030275664,1624030289664
 	
 	;Model::RightToeBase, Model::RightForeFoot
-	C: "OO",2232852221584,2232852219584
+	C: "OO",1624030307664,1624030275664
 	
 	;Model::LeftLeg, Model::LeftUpLeg
-	C: "OO",2232852201584,2232852229584
+	C: "OO",1624030311664,1624030277664
 	
 	;Model::LeftFoot, Model::LeftLeg
-	C: "OO",2233556814864,2232852201584
+	C: "OO",1624030301664,1624030311664
 	
 	;Model::LeftForeFoot, Model::LeftFoot
-	C: "OO",2233556790864,2233556814864
+	C: "OO",1624030293664,1624030301664
 	
 	;Model::LeftToeBase, Model::LeftForeFoot
-	C: "OO",2233556798864,2233556790864
+	C: "OO",1624030309664,1624030293664
 }
 ;Takes section
 ;----------------------------------------------------

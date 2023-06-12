@@ -107,19 +107,19 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
         if (this.bvhAnimator == null)
         {
+            throw new InvalidOperationException("No Bvh Animator  set. Set it in Inspector");
           
             //GameObject avatarRootNode = this.skeletonGO.transform .GetChild(0).gameObject; //MJ: avatarRootNode  is "Hips"
-            GameObject avatarRootNode = this.skeletonGO; //MJ: this gameObject is "Skeleton"
+            // GameObject avatarRootNode = this.skeletonGO; //MJ: this gameObject is "Skeleton"
+            
+            // HumanDescription humanDescription = new HumanDescription(); // struct type
+            // this.bvhAnimator = this.gameObject.AddComponent<Animator>();
 
-            //throw new InvalidOperationException("No Bvh Animator  set.");
-            HumanDescription humanDescription = new HumanDescription(); // struct type
-            this.bvhAnimator = this.gameObject.AddComponent<Animator>();
-
-            // This class allows you to create custom avatars for your animated characters entirely
-            // via script, in a similar way to what goes on behind the Scenes
-            // in the Unity Editor when you create an avatar from the model import inspector.
-            this.bvhAnimator.avatar = AvatarBuilder.BuildHumanAvatar( avatarRootNode, humanDescription);
-            //MJ: confer https://github.com/bkevelham/unity-avatar-generation
+            // // This class allows you to create custom avatars for your animated characters entirely
+            // // via script, in a similar way to what goes on behind the Scenes
+            // // in the Unity Editor when you create an avatar from the model import inspector.
+            // this.bvhAnimator.avatar = AvatarBuilder.BuildHumanAvatar( avatarRootNode, humanDescription);
+            // //MJ: confer https://github.com/bkevelham/unity-avatar-generation
 
         /// Create a HumanDescription out of an avatar GameObject. 
 		/// The HumanDescription is what is needed to create an Avatar object
@@ -137,21 +137,11 @@ public class BVHAnimationRetargetter : MonoBehaviour
             // Verify the bone hierarchy: Make sure that your GameObject has a proper bone hierarchy and that it includes the "Hips" bone. 
             //The "Hips" bone is a required bone for building a human avatar, so it must be present. 
 
-// animator is an instance of the Animator component that you want to assign the Avatar to.
-// this.skeletonGO is a reference to the GameObject, the source of the HumanDescription.
-// humanDescription is an instance of the HumanDescription class that holds the description of the Humanoid Avatar.
-// The AvatarBuilder.BuildHumanAvatar method takes the BVH GameObject and the HumanDescription 
-// as parameters and returns an Avatar instance. 
-// The returned Avatar is then assigned to the avatar property of the Animator component.
-
-// Please note that to use the AvatarBuilder class and its related methods, 
-// you need to include the UnityEditor namespace in an Editor script, 
-// as this functionality is only available in the Unity Editor environment.
 
             //AssetDatabase.CreateAsset(animator.avatar, "Assets/Path/To/Save/Avatar.asset");
-            Debug.Log($"Is avatar valid={this.bvhAnimator.avatar.isValid}");
+           // Debug.Log($"Is avatar valid={this.bvhAnimator.avatar.isValid}");
 
-            return  this.bvhAnimator;
+            //return  this.bvhAnimator;
         }
 
         else
@@ -166,7 +156,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
         if (this.saraAnimator == null)
         {
-            throw new InvalidOperationException("No Sara Animator set.");
+            throw new InvalidOperationException("No Sara Animator set. Set it in inspector");
         }
 
         else
@@ -209,7 +199,15 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
         // this.gameObject =  bvhRetargetter; It has two components: BVHAnimationRetargetter and bvhFrameGetter
 
-        this.skeletonGO = this.gameObject.GetComponent<BVHFrameGetter>().skeletonGO;
+        this.skeletonGO = this.gameObject.GetComponent<BVHSkeletonCreator>().skeletonGO;
+
+        
+        if (this.skeletonGO == null)
+        {
+
+             Debug.Log(" BVH Skeleton Should have been created by BVHSkeletonCreator component and saved as a Prefab asset");
+             return;
+        }
 
         if (this.animType == AnimType.Humanoid)
         {
@@ -221,7 +219,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
             // Get Animator component of the virtual human to which this BVHAnimationLoader component is added
             // =>   this.bvhAnimator = this.gameObject.GetComponent<Animator>();
 
-            // this.bvhAnimator.avatar = AvatarBuilder.BuildHumanAvatar(this.skeletonGO, HumanDescription humanDescription);
+      
             if (!this.bvhAnimator.avatar.isValid)
             {
 

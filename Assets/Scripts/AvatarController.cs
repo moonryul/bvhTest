@@ -158,34 +158,63 @@ public class AvatarController : MonoBehaviour
                  // When it is unchecked, its Start() and Update() methods are executed. 
     {
 
-        this.skeletonGO = GameObject.FindGameObjectWithTag("Skeleton");
+       // this.skeletonGO = GameObject.FindGameObjectWithTag("Skeleton");
 
         if (this.skeletonGO == null)
         {
 
-            
              Debug.Log(" BVH Skeleton Should have been created by BVHSkeletonCreator component and saved as a Prefab asset");
              return;
+
+            // // (1)  create a skeleton of transforms for the skeleton hierarchy, 
+            // // (2) add a BVHDebugLines component to it so it becomes visible like a stick figur [
+            // // BVHDebugLines bvhdebugLines = gameObject.AddComponent<BVHDebugLines>() ],
+            // // (Lines are simply drawn between the bone heads (and ends))d  
+            // // (3) return the skeleton, which is a hierarchy of GameObjects.
+
+            // // Create all gameObjects hiearchy and the components needed to render the gameObjects for bvh.Allbones[].
+
+            // this.skeletonGO = this.bvh.makeDebugSkeleton(animate: false, skeletonGOName: "Skeleton");
+            // // => if animate = false, dot not create an animation clip but only the rest pose; 
+            // // Create BvhDebugLines component and MeshRenderer component,
+            // //  but do not create Animation component:
+            // // public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
+
+            // Debug.Log(" bvh Skeleton is  created");
+
+            // this.avatarRootTransform = this.skeletonGO.transform.GetChild(0); // the Hips joint: The first child of SkeletonGO
+            // // Set this.avatarTransforms refer to the children transforms of this.avatarRootTransform (Hip); Hip is the child of
+            // // the Skeleton, which is this.bvhAnimator.gameObject.transform, used as the root of the Unity Humanoid avatar
+            // // in  this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAnimator.gameObject.transform),
+            // // in BVHAnimationRetargetter component. 
+       
+            // this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
             
+
+           
+
         }
         else
         {
-            Debug.Log("In AvatarController: bvh Skeleton is already created and has been given Tag 'Skeleton' ");
+            Debug.Log("In AvatarController: bvh Skeleton is already created and has been given Tag 'Skeleton' => Perfect ");
 
             //all gameObjects hiearchy and the components needed to render the gameObjects for bvh.Allbones[] are already available.
 
             // this.skeletonGO contains the pose of the skeleton obtained from the saved scene.
-           
+
+
             //IMPORTANT:  Collect the transforms in the skeleton hiearchy into ***a list of transforms***,  this.avatarCurrentTransforms:
             // If you change  this.avatarCurrentTransforms, it affects the hierarchy of    this.skeletonGO , because both reference the same transforms;
 
-            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
-            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
-            //MJ:  this.jointPaths and this.avatarTransforms are set within the above method.
+            // this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
+            // this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
+
+            this.avatarRootTransform = this.gameObject.GetComponent<BVHSkeletonCreator>().avatarRootTransform;
+            this.avatarTransforms = this.gameObject.GetComponent<BVHSkeletonCreator>().avatarTransforms;
+
 
         }
-    } // Awake()
-
+    }
 
 
     void Start()

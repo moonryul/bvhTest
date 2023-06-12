@@ -37,33 +37,10 @@ public class BVHFrameGetter : MonoBehaviour
     void Start()
     {
 
-        // // Load BVH motion data to this.bvh.allBones
-        // if (this.bvhFileName == "")
-        // {
-        //     Debug.Log(" In BVHFrameGetter: bvhFileName should be set in the inspector");
-        //     throw new InvalidOperationException(" In BVHFrameGetter: No  Bvh FileName is set.");
-
-        // }
-
-        // //MJ: Note:
-        // //public BVH(string pathToBvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
-
-        // //MJ:  During Awake() of BVHFrameGetter Script, parse the bvh file and load the  hierarchy paths and  load motion data to this.bvh.allBones
-
-        // //VERY IMPORTANT:  when you get the motion file from the gesticulator, store it to this.bvh.allBones. Then the motion will be played.
-
-        this.bvh = new BVH(bvhFileName, parseMotionData: true); // Load BVH motion data to this.bvh.allBones
-        // // parseMotionData:false => only the skeleton and the rest pose is read
-
-        // this.frameCount = this.bvh.frameCount;
-        // this.secondsPerFrame = this.bvh.secondsPerFrame; // 0.05f;
-        // // Sets to 20 fps
-        // Time.fixedDeltaTime = (float)this.secondsPerFrame;
-
-
+       
         // // Create a Skeleton hiearchy if it  is not yet created. 
 
-        this.skeletonGO = GameObject.FindGameObjectWithTag("Skeleton");
+       // this.skeletonGO = GameObject.FindGameObjectWithTag("Skeleton");
 
         if (this.skeletonGO == null)
         {
@@ -94,61 +71,88 @@ public class BVHFrameGetter : MonoBehaviour
             // // in BVHAnimationRetargetter component. 
        
             // this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
-            
-
-           
+                      
 
         }
         else
         {
-            Debug.Log("In BVHFrameGetter: bvh Skeleton is already created and has been given Tag 'Skeleton' ");
+            Debug.Log("In BVHFrameGetter: bvh Skeleton is already created and has been given Tag 'Skeleton' => Perfect ");
 
             //all gameObjects hiearchy and the components needed to render the gameObjects for bvh.Allbones[] are already available.
 
             // this.skeletonGO contains the pose of the skeleton obtained from the saved scene.
-            
+
 
             //IMPORTANT:  Collect the transforms in the skeleton hiearchy into ***a list of transforms***,  this.avatarCurrentTransforms:
             // If you change  this.avatarCurrentTransforms, it affects the hierarchy of    this.skeletonGO , because both reference the same transforms;
 
-            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
-            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
+            // this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
+            // this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
+
+            this.avatarRootTransform = this.gameObject.GetComponent<BVHSkeletonCreator>().avatarRootTransform;
+            this.avatarTransforms = this.gameObject.GetComponent<BVHSkeletonCreator>().avatarTransforms;
+
+
             //MJ:  this.jointPaths and this.avatarCurrentTransforms are set within the above method.
 
+            // MJ:  Load BVH motion data to this.bvh.allBones: No, we assume that when Skeleton is created, its bvh motion is also loaded
+            // if (this.bvhFileName == "")
+            // {
+            //     Debug.Log(" In BVHFrameGetter: bvhFileName should be set in the inspector");
+            //     throw new InvalidOperationException(" In BVHFrameGetter: No  Bvh FileName is set.");
+
+            // }
+
+            // //MJ: Note:
+            // //public BVH(string pathToBvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
+
+            // //MJ:  During Awake() of BVHFrameGetter Script, parse the bvh file and load the  hierarchy paths and  load motion data to this.bvh.allBones
+
+            this.bvh = new BVH(bvhFileName, parseMotionData: true);
+             // Load BVH motion data to this.bvh.allBones
+             //  parseMotionData:false => only the skeleton and the rest pose is read;
+             // This does not create the Skeleton, which is  created by  this.skeletonGO = this.bvh.makeDebugSkeleton(animate: false, skeletonGOName: "Skeleton");
+             // in BVHSkeletonCreator.
+
+            //this.bvh = this.gameObject.GetComponent<BVHSkeletonCreator>().bvh; This did  set  this.bvh.allBones.
+
+            this.frameCount = this.bvh.frameCount;
+            this.secondsPerFrame = this.bvh.secondsPerFrame; // 0.05f;
+            // // Sets to 20 fps
+            Time.fixedDeltaTime = (float)this.secondsPerFrame;
 
         }
 
-      
+
     } // Start()
 
 
+    // void ParseAvatarTransformRecursive(Transform child, string parentPath, List<string> jointPaths, List<Transform> transforms)
+    // {
+    //     string jointPath = parentPath.Length == 0 ? child.gameObject.name : parentPath + "/" + child.gameObject.name;
+    //     // The empty string's length is zero
 
-    void ParseAvatarTransformRecursive(Transform child, string parentPath, List<string> jointPaths, List<Transform> transforms)
-    {
-        string jointPath = parentPath.Length == 0 ? child.gameObject.name : parentPath + "/" + child.gameObject.name;
-        // The empty string's length is zero
+    //     jointPaths.Add(jointPath);
+    //     transforms.Add(child);
 
-        jointPaths.Add(jointPath);
-        transforms.Add(child);
+    //     foreach (Transform grandChild in child)
+    //     {
+    //         ParseAvatarTransformRecursive(grandChild, jointPath, jointPaths, transforms);
+    //     }
 
-        foreach (Transform grandChild in child)
-        {
-            ParseAvatarTransformRecursive(grandChild, jointPath, jointPaths, transforms);
-        }
+    //     // Return if child has no children, that is, it is a leaf node.
+    // }
 
-        // Return if child has no children, that is, it is a leaf node.
-    }
+    // void ParseAvatarRootTransform(Transform rootTransform, List<string> jointPaths, List<Transform> avatarTransforms)
+    // {
+    //     jointPaths.Add(""); // The name of the root tranform path is the empty string
+    //     avatarTransforms.Add(rootTransform);
 
-    void ParseAvatarRootTransform(Transform rootTransform, List<string> jointPaths, List<Transform> avatarTransforms)
-    {
-        jointPaths.Add(""); // The name of the root tranform path is the empty string
-        avatarTransforms.Add(rootTransform);
-
-        foreach (Transform child in rootTransform) // rootTransform class implements IEnuerable interface
-        {
-            ParseAvatarTransformRecursive(child, "", jointPaths, avatarTransforms);
-        }
-    }
+    //     foreach (Transform child in rootTransform) // rootTransform class implements IEnuerable interface
+    //     {
+    //         ParseAvatarTransformRecursive(child, "", jointPaths, avatarTransforms);
+    //     }
+    // }
 
     // Update vs FixedUpdate: Update is called once per frame
     // MonoBehaviour.FixedUpdate has the frequency of the physics system; it is called every fixed frame-rate frame. Compute Physics system calculations after FixedUpdate.
@@ -191,8 +195,8 @@ public class BVHFrameGetter : MonoBehaviour
             // We need a formula that computes the two adjacent frameNumbers whose key times include a given time t, using bvh.secondsPerFrame, bvh.frameCount
 
             // THe position and the rotation of the Hips joint are assumed to be all zeros in our gesticulator experiment.
-            this.bvh.allBones[0].localFramePositions[this.frameNo] = new Vector3(0,0,0);
-            this.bvh.allBones[0].localFrameRotations[this.frameNo] = Quaternion.identity;
+            // this.bvh.allBones[0].localFramePositions[this.frameNo] = new Vector3(0,0,0);
+            // this.bvh.allBones[0].localFrameRotations[this.frameNo] = Quaternion.identity;
             
             Vector3 vector = this.bvh.allBones[0].localFramePositions[this.frameNo];
 
