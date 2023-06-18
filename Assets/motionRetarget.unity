@@ -373,9 +373,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1735169069}
   - component: {fileID: 1735169067}
-  - component: {fileID: 1735169066}
   - component: {fileID: 1735169065}
   - component: {fileID: 1735169070}
+  - component: {fileID: 1735169072}
+  - component: {fileID: 1735169071}
   m_Layer: 0
   m_Name: bvhMotionRetargetter
   m_TagString: Untagged
@@ -390,7 +391,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1735169064}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4aafd9e4c1582b04297b848d255a148b, type: 3}
   m_Name: 
@@ -399,27 +400,6 @@ MonoBehaviour:
   skeletonGO: {fileID: 1933547507}
   bvhAnimator: {fileID: 1933547510}
   saraAnimator: {fileID: 1667270852}
---- !u!114 &1735169066
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1735169064}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a05c333413a7f9478437666f167cc5c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  jointIndex: 0100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000001c0000001d0000001e0000001f000000
-  numOfUsedJoints: 15
-  avatarRootTransform: {fileID: 0}
-  jointPaths: []
-  avatarTransforms: []
-  bvhFileName: Assets/Recording_001.bvh
-  secondsPerFrame: 0
-  frameCount: 0
-  skeletonGO: {fileID: 1933547507}
 --- !u!114 &1735169067
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -435,7 +415,7 @@ MonoBehaviour:
   avatarRootTransform: {fileID: 0}
   jointPaths: []
   avatarTransforms: []
-  bvhFileName: Assets/Recording_001.bvh
+  bvhFileName: Assets/temp.bvh
   frameNo: 0
   secondsPerFrame: 0
   frameCount: 0
@@ -475,6 +455,48 @@ MonoBehaviour:
   secondsPerFrame: 0
   frameCount: 0
   skeletonGO: {fileID: 1933547507}
+--- !u!114 &1735169071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1735169064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a32d7b3cbb6a7a45aa8043d9e3fa128, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jointIndex: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000001b0000001c0000001d0000001e000000
+  numOfUsedJoints: 15
+  avatarRootTransform: {fileID: 0}
+  jointPaths: []
+  avatarTransforms: []
+  bvhFileName: 
+  secondsPerFrame: 0
+  frameCount: 0
+  skeletonGO: {fileID: 0}
+--- !u!114 &1735169072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1735169064}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a05c333413a7f9478437666f167cc5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jointIndex: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000001b0000001c0000001d0000001e000000
+  numOfUsedJoints: 15
+  avatarRootTransform: {fileID: 0}
+  jointPaths: []
+  avatarTransforms: []
+  bvhFileName: 
+  secondsPerFrame: 0
+  frameCount: 0
+  skeletonGO: {fileID: 0}
 --- !u!1 &1933547507 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6690853842674871097, guid: 6f73e8c96f4521e4188df8a65385f565, type: 3}

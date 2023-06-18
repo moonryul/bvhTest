@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/motionRetarget.unity
+- path: Assets/Scenes/bvhTest.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

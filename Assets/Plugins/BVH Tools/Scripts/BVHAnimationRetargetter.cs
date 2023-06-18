@@ -10,7 +10,7 @@ using UnityEditor; // to use AssetDatabase
 using Unity.Collections;
 
 
-//public class RetargetingHPH : MonoBehaviour
+//public class Retargeting : MonoBehaviour
 //    {
 //        public GameObject src;
 
@@ -199,15 +199,17 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
         // this.gameObject =  bvhRetargetter; It has two components: BVHAnimationRetargetter and bvhFrameGetter
 
-        this.skeletonGO = this.gameObject.GetComponent<BVHSkeletonCreator>().skeletonGO;
+        //this.skeletonGO = this.gameObject.GetComponent<BVHSkeletonCreator>().skeletonGO;
 
-        
+        this.skeletonGO = GameObject.FindGameObjectWithTag("Skeleton");
+
         if (this.skeletonGO == null)
         {
 
-             Debug.Log(" BVH Skeleton Should have been created by BVHSkeletonCreator component and saved as a Prefab asset");
-             return;
-        }
+             Debug.Log(" BVH Skeleton Should have been created by BVHSkeletonCreator component and added to the hierarchy");
+             throw new InvalidOperationException(" In BVHFrameGetter:Skeleton is not added to the hierarchy");
+
+        }   
 
         if (this.animType == AnimType.Humanoid)
         {

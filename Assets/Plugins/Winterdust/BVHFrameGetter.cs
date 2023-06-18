@@ -24,7 +24,7 @@ public class BVHFrameGetter : MonoBehaviour
 
  
     public string bvhFileName = ""; // == Assets/Recording_001.bvh
-    public BVH bvh;
+    public BVH bvh; // MJ: BVH class
 
     public int frameNo = 0;
     public double secondsPerFrame;
@@ -40,14 +40,15 @@ public class BVHFrameGetter : MonoBehaviour
        
         // // Create a Skeleton hiearchy if it  is not yet created. 
 
-       // this.skeletonGO = GameObject.FindGameObjectWithTag("Skeleton");
+        this.skeletonGO = GameObject.FindGameObjectWithTag("Skeleton");
 
         if (this.skeletonGO == null)
         {
 
-             Debug.Log(" BVH Skeleton Should have been created by BVHSkeletonCreator component and saved as a Prefab asset");
-             return;
+             Debug.Log(" BVH Skeleton Should have been created by BVHSkeletonCreator component and added to the hierarchy");
+             throw new InvalidOperationException(" In BVHFrameGetter:Skeleton is not added to the hierarchy");
 
+             
             // // (1)  create a skeleton of transforms for the skeleton hierarchy, 
             // // (2) add a BVHDebugLines component to it so it becomes visible like a stick figur [
             // // BVHDebugLines bvhdebugLines = gameObject.AddComponent<BVHDebugLines>() ],
@@ -86,27 +87,16 @@ public class BVHFrameGetter : MonoBehaviour
             //IMPORTANT:  Collect the transforms in the skeleton hiearchy into ***a list of transforms***,  this.avatarCurrentTransforms:
             // If you change  this.avatarCurrentTransforms, it affects the hierarchy of    this.skeletonGO , because both reference the same transforms;
 
-            // this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
-            // this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
+            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
+            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
 
-            this.avatarRootTransform = this.gameObject.GetComponent<BVHSkeletonCreator>().avatarRootTransform;
-            this.avatarTransforms = this.gameObject.GetComponent<BVHSkeletonCreator>().avatarTransforms;
+            // this.avatarRootTransform = this.gameObject.GetComponent<BVHSkeletonCreator>().avatarRootTransform;
+            // this.avatarTransforms = this.gameObject.GetComponent<BVHSkeletonCreator>().avatarTransforms;
 
 
-            //MJ:  this.jointPaths and this.avatarCurrentTransforms are set within the above method.
-
-            // MJ:  Load BVH motion data to this.bvh.allBones: No, we assume that when Skeleton is created, its bvh motion is also loaded
-            // if (this.bvhFileName == "")
-            // {
-            //     Debug.Log(" In BVHFrameGetter: bvhFileName should be set in the inspector");
-            //     throw new InvalidOperationException(" In BVHFrameGetter: No  Bvh FileName is set.");
-
-            // }
-
-            // //MJ: Note:
-            // //public BVH(string pathToBvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
-
-            // //MJ:  During Awake() of BVHFrameGetter Script, parse the bvh file and load the  hierarchy paths and  load motion data to this.bvh.allBones
+            // public BVH(string pathToBvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
+                       
+            // this.bvh is different from bvh created in BVHSkeletonCreator.cs
 
             this.bvh = new BVH(bvhFileName, parseMotionData: true);
              // Load BVH motion data to this.bvh.allBones
@@ -127,32 +117,32 @@ public class BVHFrameGetter : MonoBehaviour
     } // Start()
 
 
-    // void ParseAvatarTransformRecursive(Transform child, string parentPath, List<string> jointPaths, List<Transform> transforms)
-    // {
-    //     string jointPath = parentPath.Length == 0 ? child.gameObject.name : parentPath + "/" + child.gameObject.name;
-    //     // The empty string's length is zero
+    void ParseAvatarTransformRecursive(Transform child, string parentPath, List<string> jointPaths, List<Transform> transforms)
+    {
+        string jointPath = parentPath.Length == 0 ? child.gameObject.name : parentPath + "/" + child.gameObject.name;
+        // The empty string's length is zero
 
-    //     jointPaths.Add(jointPath);
-    //     transforms.Add(child);
+        jointPaths.Add(jointPath);
+        transforms.Add(child);
 
-    //     foreach (Transform grandChild in child)
-    //     {
-    //         ParseAvatarTransformRecursive(grandChild, jointPath, jointPaths, transforms);
-    //     }
+        foreach (Transform grandChild in child)
+        {
+            ParseAvatarTransformRecursive(grandChild, jointPath, jointPaths, transforms);
+        }
 
-    //     // Return if child has no children, that is, it is a leaf node.
-    // }
+        // Return if child has no children, that is, it is a leaf node.
+    }
 
-    // void ParseAvatarRootTransform(Transform rootTransform, List<string> jointPaths, List<Transform> avatarTransforms)
-    // {
-    //     jointPaths.Add(""); // The name of the root tranform path is the empty string
-    //     avatarTransforms.Add(rootTransform);
+    void ParseAvatarRootTransform(Transform rootTransform, List<string> jointPaths, List<Transform> avatarTransforms)
+    {
+        jointPaths.Add(""); // The name of the root tranform path is the empty string
+        avatarTransforms.Add(rootTransform);
 
-    //     foreach (Transform child in rootTransform) // rootTransform class implements IEnuerable interface
-    //     {
-    //         ParseAvatarTransformRecursive(child, "", jointPaths, avatarTransforms);
-    //     }
-    // }
+        foreach (Transform child in rootTransform) // rootTransform class implements IEnuerable interface
+        {
+            ParseAvatarTransformRecursive(child, "", jointPaths, avatarTransforms);
+        }
+    }
 
     // Update vs FixedUpdate: Update is called once per frame
     // MonoBehaviour.FixedUpdate has the frequency of the physics system; it is called every fixed frame-rate frame. Compute Physics system calculations after FixedUpdate.

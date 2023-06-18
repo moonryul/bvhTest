@@ -238,7 +238,7 @@ namespace Winterdust
 						this.boneCount++;
 						num9++;
 					}
-					else if (text3.StartsWith("OFFSET "))
+					else if (text3.StartsWith("OFFSET ")) //MJ: OFFSET => locaRestPosition
 					{
 						if (flag2)
 						{
@@ -277,7 +277,8 @@ namespace Winterdust
 						FrameTime = text3.Substring(12);
 					}
 				}
-				else
+
+				else // not (text3[0] == 'F')
 				{
 					if (num12 == 0)
 					{
@@ -328,20 +329,22 @@ namespace Winterdust
 						}
 						array = new float[num13];
 					}
-					if (!parseMotionData)  // if parseMotionData = false:
+
+					if (!parseMotionData)  // MJ: if parseMotionData = false: Set this.allBones to the rest position
 					{
 						for (int n = 0; n < this.boneCount; n++)
 						{
-							this.allBones[n].localFramePositions = null;
+							this.allBones[n].localFramePositions = null; //MJ: localFramePositions are set to null ?
 							for (int num16 = 0; num16 < this.frameCount; num16++)
-							{
+							{  //MJ: set the localFrameRotation of the bone at each frame num16 to identity
 								this.allBones[n].localFrameRotations[num16] = Quaternion.identity;
 							}
 						}
+
 						break;    // break out of 	the parsing loop for (int j = 0; j < bvhFile.Length; j++) //string[] bvhFile = input string
                     }
 
-
+                   //MJ: Get the motions from the MOTION section of the bvh file
                     if (num11 >= 1.0)
 					{
 						num11 -= 1.0;
@@ -354,10 +357,12 @@ namespace Winterdust
 							array[num17] = float.Parse(array3[num17]);
 						}
 						int num18 = 0;
+
 						for (int num19 = 0; num19 < this.boneCount; num19++)
-						{
+						{   //MJ: set the pose of the bones at frame num12
 							this.allBones[num19].feedFrame(ref num18, ref array, ref num12, ref zUp); // zUp = false: yUp in BVH
 						}
+
 						num12++;
 						if (progressTracker != null)
 						{
@@ -367,7 +372,8 @@ namespace Winterdust
 						{
 							break;
 						}
-					}
+					} // //MJ: Get the motions from the MOTION section of the bvh file
+
 					num11 += num7;
 				}
 			}//for (int j = 0; j < bvhFile.Length; j++) //string[] bvhFile = input string
@@ -583,22 +589,25 @@ namespace Winterdust
 			// => 	GameObject gameObject = new GameObject(skeletonGOName);
 			Color color;
 			ColorUtility.TryParseHtmlString("#" + colorHex.Replace("#", "").Replace("0x", ""), out color);
-			if (jointSize != 0f)
+			if (jointSize != 0f) // draw the skeleton
 			{
 				bool flag = false;
 				if (jointSize < 0f)
 				{
 					jointSize *= -1f;
+
 					flag = true;
 				}
 				Material material = new Material(Shader.Find("Legacy Shaders/Diffuse"));
 				material.color = color;
+
 				Transform[] componentsInChildren = gameObject.GetComponentsInChildren<Transform>();
+
 				for (int i = 0; i < componentsInChildren.Length; i++)
 				{
-					if (componentsInChildren[i] != gameObject.transform)
+					if (componentsInChildren[i] != gameObject.transform) // exclude the root node
 					{
-						Vector3[] array = new Vector3[]
+						Vector3[] array = new Vector3[] // rectangular cube
 						{
 							new Vector3(-jointSize / 8f, jointSize / 2f, -jointSize / 2f),
 							new Vector3(-jointSize, jointSize, -jointSize * 2f),
@@ -625,7 +634,7 @@ namespace Winterdust
 						componentsInChildren[i].gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
 						componentsInChildren[i].gameObject.AddComponent<MeshRenderer>().sharedMaterial = material;
 					}
-				}
+				} // for (int i = 0; i < componentsInChildren.Length; i++)
 			}
 			BVHDebugLines bvhdebugLines = gameObject.AddComponent<BVHDebugLines>();
 
@@ -1959,7 +1968,7 @@ namespace Winterdust
             {
                 if (frame == -1)
                 {
-                    boneTransform.localPosition = this.localRestPosition; // this refers to the current  BVHBone
+                    boneTransform.localPosition = this.localRestPosition; // "this" refers to the current  BVHBone
                     boneTransform.localRotation = Quaternion.identity;
                     return;
                 }
