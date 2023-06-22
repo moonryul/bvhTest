@@ -1002,21 +1002,9 @@
       <Project>{6e27e5fb-da92-c598-005c-a43a1891ceda}</Project>
       <Name>Siccity.GLTFUtility</Name>
     </ProjectReference>
-    <ProjectReference Include="ReadyPlayerMe.csproj">
-      <Project>{655cc00a-d31d-9a9e-d7c3-716a520a5db5}</Project>
-      <Name>ReadyPlayerMe</Name>
-    </ProjectReference>
     <ProjectReference Include="WebView.csproj">
       <Project>{4cf5366f-4ebd-51f5-fcf5-d5229d2bcb58}</Project>
       <Name>WebView</Name>
-    </ProjectReference>
-    <ProjectReference Include="ReadyPlayerMe.Editor.csproj">
-      <Project>{b6821b24-ae55-3c1c-1bcc-c348e27af7c5}</Project>
-      <Name>ReadyPlayerMe.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="ReadyPlayerMe.Extras.Editor.csproj">
-      <Project>{bfaaa422-71b7-b82c-beac-184a27e5ff4f}</Project>
-      <Name>ReadyPlayerMe.Extras.Editor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
