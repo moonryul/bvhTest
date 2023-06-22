@@ -40,7 +40,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
     //public List<Transform> bvhAvatarCurrentTransforms = new List<Transform>();
 
 
-    HumanPose humanPose = new HumanPose();
+    public  HumanPose humanPose;
     BvhSkeleton bvhSkeleton = new BvhSkeleton();
 
     List<string> jointPaths = new List<string>(); // emtpy one
@@ -207,7 +207,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
         {
 
              Debug.Log(" BVH Skeleton Should have been created by BVHSkeletonCreator component and added to the hierarchy");
-             throw new InvalidOperationException(" In BVHFrameGetter:Skeleton is not added to the hierarchy");
+             throw new InvalidOperationException(" In BVHFrameGetter:Skeleton is not added to the hierarchy or Is not given Tag 'Skeleton'");
 
         }   
 
@@ -240,18 +240,25 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
             }
 
+            this.humanPose = new HumanPose();
+
             this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAnimator.gameObject.transform);
-            //MJ: this.bvhAnimator.gameObject == SkeletonGO
-            //  this.skeletonGO.transform.GetChild(0) refers to the root (Hip) of the bvh skeleton to be controlled by
-            //  every frame by BVHFrameGetters component's Update() or by AvatarController's Coroutine. 
-            //  this.bvhAnimator is the Animator component attached to bvh "Skeleton" gameObject, which a hierarchy of gameObjects representing
-            // the hiearchy defined by the bvh file.
+            //MJ: 
+            //(1) this.bvhAnimator is the Animator component attached to bvh "Skeleton" gameObject,
+            //  which a hierarchy of gameObjects representing the hiearchy defined by the bvh file.
 
-            // => this.scrHumanPoseHandler has a reference to this.bvhAnimator.avatar and its root transform, this.bvhAnimator.gameObject.transform.
+            // (2) this.bvhAnimator.gameObject == SkeletonGO:
+            //  this.skeletonGO.transform.GetChild(0) refers to the root (Hip) of the bvh skeleton which is set by
+            //  every frame by BVHFrameGetters component's FixedUpdate() or by AvatarController's Coroutine. 
+
+            // (3) this.scrHumanPoseHandler has a reference to this.skeletonGO.transform, the root of the avatar object
             // and thereby the entire hierarchy of transforms;
+            // (4) this.bvhAnimator.avatar refers to the definitino of the Unity avatar in relation to the bvh character.
 
-            // You can change the transforms of the human avatar hierarchy (In our code, by BVHFrameGetter script);
-            // You can set the human pose defined by the human avatar hierarchy to humanPose by  this.srcHmanPoseHandler.SetHumanPose(ref humanPose), or
+
+            // (4) The transforms of the avatar hierarchy are changed by the FixedUpdate of BVHFrameGetter script;
+
+            // (5) You can set the human pose defined by the human avatar hierarchy to humanPose by  this.srcHumanPoseHandler.SetHumanPose(ref humanPose), or
             // get the humanPose by this.srcHmanPoseHandler.SetHumanPose(ref humanPose),
             // where  HumanPose humanPose = new HumanPose();
 
@@ -274,9 +281,8 @@ public class BVHAnimationRetargetter : MonoBehaviour
     } // Start()
 
     
-    void Update()
+    void FixedUpdate()
     {
-
         if (animType == AnimType.Humanoid)
         {
 
@@ -286,9 +292,9 @@ public class BVHAnimationRetargetter : MonoBehaviour
             //MJ: Compute a human pose from the bvh skeleton (bound to srcHumanPoseHandler), 
             // store the pose in the human pose handler, and return the human pose as the value ref humanPose.
             // The bvh skeleton pose is updated every frame by by BVHFrameGetter script.
-            HumanPose humanPose = new HumanPose();
-            this.srcHumanPoseHandler.GetHumanPose(ref humanPose); //NullReferenceException: Object reference not set to an instance of an object
-            
+            // HumanPose humanPose = new HumanPose();
+            this.srcHumanPoseHandler.GetHumanPose(ref this.humanPose);
+                        
             // => Computes a human pose* from the **bvh avatar skeleton**, stores the pose in the human pose handler, and returns it to humanPose.
 
             //MJ: note that:
@@ -312,11 +318,10 @@ public class BVHAnimationRetargetter : MonoBehaviour
             // this.avatarPose = new NativeArray<float>(this.jointPaths.Count * 7, Allocator.Persistent);
 
 
-
             //Set the humanPose from the bvh motion to the Sara (destination) HumanPose:
             // humanPose is the common ground between the bvh skeleton and the Sara skeleton.
 
-            this.destHumanPoseHandler.SetHumanPose(ref humanPose);
+            this.destHumanPoseHandler.SetHumanPose(ref this.humanPose);
 
 
 

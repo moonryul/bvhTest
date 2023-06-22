@@ -17,24 +17,24 @@ public class BVHSkeletonCreator: MonoBehaviour
 
     // https://winterdust.itch.io/bvhimporterexporter
 
-    public static  Transform avatarRootTransform; // initialized to null
-    public static List<string> jointPaths = new List<string>(); // initialized to an empty list of strings
-    public static  List<Transform> avatarTransforms = new List<Transform>();
+    public   Transform avatarRootTransform; // initialized to null
+    public  List<string> jointPaths = new List<string>(); // initialized to an empty list of strings
+    public   List<Transform> avatarTransforms = new List<Transform>();
     // It creates an empty list of Transforms that you can directly use without the need to assign it later.
     // This way, even if GetComponent<BVHFrameGetter>().avatarCurrentTransforms returns null, this.avatarCurrentTransforms will be an empty list (Count will be 0) rather than null.
     // You can start adding or removing Transform elements from the list without encountering null reference exceptions.
     // The transforms for Skeleton gameObject; This is the bvhCurrentTransform set from the current frame of the bvh motion file
 
  
-    public static  string bvhFileName ="";
-    public static  BVH bvh = null;
+    public   string bvhFileName ="";
+    public   BVH bvh = null;
 
-    public static GameObject skeletonGO = null;
+    public  GameObject skeletonGO = null;
 
     void Awake()
     {
            // Load BVH motion data to this.bvh.allBones
-            if (bvhFileName == "")
+            if (this.bvhFileName == "")
             {
                 Debug.Log(" In Awake(), BVHFrameGetter: bvhFileName should be set in the inspector");
                 throw new InvalidOperationException(" In BVHFrameGetter: No  Bvh FileName is set.");
@@ -42,13 +42,7 @@ public class BVHSkeletonCreator: MonoBehaviour
             }
 
      
-    }
-
- // Add a menu item named "Create Skeleton" to MyMenu in the menu bar.
-    [MenuItem("MyMenu/Create Skeleton")]
-    static void  BVHSkeletonCreate()
-    {
-
+    
     
        //MJ: 
             //public BVH(string pathToBvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
@@ -57,7 +51,7 @@ public class BVHSkeletonCreator: MonoBehaviour
 
             //VERY IMPORTANT:  when you get the motion file from the gesticulator, store it to this.bvh.allBones. Then the motion will be played.
 
-            bvh = new BVH(bvhFileName, parseMotionData: false); 
+            this.bvh = new BVH(bvhFileName, parseMotionData: false); 
              // we assume that when Skeleton is created, its bvh motion is NOT loaded  
              // parseMotionData:false: set the localFrameRotations to identity quaternion and the localFramePositions to null:
 
@@ -72,7 +66,10 @@ public class BVHSkeletonCreator: MonoBehaviour
 			// 			}
           
             // Create the Skeleton from this.bvh: ??
-            skeletonGO = bvh.makeDebugSkeleton(animate: false, skeletonGOName: "Skeleton");
+            this.skeletonGO = bvh.makeDebugSkeleton(animate: false, skeletonGOName: "Skeleton");
+            this.skeletonGO.transform.localScale *= 0.03f;
+            //MJ: BVH file uses cm unit but Unity uses m unit, so we need to scale the bone lengths of the bvh charater.
+            
             // => if animate = false, dot not create an animation clip but only the rest position of the skeleton,
             // this.skeletonGO.transform and its children transforms:
             // Refer to    setLocalPosRot(Transform boneTransform, ref int frame) in BVH.cs
@@ -82,17 +79,17 @@ public class BVHSkeletonCreator: MonoBehaviour
 
             Debug.Log(" In Awake, BVHSkeletonCreator, bvh Skeleton is  created");
 
-            avatarRootTransform = skeletonGO.transform.GetChild(0);
+            this.avatarRootTransform = skeletonGO.transform.GetChild(0);
              // this.avatarRootTransform = the Hips joint: The first child of SkeletonGO
              // Set this.avatarTransforms refer to the children transforms of this.avatarRootTransform (Hip); Hip is the child of
              // the Skeleton, which is this.bvhAnimator.gameObject.transform, used as the root of the Unity Humanoid avatar
              // in  this.srcHumanPoseHandler = new HumanPoseHandler(this.bvhAnimator.avatar, this.bvhAnimator.gameObject.transform),
              // in BVHAnimationRetargetter component. 
 
-            ParseAvatarRootTransform(avatarRootTransform, jointPaths, avatarTransforms);
+            ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarTransforms);
 
 
-    } // static void BVHSkeletonCreate()
+    } //  void Awake()
 
     static void  ParseAvatarTransformRecursive(Transform child, string parentPath, List<string> jointPaths, List<Transform> transforms)
     {

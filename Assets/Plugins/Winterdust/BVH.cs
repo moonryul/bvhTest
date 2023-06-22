@@ -494,6 +494,7 @@ namespace Winterdust
 		public GameObject makeSkeleton(int frame = -1, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool animate = false)
 		{
 			GameObject gameObject = new GameObject(skeletonGOName);
+			gameObject.tag="Skeleton"; // added by MJ
 
 			for (int i = 0; i < this.boneCount; i++)
 			{

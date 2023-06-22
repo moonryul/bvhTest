@@ -19,7 +19,7 @@ namespace Winterdust
 			}
 
 				//MJ: scale down the scale of the bvh motion from cm to cm by scale factor = 0.01
-			 this.gameObject.transform.localScale *= 0.01f;
+			//this.gameObject.transform.localScale *= 0.03f;
 			 
 		}
 

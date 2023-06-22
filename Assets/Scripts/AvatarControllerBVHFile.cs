@@ -257,7 +257,7 @@ public class AvatarControllerBVHFile : MonoBehaviour
         Debug.Log($"\nPythonEngine.PythonPath  2 ****:{PythonEngine.PythonPath}");
 
         // Python 엔진 초기화 => The Unity was killed during this initialization!
-        //PythonEngine.Initialize();
+        PythonEngine.Initialize();
 
      
         // Define the input to the gesticulator: 
