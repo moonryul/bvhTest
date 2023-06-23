@@ -14,10 +14,6 @@ public class BVHFrameGetter : MonoBehaviour
 
     // https://winterdust.itch.io/bvhimporterexporter
 
-    public bool isFrameFromBVHFile = true;
-    // If the current frame for the human character is from the bvh file, the FixedUpdate() of BVHFrameGetter component is
-    // executed to set the current frame; Otherwise, the current frame will be set by the output of  AI gesticulator in AvatarController component.
-
     public Transform avatarRootTransform; // defined in inspector
     public List<string> jointPaths = new List<string>(); // emtpy one
     public List<Transform> avatarCurrentTransforms = new List<Transform>();
@@ -35,7 +31,7 @@ public class BVHFrameGetter : MonoBehaviour
 
 
 
-    void Awake()
+    void Start()
     {
 
         // Load BVH motion data to this.bvh.allBones
@@ -218,69 +214,62 @@ public class BVHFrameGetter : MonoBehaviour
         // If the current frame for the human character is from the bvh file, the FixedUpdate() of BVHFrameGetter component is
         // executed to set the current frame; Otherwise, the current frame will be set by the output of  AI gesticulator in AvatarController component.
 
+        //this.frameNo = 0; // go to the beginning of the frame
+        //return;
 
-        if (this.isFrameFromBVHFile != true)  { return; }
-        else
+        // Update the transforms of skeletonGO bvh.secondsPerFrame
+
+
+        // We need a formula that computes the two adjacent frameNumbers whose key times include a given time t, using bvh.secondsPerFrame, bvh.frameCount
+
+        Vector3 vector = this.bvh.allBones[0].localFramePositions[this.frameNo];
+
+        Quaternion quaternion = this.bvh.allBones[0].localFrameRotations[this.frameNo]; // frameTIme = 50 ms from gesticulator
+                                                                                        // update the pose of the avatar to the motion data of the current frame this.frameNo
+
+        // this.avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
+        // this.avatarCurrentTransforms[0].localRotation = quaternion;
+
+        //MJ: We can get the root vector and quaternion from the motionPythonArray from gesticulator directly, without
+        //using this.bvh.allBones[0].localFramePositions[this.frameNo];
+
+        this.avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
+        this.avatarCurrentTransforms[0].localRotation = quaternion;
+
+        for (int b = 1; b < bvh.boneCount; b++) // boneCount= 57 ordered in depth first search of the skeleton hierarchy: bvh.boneCount = 57
+                                                // HumanBodyBones: Hips=0....; LastBone = 55
         {
-
-            //this.frameNo = 0; // go to the beginning of the frame
-            //return;
-
-            // Update the transforms of skeletonGO bvh.secondsPerFrame
+            //Debug.Log(bvh.preparedAnimationClip.data[n].relativePath);            
 
 
-            // We need a formula that computes the two adjacent frameNumbers whose key times include a given time t, using bvh.secondsPerFrame, bvh.frameCount
+            //Vector3 vector = bvh.allBones[b].localFramePositions[this.frameNo];
+            // vector =  this.bvh.allBones[b].localRestPosition; // This line can be moved to BVHAnimationRetargetter to improve performance.
 
-            Vector3 vector = this.bvh.allBones[0].localFramePositions[this.frameNo];
+            //  We can get the  quaternion of b-th bone from the motionPythonArray from gesticulator directly, without
+            //using this.bvh.allBones[b].localFrameRotations[this.frameNo];
 
-            Quaternion quaternion = this.bvh.allBones[0].localFrameRotations[this.frameNo]; // frameTIme = 50 ms from gesticulator
-                                                                                            // update the pose of the avatar to the motion data of the current frame this.frameNo
+            quaternion = this.bvh.allBones[b].localFrameRotations[this.frameNo];
 
-            // this.avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
-            // this.avatarCurrentTransforms[0].localRotation = quaternion;
-
-            //MJ: We can get the root vector and quaternion from the motionPythonArray from gesticulator directly, without
-            //using this.bvh.allBones[0].localFramePositions[this.frameNo];
-
-            this.avatarCurrentTransforms[0].localPosition = vector; // 0 ~ 56: a total of 57  ==> this.avatarCurrentTransforms holds the transforms of the Skeleton hierarchy
-            this.avatarCurrentTransforms[0].localRotation = quaternion;
-
-            for (int b = 1; b < bvh.boneCount; b++) // boneCount= 57 ordered in depth first search of the skeleton hierarchy: bvh.boneCount = 57
-                                                    // HumanBodyBones: Hips=0....; LastBone = 55
-            {
-                //Debug.Log(bvh.preparedAnimationClip.data[n].relativePath);            
-
-
-                //Vector3 vector = bvh.allBones[b].localFramePositions[this.frameNo];
-                // vector =  this.bvh.allBones[b].localRestPosition; // This line can be moved to BVHAnimationRetargetter to improve performance.
-
-                //  We can get the  quaternion of b-th bone from the motionPythonArray from gesticulator directly, without
-                //using this.bvh.allBones[b].localFrameRotations[this.frameNo];
-
-                quaternion = this.bvh.allBones[b].localFrameRotations[this.frameNo];
-
-                //  Update the pose of the avatar to the motion data of the current frame this.frameNo
-                //this.avatarCurrentTransforms[b].localPosition = vector; //b: 0 ~ 56: a total of 57
-                this.avatarCurrentTransforms[b].localRotation = quaternion;     // Set the local rotations of each frame  to the correspoding transform in the skeleton hiearchy;
-                                                                                // This means the rest pose of the skeleton is important to the final pose
+            //  Update the pose of the avatar to the motion data of the current frame this.frameNo
+            //this.avatarCurrentTransforms[b].localPosition = vector; //b: 0 ~ 56: a total of 57
+            this.avatarCurrentTransforms[b].localRotation = quaternion;     // Set the local rotations of each frame  to the correspoding transform in the skeleton hiearchy;
+                                                                            // This means the rest pose of the skeleton is important to the final pose
 
 
 
-            } //  for each bone
+        } //  for each bone
 
-            // Increment frameNo for the next fixed update call
-            this.frameNo++;
-            // check if the current frame number frameNo exceeds frameCount
-            if (this.frameNo == this.bvh.frameCount) // frameNo = 0 ~ 519;  frameCount = 520
-            {
-                this.frameNo = 0; // go to the beginning of the frame
-
-            }
+        // Increment frameNo for the next fixed update call
+        this.frameNo++;
+        // check if the current frame number frameNo exceeds frameCount
+        if (this.frameNo == this.bvh.frameCount) // frameNo = 0 ~ 519;  frameCount = 520
+        {
+            this.frameNo = 0; // go to the beginning of the frame
 
         }
 
-
     }
+
 
     //void FixedUpdate()
 

@@ -21,16 +21,6 @@ public class BVHAnimationLoaderEditor : Editor {
         //     Debug.Log("Loading animation done.");
         // }
 
-        if (GUILayout.Button("Play animation")) {
-            bvhRetargetter.playAnimation();
-            Debug.Log("Playing animation.");
-        }
-
-        if (GUILayout.Button("Stop animation")) {
-            Debug.Log("Stopping animation.");
-            bvhRetargetter.stopAnimation();
-        }
-
         
     }
 }

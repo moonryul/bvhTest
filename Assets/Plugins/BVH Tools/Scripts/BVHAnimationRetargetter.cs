@@ -39,10 +39,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
     public List<Transform> bvhAvatarCurrentTransforms = new List<Transform>();
 
-   
-
-    public BVHFrameGetter bvhFrameGetter; 
-
+    
     public GameObject skeletonGO; // the reference to skeletonGO comes from bvhFrameGetter.cs
 
     HumanPose humanPose = new HumanPose();
@@ -71,31 +68,16 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
     // Field Initializer vs Setting within Constructors: https://stackoverflow.com/questions/298183/c-sharp-member-variable-initialization-best-practice?msclkid=7fa9d0edc04911ec89a1aa2251ca3533
        
-    [Header("Loader settings")]
-    [Tooltip("The Animator component for the character; The bone names should be identical to those in the BVH file; All bones should be initialized with zero rotations.")]
+   
     public  Animator bvhAnimator; // should be defined in the inspector
     public   Animator saraAnimator; // should be defined in the inspector
-   
-    public string clipName;
-    
-    [Tooltip("This field can be used to read out the the animation clip after being loaded. A new clip will always be created when loading.")]
-    public AnimationClip clip;
-
-    //MJ added the following to use Animation Controller for the animation of the character
-
-    private AnimationClip[] m_Animations;
-
-    public Animation bvhAnimation;
-    
-     protected AnimatorOverrideController animatorOverrideController; 
+         
+    protected AnimatorOverrideController animatorOverrideController; 
     
     protected AnimationClipOverrides clipOverrides;
      
         // public AnimationClip this[string name] { get; set; }
         // public AnimationClip this[AnimationClip clip] { get; set; }
-    static private int clipCount = 0;
-    private BVHParser bp = null;
-    //private Transform bvhRootTransform;
     private string prefix;
     private int frames;
     private float deltaTime;
@@ -530,46 +512,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
 
 
-    public void playAnimation()
-    {
-
-        if (this.animType == AnimType.Humanoid)
-        {
-            this.bvhAnimator.Play("bvhPlay");  // MJ: Animator.Play(string stateName); play a state stateName; Base Layer.Bounce, e.g.
-                                               // "Entry" => Bounce    
-
-            this.bvhAnimator.Update(0.0f); // Update(Time.deltaTime): Animation control: https://chowdera.com/2021/08/20210823014846793k.html
-                                           //=>  //  Record each frame
-                                           //        animator.Update( 1.0f / frameRate);
-                                           //=> You can pass the elapsed time by which it updates, and passing zero works as expected - **it updates to the first frame of the first animation state**
-                                           // The game logic vs animation logic: https://docs.unity3d.com/Manual/ExecutionOrder.html  
-        }
-
-        else if (this.animType == AnimType.Legacy)
-        {
-
-
-            this.GetComponent<Animation>().Play(this.clip.name);
-        }
-    }
-
-    public void stopAnimation()
-    {
-        if (this.animType == AnimType.Humanoid)
-        {
-
-            this.bvhAnimator.enabled = false;
-        }
-        else if (this.animType == AnimType.Legacy)
-        {
-
-            if (this.GetComponent<Animation>().IsPlaying(clip.name))
-            {
-                this.GetComponent<Animation>().Stop();
-            }
-        }
-    }
-
+   
     // Indexes to muscles
     // 9: Neck Nod Down-Up min: -40 max: 40
     // 10: Neck Tilt Left-Right min: -40 max: 40
@@ -708,7 +651,7 @@ public class BVHAnimationRetargetter : MonoBehaviour
 
 
             //MJ:  // Muscle name and index lookup for Debugging
-            this.LookUpHumanMuscleIndex();
+            //this.LookUpHumanMuscleIndex();
            
            
 

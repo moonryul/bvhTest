@@ -128,9 +128,9 @@ public class AvatarController : MonoBehaviour
                   PythonEngine.PythonPath,
                      Path.Combine(PYTHON_HOME, @"Lib\site-packages"),
 
-                      @"D:\Dropbox\metaverse\gesticulator",  // the root folder itself  under which demo package resides; demo package has demo.py module
-                      @"D:\Dropbox\metaverse\gesticulator\gesticulator",
-                       @"D:\Dropbox\metaverse\gesticulator\gesticulator\visualization"
+                      @"D:\Dropbox\Dropbox\metaverse\gesticulatorUnity",  // the root folder itself  under which demo package resides; demo package has demo.py module
+                      @"D:\Dropbox\Dropbox\metaverse\gesticulatorUnity\gesticulator",
+                       @"D:\Dropbox\Dropbox\metaverse\gesticulatorUnity\gesticulator\visualization"
 
             }
         );
@@ -147,12 +147,11 @@ public class AvatarController : MonoBehaviour
         //  this.gameObject.GetComponent<BVHFrameGetter>().avatarRootTransform is set in Awake() of
         // BVHFrameGetter component.
 
-        this.isFrameFromBVHFile = this.gameObject.GetComponent<BVHFrameGetter>().isFrameFromBVHFile;
+       
         this.avatarRootTransform = this.gameObject.GetComponent<BVHFrameGetter>().avatarRootTransform;
         this.avatarCurrentTransforms = this.gameObject.GetComponent<BVHFrameGetter>().avatarCurrentTransforms;
 
-        if ( this.isFrameFromBVHFile == true) return; 
-
+     
         // Define the input to the gesticulator: 
         //ToDo:  For the term project, you need to get the audio from the user and get the text from it using 
         // speechToText API
@@ -163,7 +162,7 @@ public class AvatarController : MonoBehaviour
         //    This is a convenience functions that enables the model to work with plaintext 
         //    transcriptions in place of a time-annotated JSON file from Google Speech-to-Text.
         
-        string audio_file = @"D:\Dropbox\metaverse\gesticulator\demo\input\jeremy_howard.wav";
+        string audio_file = @"D:\Dropbox\Dropbox\metaverse\gesticulatorUnity\demo\input\jeremy_howard.wav";
 
         // Start Coroutine: It basically execute a custom Update(), which has a yield statement somewhere
         IEnumerator _ienumerator = GetSpeech_GenGesture_Display(audio_text, audio_file);
