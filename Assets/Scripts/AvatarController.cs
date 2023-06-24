@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-using Unity.Mathematics;
+//using Unity.Mathematics;
 
 using Python.Runtime;  // This package resides in Assets/Assets/Plugins
 
@@ -29,17 +29,18 @@ using UnityEngine;
 public class AvatarController : MonoBehaviour
 {
     public int frameNo = 0;
-
-    public bool isFrameFromBVHFile;
+    public GameObject skeletonGO = null;
+    
+    public List<string> jointPaths = new List<string>(); // emtpy one
 
     public Transform avatarRootTransform;
 
     public List<Transform> avatarCurrentTransforms; // = new List<Transform>();
     // The transforms for Skeleton gameObject; This is the bvhCurrentTransform set from the current frame of the bvh motion file
                                              //        12 13 14 15
-    public int[] jointIndex = {1,2,3,4,5,6,7,8,9,10,11,28,29,30,31}; // Excluding Hip; starting from Spine
+    public int[] jointIndex = {1,2,3,4,5,6,7,8,9,10,11,27,28,29,30}; // Excluding Hip; starting from Spine
     public int   numOfUsedJoints = 15; // inclung the hip rotation, but excluding the hip position, execluding the finger joints
-
+    public int   numOfbvhFileJoints; 
 //MJ from bvh2features.py:
 //                              1       2        3      4        5      6       7       8
  //('jtsel', JointSelector(['Spine','Spine1','Spine2','Spine3','Neck','Neck1','Head','RightShoulder', 
@@ -140,16 +141,37 @@ public class AvatarController : MonoBehaviour
         // Python 엔진 초기화
         PythonEngine.Initialize();
 
+        // this.skeletonGO = GameObject.FindGameObjectWithTag("Skeleton");
 
-        //MJ:  Get the public avatarRootTransform field of BVHFrameGetter component of  this.gameObject, which is bvhRetargetter,
-        // to this.avatarRootTransform:
+        if (this.skeletonGO == null)
+        {
 
-        //  this.gameObject.GetComponent<BVHFrameGetter>().avatarRootTransform is set in Awake() of
-        // BVHFrameGetter component.
+             Debug.Log(" Skeleton gameObject should have been created and added to the hierarchy by using BVHSkeletonCreator.cs");
+
+             throw new InvalidOperationException("No   Skeleton gameObject is set");
+            
+        }
+        else
+        {
+            Debug.Log(" bvh Skeleton is already created and has been given Tag 'Skeleton' ");
+
+          
+
+            //IMPORTANT:  Collect the transforms in the skeleton hiearchy into ***a list of transforms***,  this.avatarCurrentTransforms:
+            // If you change  this.avatarCurrentTransforms, it affects the hierarchy of    this.skeletonGO , because both reference the same transforms;
+
+            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
+            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarCurrentTransforms);
+            //MJ:  this.jointPaths and this.avatarCurrentTransforms are set within the above method.
+            this.numOfbvhFileJoints = this.avatarCurrentTransforms.Count;
+                     
+
+        }
+
 
        
-        this.avatarRootTransform = this.gameObject.GetComponent<BVHFrameGetter>().avatarRootTransform;
-        this.avatarCurrentTransforms = this.gameObject.GetComponent<BVHFrameGetter>().avatarCurrentTransforms;
+        // this.avatarRootTransform = this.gameObject.GetComponent<BVHFrameGetter>().avatarRootTransform;
+        // this.avatarCurrentTransforms = this.gameObject.GetComponent<BVHFrameGetter>().avatarCurrentTransforms;
 
      
         // Define the input to the gesticulator: 
@@ -165,8 +187,8 @@ public class AvatarController : MonoBehaviour
         string audio_file = @"D:\Dropbox\Dropbox\metaverse\gesticulatorUnity\demo\input\jeremy_howard.wav";
 
         // Start Coroutine: It basically execute a custom Update(), which has a yield statement somewhere
-        IEnumerator _ienumerator = GetSpeech_GenGesture_Display(audio_text, audio_file);
-        StartCoroutine(_ienumerator);
+        //IEnumerator _ienumerator = GetSpeech_GenGesture_Display(audio_text, audio_file);
+        StartCoroutine( GetSpeech_GenGesture_Display(audio_text, audio_file) );
 
     } // Start
 
@@ -242,9 +264,13 @@ public class AvatarController : MonoBehaviour
                 
                 //MJ: Test two versions of main: main1 with audi_file and main2 with audio_array:
 
-                //dynamic motionPythonArray = democs.main1(audio_text: audio_text, audio_file:audio_file);
-                dynamic motionPythonArray = democs.main2(audio_text: audio_text, audio_array:audio_array, sample_rate:sample_rate);
+                dynamic motionPythonArray = democs.main1(audio_text: audio_text, audio_file:audio_file);
+                //dynamic motionPythonArray = democs.main2(audio_text: audio_text, audio_array:audio_array, sample_rate:sample_rate);
                 
+                //MJ: just for debugging:
+                //yield break;
+
+
                 //  We removed lower-body data, retaining 15 upper-body joints out of the original 69. 
                 // Fingers were not modelled due to poor data quality. 15 joints * 3 = 45 angles
 
@@ -261,39 +287,58 @@ public class AvatarController : MonoBehaviour
                 int num_of_rows = motionPythonArray.shape[0]; // = 528
                 int num_of_cols = motionPythonArray.shape[1]; // = 45 (The  total number of main joints is 46); The returned 45 means that HIPs joint is fixed and not returned
 
-                System.Text.StringBuilder logMessage = new System.Text.StringBuilder();
+                // System.Text.StringBuilder logMessage = new System.Text.StringBuilder();
 
-                for (int i = 0; i < num_of_rows; i++) // mum_of_rows == 528: why not 520?
-                {
-                    logMessage.AppendFormat("Frame={0}: \n", i);// To avoid the repetition of the debug message in Unity, use .LogFormat instead of .Log
+                // for (int i = 0; i < num_of_rows; i++) // mum_of_rows == 528: why not 520?
+                // {
+                //     logMessage.AppendFormat("Frame={0}: \n", i);// To avoid the repetition of the debug message in Unity, use .LogFormat instead of .Log
 
-                    for (int j = 0; j < num_of_cols; j++) 
-                    {
+                //     for (int j = 0; j < num_of_cols; j++) 
+                //     {
 
-                        logMessage.AppendFormat("{0} \t", motionPythonArray[i][j]);
+                //         logMessage.AppendFormat("{0} \t", motionPythonArray[i][j]);
 
-                    }
+                //     }
 
-                    logMessage.AppendLine();
+                //     logMessage.AppendLine();
 
-                }
+                // }
 
-                System.IO.File.WriteAllText("motionGeneratedFromGesticulatorAudioArray.txt", logMessage.ToString());
+                // System.IO.File.WriteAllText("motionGeneratedFromGesticulator.bvh", logMessage.ToString());
 
 
                 
-                Vector3 rootPosition = new Vector3(0, 1, 0); // the hip position is set  1 m above the ground, the world coord system.
+                Vector3 rootPosition = new Vector3();// the hip position is set  1 m above the ground, the world coord system.
+                Vector3 eulerAngles_ij = new Vector3();
+                Quaternion rotation_ij = new Quaternion(); //
 
-                this.avatarCurrentTransforms[ 0 ].localPosition = rootPosition; // The root position of the body is set always the same => This could be changed dynamically by
-                                                                                  // other locomotions.
-                this.avatarCurrentTransforms[ 0 ].localRotation = Quaternion.identity; 
+                // this.avatarCurrentTransforms[ 0 ].localPosition = rootPosition; // The root position of the body is set always the same => This could be changed dynamically by
+                //                                                                   // other locomotions.
+                // this.avatarCurrentTransforms[ 0 ].localRotation = Quaternion.identity; 
 
                 // int num_of_rows = motionPythonArray.shape[0]; // = 528
                 // int num_of_cols = motionPythonArray.shape[1]; // = 45 (The  total number of main joints is 46); The returned 45 means that HIPs joint is fixed and not returned
 
                 for (int i = 0; i < num_of_rows; i++) // i = 0 ~ 527; num_of_rows = num of frames
-                {
-                    for (int j = 0; j < num_of_cols /3; j++) // num_of_cols are the num of Euler  angles for the  15 joints; depth first search of the skeleton hierarchy: bvh.boneCount = 57
+                {   this.frameNo = i;
+
+                    // Get the position and the rotation of the root joint, Hips, j=0
+                    rootPosition.x = (float)motionPythonArray[i][0];
+                    rootPosition.y = (float) motionPythonArray[i][1];
+                    rootPosition.z = (float) motionPythonArray[i][2]; 
+
+                    this.avatarCurrentTransforms[ 0 ].localPosition = rootPosition; // The root position of the body is set always the same => This could be changed dynamically by
+                                                                                  // other locomotions.
+                    eulerAngles_ij.z = (float)motionPythonArray[i][ 3 + 0]; // X from ZXY euler angles (in degrees)
+                    eulerAngles_ij.x = (float) motionPythonArray[i][ 3 + 1]; // Y from ZXY euler angles (in degrees) 
+                    eulerAngles_ij.y = (float) motionPythonArray[i][ 3 + 2]; // Z from ZXY euler angles (in degrees) 
+                    //    public static quaternion EulerXZY(float3 xyz) in Unity.Mathematics
+                    rotation_ij = this.fromEulerZXY(eulerAngles_ij);
+
+                    this.avatarCurrentTransforms[ 0 ].localRotation = rotation_ij; 
+
+                    for (int j = 1; j < this.numOfbvhFileJoints; j++) //MJ: from Spine joint: j=1; A total of 57 joints
+                    //for (int j = 0; j < numOfUsedJoints; j++) // num_of_cols are the num of Euler  angles for the  15 joints; depth first search of the skeleton hierarchy: bvh.boneCount = 57
                                                              // The range of j = the range of joints = 15;               // HumanBodyBones: Hips=0....; LastBone = 55
                     {  // The 0th joint refers to Spine, just above Hips.
                     
@@ -302,20 +347,22 @@ public class AvatarController : MonoBehaviour
                         //  the second angle corresponds to the X-axis rotation, 
                         // and the third angle corresponds to the Y-axis rotation.
 
-                        Vector3 eulerAngles_ij = new Vector3();
+                       
 
                         // Get the three angles for the jth joint
-                        eulerAngles_ij.z = (float)motionPythonArray[i][ 3*j + 0]; // ZXY euler angles (in degrees)
-                        eulerAngles_ij.x = (float) motionPythonArray[i][ 3*j + 1]; // ZXY euler angles (in degrees) 
-                        eulerAngles_ij.y = (float) motionPythonArray[i][ 3*j + 2]; // ZXY euler angles (in degrees) 
+                        eulerAngles_ij.z = (float)motionPythonArray[i][ 3*(j+1) + 0]; // ZXY euler angles (in degrees)
+                        eulerAngles_ij.x = (float) motionPythonArray[i][ 3*(j+1) + 1]; // ZXY euler angles (in degrees) 
+                        eulerAngles_ij.y = (float) motionPythonArray[i][ 3*(j+1) + 2]; // ZXY euler angles (in degrees) 
 
-                        quaternion rotation_ij = quaternion.EulerZXY(eulerAngles_ij.x * Mathf.Deg2Rad, eulerAngles_ij.y * Mathf.Deg2Rad, eulerAngles_ij.z * Mathf.Deg2Rad); // expects radian inputs
+                        rotation_ij = this.fromEulerZXY(eulerAngles_ij); 
 
-                        //public static quaternion EulerZXY(float x, float y, float z
+                        //public static quaternion EulerZXY(float x, float y, float z): Returns a quaternion constructed by first performing a rotation around the z-axis, then the x-axis and finally the y-axis.
 
                         //  Update the pose of the avatar to the motion data of the current frame this.frameNo
                         //this.avatarCurrentTransforms[b].localPosition = vector; // 0 ~ 56: a total of 57
-                        this.avatarCurrentTransforms[ this.jointIndex[j] ].localRotation = rotation_ij;
+                        //this.avatarCurrentTransforms[ this.jointIndex[j] ].localRotation = rotation_ij;
+
+                        this.avatarCurrentTransforms[ j].localRotation = rotation_ij;
                         // Set the local rotations of each frame  to the correspoding transform in the skeleton hiearchy;
                         // This means the rest pose of the skeleton is important to the final pose
 
@@ -383,7 +430,39 @@ public class AvatarController : MonoBehaviour
 
         } // IEnumerator GetSpeech_GenGesture_Display()     
 
+ // BVH to Unity
+    private Quaternion fromEulerZXY(Vector3 euler)
+    {
+        return Quaternion.AngleAxis(euler.z, Vector3.forward) * Quaternion.AngleAxis(euler.x, Vector3.right) * Quaternion.AngleAxis(euler.y, Vector3.up);
+    }
 
-    }   //class Program
+void ParseAvatarTransformRecursive(Transform child, string parentPath, List<string> jointPaths, List<Transform> transforms)
+    {
+        string jointPath = parentPath.Length == 0 ? child.gameObject.name : parentPath + "/" + child.gameObject.name;
+        // The empty string's length is zero
+
+        jointPaths.Add(jointPath);
+        transforms.Add(child);
+
+        foreach (Transform grandChild in child)
+        {
+            ParseAvatarTransformRecursive(grandChild, jointPath, jointPaths, transforms);
+        }
+
+        // Return if child has no children, that is, it is a leaf node.
+    }
+
+    void ParseAvatarRootTransform(Transform rootTransform, List<string> jointPaths, List<Transform> avatarTransforms)
+    {
+        jointPaths.Add(""); // The name of the root tranform path is the empty string
+        avatarTransforms.Add(rootTransform);
+
+        foreach (Transform child in rootTransform) // rootTransform class implements IEnuerable interface
+        {
+            ParseAvatarTransformRecursive(child, "", jointPaths, avatarTransforms);
+        }
+    }
+
+    }   //class AvatarController
 
 

@@ -357,9 +357,6 @@ MonoBehaviour:
   skeletonGO: {fileID: 1693795313}
   bvhAnimator: {fileID: 1693795314}
   saraAnimator: {fileID: 312638137}
-  clipName: 
-  clip: {fileID: 0}
-  bvhAnimation: {fileID: 0}
 --- !u!114 &1229214355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367,7 +364,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1229214350}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5483c1fd28178924caa0327ced90ffa7, type: 3}
   m_Name: 
@@ -375,7 +372,7 @@ MonoBehaviour:
   avatarRootTransform: {fileID: 0}
   jointPaths: []
   avatarCurrentTransforms: []
-  bvhFileName: Assets/Recording_001.bvh
+  bvhFileName: Assets/gen_motion_python_test.bvh
   frameNo: 0
   secondsPerFrame: 0
   frameCount: 0
@@ -387,17 +384,19 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1229214350}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4a05c333413a7f9478437666f167cc5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   frameNo: 0
-  isFrameFromBVHFile: 0
+  skeletonGO: {fileID: 1693795313}
+  jointPaths: []
   avatarRootTransform: {fileID: 0}
   avatarCurrentTransforms: []
   jointIndex: 0100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000001c0000001d0000001e0000001f000000
   numOfUsedJoints: 15
+  numOfbvhFileJoints: 0
 --- !u!1001 &1510382709
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -435,15 +434,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7878993537070894574, guid: 6f73e8c96f4521e4188df8a65385f565, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.01
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 7878993537070894574, guid: 6f73e8c96f4521e4188df8a65385f565, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.01
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 7878993537070894574, guid: 6f73e8c96f4521e4188df8a65385f565, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.01
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 7878993537070894574, guid: 6f73e8c96f4521e4188df8a65385f565, type: 3}
       propertyPath: m_LocalPosition.x
@@ -545,7 +544,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400336, guid: d978ee81cc242d94794d140b825cdbf2, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400336, guid: d978ee81cc242d94794d140b825cdbf2, type: 3}
       propertyPath: m_LocalRotation.x
@@ -553,7 +552,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400336, guid: d978ee81cc242d94794d140b825cdbf2, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400336, guid: d978ee81cc242d94794d140b825cdbf2, type: 3}
       propertyPath: m_LocalRotation.z
@@ -565,7 +564,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400336, guid: d978ee81cc242d94794d140b825cdbf2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 400336, guid: d978ee81cc242d94794d140b825cdbf2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z

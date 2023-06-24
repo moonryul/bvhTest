@@ -33,6 +33,36 @@ public class BVHFrameGetter : MonoBehaviour
 
     void Start()
     {
+            // Create a Skeleton hiearchy if it  is not yet created. 
+
+        this.skeletonGO = GameObject.FindGameObjectWithTag("Skeleton");
+
+        if (this.skeletonGO == null)
+        {
+
+             Debug.Log(" Skeleton gameObject should have been created and added to the hierarchy by using BVHSkeletonCreator.cs");
+
+             throw new InvalidOperationException("No   Skeleton gameObject is set");
+            
+        }
+        else
+        {
+            Debug.Log(" bvh Skeleton is already created and has been given Tag 'Skeleton' ");
+
+          
+
+            //IMPORTANT:  Collect the transforms in the skeleton hiearchy into ***a list of transforms***,  this.avatarCurrentTransforms:
+            // If you change  this.avatarCurrentTransforms, it affects the hierarchy of    this.skeletonGO , because both reference the same transforms;
+
+            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
+            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarCurrentTransforms);
+            //MJ:  this.jointPaths and this.avatarCurrentTransforms are set within the above method.
+
+            //Set the current transforms of the avatar to the initial pose,which is T-pose.
+            
+
+        }
+
 
         // Load BVH motion data to this.bvh.allBones
         if (this.bvhFileName == "")
@@ -45,100 +75,15 @@ public class BVHFrameGetter : MonoBehaviour
         //MJ: Note:
         //public BVH(string pathToBvhFile, double importPercentage = 1.0, bool zUp = false, int calcFDirFromFrame = 0, int calcFDirToFrame = -1, bool ignoreRootBonePositions = false, bool ignoreChildBonePositions = true, bool fixFrameRate = true, bool parseMotionData = true, BVH.ProgressTracker progressTracker = null)
 
-        //MJ:  During Awake() of BVHFrameGetter Script, parse the bvh file and load the  hierarchy paths and  load motion data to this.bvh.allBones
-
-        //VERY IMPORTANT:  when you get the motion file from the gesticulator, store it to this.bvh.allBones. Then the motion will be played.
-
         this.bvh = new BVH(bvhFileName, parseMotionData: true); // Load BVH motion data to this.bvh.allBones
 
         this.frameCount = this.bvh.frameCount;
         this.secondsPerFrame = this.bvh.secondsPerFrame; // 0.05f;
         // Sets to 20 fps
-        Time.fixedDeltaTime = (float)this.secondsPerFrame;
+        Time.fixedDeltaTime = (float)this.secondsPerFrame; 
+        
 
-
-        // Create a Skeleton hiearchy if it  is not yet created. 
-
-        this.skeletonGO = GameObject.FindGameObjectWithTag("Skeleton");
-
-        if (this.skeletonGO == null)
-        {
-            // (1)  create a skeleton of transforms for the skeleton hierarchy, 
-            // (2) add a BVHDebugLines component to it so it becomes visible like a stick figur [
-            // BVHDebugLines bvhdebugLines = gameObject.AddComponent<BVHDebugLines>() ],
-            // (Lines are simply drawn between the bone heads (and ends))d  
-            // (3) return the skeleton, which is a hierarchy of GameObjects.
-
-            // Create all gameObjects hiearchy and the components needed to render the gameObjects for bvh.Allbones[].
-
-            this.skeletonGO = this.bvh.makeDebugSkeleton(animate: false, skeletonGOName: "Skeleton");
-            // => if animate = false, dot not create an animation clip but only the rest pose; 
-            // Create BvhDebugLines component and MeshRenderer component,
-            //  but do not create Animation component:
-            // public GameObject makeDebugSkeleton(bool animate = true, string colorHex = "ffffff", float jointSize = 1f, int frame = -1, bool xray = false, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool originLine = false)
-
-            Debug.Log(" bvh Skeleton is  created");
-
-            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0); // the Hips joint: The first child of SkeletonGO
-
-            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarCurrentTransforms);
-            // //MJ:  this.jointPaths and this.avatarCurrentTransforms are set within his.ParseAvatarRootTransform.
-
-            Debug.Log(" bvhFile has been read in Awake() of BVHFrameGetter");
-
-        }
-        else
-        {
-            Debug.Log(" bvh Skeleton is already created and has been given Tag 'Skeleton' ");
-
-            //all gameObjects hiearchy and the components needed to render the gameObjects for bvh.Allbones[] are already available.
-
-            // this.skeletonGO contains the pose of the skeleton obtained from the saved scene.
-            // Set this pose to the allBones data structure of the BVH => no need to do it, because we do:
-            //   this.bvh = new BVH(bvhFileName, parseMotionData: true); // Load BVH motion data to this.bvh.allBones always.
-
-            //this.bvh.setBoneTransformsToSkeleton(this.skeletonGO);
-
-            // Note:
-            // public void setBoneTransformsToSkeleton(GameObject skeletonGO,  int frame = -1)
-            // {
-            //     Transform[] componentsInChildren = skeletonGO.GetComponentsInChildren<Transform>(); 
-
-            //     for (int i = 0; i < this.boneCount; i++)
-            //     {
-
-
-            //         this.allBones[i].setLocalPosRot( componentsInChildren[ i+1].transform, ref frame);  
-            // 		 // i+1 index: componentsInChildren contains the transform of Skeleton GameObject itself; we exclude it from the avatar hiearchy
-
-
-            //     }
-
-
-            // }
-
-
-
-            //IMPORTANT:  Collect the transforms in the skeleton hiearchy into ***a list of transforms***,  this.avatarCurrentTransforms:
-            // If you change  this.avatarCurrentTransforms, it affects the hierarchy of    this.skeletonGO , because both reference the same transforms;
-
-            this.avatarRootTransform = this.skeletonGO.transform.GetChild(0);
-            this.ParseAvatarRootTransform(this.avatarRootTransform, this.jointPaths, this.avatarCurrentTransforms);
-            //MJ:  this.jointPaths and this.avatarCurrentTransforms are set within the above method.
-
-
-        }
-
-
-        // AnimationClip clip = myBvh.makeAnimationClip();
-        //==>  This line just creates an AnimationClip. By default it has legacy set to true.
-        //   But you can turn that off (either later or directly in the method call).
-
-        //   public GameObject makeSkeleton(int frame = -1, bool includeBoneEnds = true, string skeletonGOName = "Skeleton", bool animate = false)
-        // calls:  AnimationClip clip = this.makeAnimationClip(0, -1, false, "", WrapMode.Loop, true, false, false);
-
-        // It's possible to make an Animator-compatible AnimationClip, which you can use in Mecanim via an Animator Override Controller.
-
+       
         // BvhImporterExporter is delivered as a .dll file, everything is well documented with detailed XMLDOC descriptions.
         //  A .xml file is included, when placed next to the .dll the documentation can be seen from inside your script editor.
 

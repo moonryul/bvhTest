@@ -36,8 +36,10 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\RealTime_MicGet.cs" />
      <Compile Include="Assets\Scripts\Program.cs" />
      <Compile Include="Assets\NewBehaviourScript.cs" />
+     <Compile Include="Assets\Scripts\BVHSkeletonCreator.cs" />
      <Compile Include="Assets\Scripts\AvatarController.cs" />
      <None Include="Assets\Resources\bvh173646864441213808250.txt" />
     <Reference Include="UnityEngine">
